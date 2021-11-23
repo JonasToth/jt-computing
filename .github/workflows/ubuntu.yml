@@ -27,7 +27,11 @@ jobs:
         key: ${{ runner.os }}-dependencies
 
     - name: Install Catch2
-      run: sudo apt install catch2
+      run: |
+        git clone https://github.com/catchorg/Catch2.git -b v2.x
+        cd Catch2
+        cmake -Bbuild -H. -DBUILD_TESTING=OFF
+        sudo cmake --build build/ --target install
 
     - name: configure
       run: cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/$INSTALL_LOCATION -DProject_ENABLE_CODE_COVERAGE=1
