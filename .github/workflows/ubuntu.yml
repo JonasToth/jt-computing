@@ -34,7 +34,7 @@ jobs:
         sudo cmake --build build/ --target install
 
     - name: configure
-      run: cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/$INSTALL_LOCATION -DProject_ENABLE_CODE_COVERAGE=1
+      run: cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/$INSTALL_LOCATION -DJTComputing_ENABLE_CODE_COVERAGE=ON -DJTComputing_ENABLE_TESTING=ON
       
     - name: build
       run: cmake --build build --config $BUILD_TYPE -j4
