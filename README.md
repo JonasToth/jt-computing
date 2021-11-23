@@ -1,8 +1,4 @@
-[![Actions Status](https://github.com/JonasToth/jt-computing/workflows/MacOS/badge.svg)](https://github.com/JonasToth/jt-computing/actions)
-[![Actions Status](https://github.com/JonasToth/jt-computing/workflows/Windows/badge.svg)](https://github.com/JonasToth/jt-computing/actions)
 [![Actions Status](https://github.com/JonasToth/jt-computing/workflows/Ubuntu/badge.svg)](https://github.com/JonasToth/jt-computing/actions)
-[![codecov](https://codecov.io/gh/JonasToth/jt-computing/branch/master/graph/badge.svg)](https://codecov.io/gh/JonasToth/jt-computing)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/JonasToth/jt-computing)](https://github.com/JonasToth/jt-computing/releases)
 
 # `jt-computing` - Me Discovering Computation
 

@@ -34,7 +34,7 @@ jobs:
         sudo cmake --build build/ --target install
 
     - name: configure
-      run: cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/$INSTALL_LOCATION -DJTComputing_ENABLE_CODE_COVERAGE=ON -DJTComputing_ENABLE_TESTING=ON
+      run: cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/$INSTALL_LOCATION -DJTComputing_ENABLE_TESTING=ON
       
     - name: build
       run: cmake --build build --config $BUILD_TYPE -j4
@@ -43,9 +43,6 @@ jobs:
       run: |
         cd build
         ctest -C $BUILD_TYPE -VV
-
-    - name: Code coverage using Codecov 
-      run: bash <(curl -s https://codecov.io/bash) 
 
     - name: install project
       run: cmake --build build --target install --config Release 
