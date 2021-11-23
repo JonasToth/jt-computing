@@ -1,5 +1,5 @@
 set(sources
-    lib/tmp.cpp
+    lib/container/BitVector.cpp
 )
 
 set(exe_sources
@@ -8,9 +8,9 @@ set(exe_sources
 )
 
 set(headers
-    include/jt-computing/tmp.hpp
+    include/jt-computing/container/BitVector.hpp
 )
 
 set(test_sources
-  lib/tmp_test.cpp
+  lib/container/BitVector.cpp
 )
