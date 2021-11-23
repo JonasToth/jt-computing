@@ -1,3 +1,10 @@
-#include "project/tmp.hpp"
+#include "jt-computing/tmp.hpp"
 
-int tmp::add(int a, int b) { return a + b; }
+namespace jt
+{
+  int add(int a, int b)
+  {
+    return a + b;
+  }
+
+}  // namespace jt

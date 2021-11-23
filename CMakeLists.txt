@@ -43,6 +43,9 @@ include(cmake/Conan.cmake)
 # Create library, setup header and source files
 #
 
+# Find all headers and implementation files
+include(cmake/SourcesAndHeaders.cmake)
+
 if(${PROJECT_NAME}_BUILD_EXECUTABLE)
   add_executable(${PROJECT_NAME} ${exe_sources})
 
@@ -129,7 +132,7 @@ PUBLIC
 $<INSTALL_INTERFACE:include>
 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 PRIVATE
-${CMAKE_CURRENT_SOURCE_DIR}/src
+${CMAKE_CURRENT_SOURCE_DIR}/lib
 )
 
 message(STATUS "Finished setting up include directories.")
