@@ -2,6 +2,7 @@
 #define BITVECTOR_HPP_FIVX3TX5
 
 #include "jt-computing/Types.hpp"
+
 #include <climits>
 #include <concepts>
 #include <iostream>
