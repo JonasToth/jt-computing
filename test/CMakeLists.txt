@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.20)
 
 #
 # Project details
@@ -9,6 +9,7 @@ project(
   LANGUAGES CXX
 )
 
+find_package(Catch2 REQUIRED)
 verbose_message("Adding tests under ${CMAKE_PROJECT_NAME}Tests...")
 
 foreach(file ${test_sources})
@@ -19,7 +20,7 @@ foreach(file ${test_sources})
   # Set the compiler standard
   #
 
-  target_compile_features(${test_name}_Tests PUBLIC cxx_std_17)
+  target_compile_features(${test_name}_Tests PUBLIC cxx_std_20)
 
   #
   # Setup code coverage if enabled
@@ -34,40 +35,14 @@ foreach(file ${test_sources})
   #
   # Load the desired unit testing framework
   #
-  # Currently supported: GoogleTest (and GoogleMock), Catch2.
+  # Currently supported: Catch2.
 
-  if(${CMAKE_PROJECT_NAME}_BUILD_EXECUTABLE)
-    set(${CMAKE_PROJECT_NAME}_TEST_LIB ${CMAKE_PROJECT_NAME}_LIB)
-  else()
-    set(${CMAKE_PROJECT_NAME}_TEST_LIB ${CMAKE_PROJECT_NAME})
-  endif()
-
-  if(${CMAKE_PROJECT_NAME}_USE_GTEST)
-    find_package(GTest REQUIRED)
-
-    if(${CMAKE_PROJECT_NAME}_USE_GOOGLE_MOCK)
-      set(GOOGLE_MOCK_LIBRARIES GTest::gmock GTest::gmock_main)
-    endif()
-
-    target_link_libraries(
-      ${test_name}_Tests
-      PUBLIC
-        GTest::GTest
-        GTest::Main
-        ${GOOGLE_MOCK_LIBRARIES}
-        ${${CMAKE_PROJECT_NAME}_TEST_LIB}
-    )
-  elseif(${CMAKE_PROJECT_NAME}_USE_CATCH2)
-    find_package(Catch2 REQUIRED)
-    target_link_libraries(
-      ${test_name}_Tests
-      PUBLIC
-        Catch2::Catch2
-        ${${CMAKE_PROJECT_NAME}_TEST_LIB}
-    )
-  else()
-    message(FATAL_ERROR "Unknown testing library. Please setup your desired unit testing library by using `target_link_libraries`.")  
-  endif()
+  target_link_libraries(
+    ${test_name}_Tests
+    PUBLIC
+      Catch2::Catch2
+      ${CMAKE_PROJECT_NAME}
+  )
 
   #
   # Add the unit tests

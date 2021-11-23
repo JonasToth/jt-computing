@@ -1,16 +1,16 @@
 set(sources
-    src/tmp.cpp
+    lib/tmp.cpp
 )
 
 set(exe_sources
-		src/main.cpp
+		bin/test_program.cpp
 		${sources}
 )
 
 set(headers
-    include/project/tmp.hpp
+    include/jt-computing/tmp.hpp
 )
 
 set(test_sources
-  src/tmp_test.cpp
+  lib/tmp_test.cpp
 )

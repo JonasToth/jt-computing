@@ -1,7 +1,7 @@
 #ifndef TMP_TMP_H_
 #define TMP_TMP_H_
 
-namespace tmp
+namespace jt
 {
   int add(int, int);
 }
