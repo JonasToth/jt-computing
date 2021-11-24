@@ -4,7 +4,7 @@ set(sources
 )
 
 set(exe_sources
-    bin/test_program.cpp
+    bin/calculate_fibbonacci.cpp
     ${sources}
 )
 

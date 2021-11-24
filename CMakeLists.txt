@@ -46,27 +46,7 @@ include(cmake/Conan.cmake)
 # Find all headers and implementation files
 include(cmake/SourcesAndHeaders.cmake)
 
-if(${PROJECT_NAME}_BUILD_EXECUTABLE)
-  add_executable(${PROJECT_NAME} ${exe_sources})
-
-  if(${PROJECT_NAME}_VERBOSE_OUTPUT)
-    verbose_message("Found the following sources:")
-    foreach(source IN LISTS exe_sources)
-      verbose_message("* ${source}")
-    endforeach()
-  endif()
-
-  if(${PROJECT_NAME}_ENABLE_UNIT_TESTING)
-    add_library(${PROJECT_NAME}_LIB ${headers} ${sources})
-
-    if(${PROJECT_NAME}_VERBOSE_OUTPUT)
-      verbose_message("Found the following headers:")
-      foreach(header IN LISTS headers)
-        verbose_message("* ${header}")
-      endforeach()
-    endif()
-  endif()
-elseif(${PROJECT_NAME}_BUILD_HEADERS_ONLY)
+if(${PROJECT_NAME}_BUILD_HEADERS_ONLY)
   add_library(${PROJECT_NAME} INTERFACE)
 
   if(${PROJECT_NAME}_VERBOSE_OUTPUT)
@@ -111,7 +91,7 @@ target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
 include(cmake/CompilerWarnings.cmake)
 set_project_warnings(${PROJECT_NAME})
 
-verbose_message("Applied compiler warnings. Using standard ${CMAKE_CXX_STANDARD}.\n")
+verbose_message("Applied compiler warnings. Using standard C++20.\n")
 
 #
 # Enable Doxygen
@@ -246,3 +226,5 @@ if(${PROJECT_NAME}_ENABLE_TESTING)
   message(STATUS "Build unit tests for the project. Tests should always be found in the test folder\n")
   add_subdirectory(test)
 endif()
+
+add_subdirectory(bin)
