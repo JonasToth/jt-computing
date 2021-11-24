@@ -134,6 +134,51 @@ TEST_CASE("BigUInt Addition", "") {
     REQUIRE(a == BigUInt{41983U + 2958912349U});
   }
 }
+
+TEST_CASE("Multiplication", "") {
+  SECTION("0 x 0") {
+    BigUInt a{0U};
+    a *= BigUInt{0U};
+    REQUIRE(a == BigUInt{0U});
+  }
+  SECTION("0 x 10") {
+    BigUInt a{0U};
+    a *= BigUInt{10U};
+    REQUIRE(a == BigUInt{0U});
+  }
+  SECTION("1 x 10") {
+    BigUInt a{1U};
+    a *= BigUInt{10U};
+    REQUIRE(a == BigUInt{10U});
+  }
+  SECTION("10 x 1") {
+    BigUInt a{10U};
+    a *= BigUInt{1U};
+    REQUIRE(a == BigUInt{10U});
+  }
+  SECTION("10 x 42") {
+    BigUInt a{10U};
+    a *= BigUInt{42U};
+    REQUIRE(a == BigUInt{420U});
+  }
+  SECTION("11 x 42") {
+    BigUInt a{11U};
+    a *= BigUInt{42U};
+    REQUIRE(a == BigUInt{462U});
+  }
+  SECTION("11 x 53") {
+    BigUInt a{11U};
+    a *= BigUInt{53U};
+    REQUIRE(a == BigUInt{11U * 53U});
+  }
+
+  SECTION("1283912381092 x 564123") {
+    BigUInt a{1283912381092ULL};
+    a *= BigUInt{564123ULL};
+    REQUIRE(a == BigUInt{1283912381092ULL * 564123ULL});
+  }
+}
+
 TEST_CASE("BigUInt LeftShift", "") {
   SECTION("Shift 0 by 1 remains 0") {
     BigUInt a{0U};

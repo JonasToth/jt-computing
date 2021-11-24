@@ -1,4 +1,5 @@
 #include "jt-computing/math/BigUInt.hpp"
+#include "jt-computing/container/BitVector.hpp"
 
 #include <algorithm>
 #include <cassert>
@@ -61,6 +62,40 @@ BigUInt &BigUInt::operator+=(const BigUInt &other) {
   }
 
   _bits.normalize();
+  return *this;
+}
+
+static BigUInt egyptianMultiplication(BigUInt n, BigUInt a) {
+  const auto one = BigUInt{1U};
+  const auto multiplyAccumulate = [&one](BigUInt accumulator, BigUInt _n,
+                                         BigUInt _a) {
+    while (true) {
+      if (_n.isOdd()) {
+        accumulator += _a;
+        if (_n == one) {
+          return accumulator;
+        }
+      }
+      _n >>= 1;
+      _a += _a;
+    }
+  };
+
+  if (n == one) {
+    return a;
+  }
+  return multiplyAccumulate(BigUInt{0U}, std::move(n), std::move(a));
+}
+
+BigUInt &BigUInt::operator*=(const BigUInt &other) {
+  if (binaryDigits() == 0U) {
+    return *this;
+  }
+  if (other.binaryDigits() == 0U) {
+    _bits = container::BitVector{};
+    return *this;
+  }
+  *this = egyptianMultiplication(*this, other);
   return *this;
 }
 

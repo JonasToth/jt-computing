@@ -29,6 +29,12 @@ public:
   /// BigUInt and using the generalized implementation.
   BigUInt &operator+=(std::unsigned_integral auto value);
 
+  /// Implement assign-multiply with another @c BigUInt.
+  BigUInt& operator*=(const BigUInt& other);
+  /// Implement assign-multiply with another @c unsigned type by constructing a @c
+  /// BigUInt and using the generalized implementation.
+  BigUInt &operator*=(std::unsigned_integral auto value);
+
   /// Shifts the underlying @c BitVector by @c value positions to the left.
   /// This doubles the @c BigUInt @c value times.
   /// @pre value > 0
@@ -60,6 +66,10 @@ bool BigUInt::operator==(std::unsigned_integral auto other) const noexcept {
 
 BigUInt &BigUInt::operator+=(std::unsigned_integral auto value) {
   return *this += BigUInt{value};
+}
+
+BigUInt &BigUInt::operator*=(std::unsigned_integral auto value) {
+  return *this *= BigUInt{value};
 }
 } // namespace jt::math
 
