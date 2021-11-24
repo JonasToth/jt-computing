@@ -20,18 +20,18 @@ BitVector &BitVector::operator<<=(int i) {
   const auto sizeBefore [[maybe_unused]] = _data.size();
   _data.insert(_data.begin(), usize(i), u8{0});
 
-  assert(sizeBefore + i == size());
+  assert(sizeBefore + usize(i) == size());
   return *this;
 }
 
 BitVector &BitVector::operator>>=(int i) {
   assert(i > 0);
-  assert(i < size());
+  assert(usize(i) < size());
 
   const auto sizeBefore [[maybe_unused]] = _data.size();
   _data.erase(_data.begin(), _data.begin() + i);
 
-  assert(sizeBefore - i == size());
+  assert(sizeBefore - usize(i) == size());
   return *this;
 }
 
