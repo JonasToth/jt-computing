@@ -134,3 +134,36 @@ TEST_CASE("BigUInt Addition", "") {
     REQUIRE(a == BigUInt{41983U + 2958912349U});
   }
 }
+
+TEST_CASE("OddityCheck", "") {
+  SECTION("0 is even") {
+    BigUInt a{0U};
+    REQUIRE(a.isEven());
+    REQUIRE(!a.isOdd());
+  }
+  SECTION("2 is even") {
+    BigUInt a{2U};
+    REQUIRE(a.isEven());
+    REQUIRE(!a.isOdd());
+  }
+  SECTION("1602134 is even") {
+    BigUInt a{1602134U};
+    REQUIRE(a.isEven());
+    REQUIRE(!a.isOdd());
+  }
+  SECTION("1 is uneven") {
+    BigUInt a{1U};
+    REQUIRE(!a.isEven());
+    REQUIRE(a.isOdd());
+  }
+  SECTION("15 is uneven") {
+    BigUInt a{15U};
+    REQUIRE(!a.isEven());
+    REQUIRE(a.isOdd());
+  }
+  SECTION("1231241239123141 is uneven") {
+    BigUInt a{1231241239123141U};
+    REQUIRE(!a.isEven());
+    REQUIRE(a.isOdd());
+  }
+}

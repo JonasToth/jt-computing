@@ -62,4 +62,8 @@ BigUInt &BigUInt::operator+=(const BigUInt &other) {
   _bits.normalize();
   return *this;
 }
+
+bool BigUInt::isEven() const noexcept {
+  return _bits.size() == 0U || !_bits.get(0U);
+}
 } // namespace jt::math

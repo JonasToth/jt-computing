@@ -29,6 +29,13 @@ public:
   /// BigUInt and using the generalized implementation.
   BigUInt &operator+=(std::unsigned_integral auto value);
 
+  /// Returns @c true if the integer is either 0 or it least significant bit is
+  /// @c true.
+  [[nodiscard]] bool isEven() const noexcept;
+
+  /// Returns @c !isEven().
+  [[nodiscard]] bool isOdd() const noexcept { return !isEven(); }
+
 private:
   container::BitVector _bits;
 };
