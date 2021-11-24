@@ -29,6 +29,16 @@ public:
   /// BigUInt and using the generalized implementation.
   BigUInt &operator+=(std::unsigned_integral auto value);
 
+  /// Shifts the underlying @c BitVector by @c value positions to the left.
+  /// This doubles the @c BigUInt @c value times.
+  /// @pre value > 0
+  BigUInt &operator<<=(int value);
+
+  /// Shifts the underlying @c BitVector by @c value positions to the right.
+  /// This halfes the @c BigUInt @c value times and drops the remainder.
+  /// @pre value > 0
+  BigUInt &operator>>=(int value);
+
   /// Returns @c true if the integer is either 0 or it least significant bit is
   /// @c true.
   [[nodiscard]] bool isEven() const noexcept;

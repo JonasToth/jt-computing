@@ -134,6 +134,59 @@ TEST_CASE("BigUInt Addition", "") {
     REQUIRE(a == BigUInt{41983U + 2958912349U});
   }
 }
+TEST_CASE("BigUInt LeftShift", "") {
+  SECTION("Shift 0 by 1 remains 0") {
+    BigUInt a{0U};
+    a <<= 1;
+    REQUIRE(a == BigUInt{0U});
+    REQUIRE(a.binaryDigits() == usize{0U});
+  }
+  SECTION("Shift 1 by 1 becomes 2") {
+    BigUInt a{1U};
+    a <<= 1;
+    REQUIRE(a == BigUInt{2U});
+    REQUIRE(a.binaryDigits() == usize{2U});
+  }
+  SECTION("Shift 1 by 20 becomes 2^20") {
+    BigUInt a{1U};
+    a <<= 20;
+    REQUIRE(a == BigUInt{1U << 20U});
+    REQUIRE(a.binaryDigits() == usize{21U});
+  }
+  SECTION("Shift weird number a couple of times equals doubing") {
+    BigUInt a{11235123U};
+    a <<= 4;
+    REQUIRE(a == BigUInt{11235123U * 2U * 2U * 2U * 2U});
+    REQUIRE(a.binaryDigits() == usize{28U});
+  }
+}
+
+TEST_CASE("BigUInt RightShift", "") {
+  SECTION("Shift 0 by 1 remains 0") {
+    BigUInt a{0U};
+    a >>= 1;
+    REQUIRE(a == BigUInt{0U});
+    REQUIRE(a.binaryDigits() == usize{0U});
+  }
+  SECTION("Shift 1 by 1 becomes 0") {
+    BigUInt a{1U};
+    a >>= 1;
+    REQUIRE(a == BigUInt{0U});
+    REQUIRE(a.binaryDigits() == usize{0U});
+  }
+  SECTION("Shift 2^20 by 20 becomes 1") {
+    BigUInt a{1U << 20U};
+    a >>= 20;
+    REQUIRE(a == BigUInt{1U});
+    REQUIRE(a.binaryDigits() == usize{1U});
+  }
+  SECTION("Shift weird number a couple of times equals halfing") {
+    BigUInt a{11235123U};
+    a >>= 4;
+    REQUIRE(a == BigUInt{11235123U / 2U / 2U / 2U / 2U});
+    REQUIRE(a.binaryDigits() == usize{20U});
+  }
+}
 
 TEST_CASE("OddityCheck", "") {
   SECTION("0 is even") {

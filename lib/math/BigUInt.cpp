@@ -1,6 +1,7 @@
 #include "jt-computing/math/BigUInt.hpp"
 
 #include <algorithm>
+#include <cassert>
 
 namespace jt::math {
 bool BigUInt::operator==(const BigUInt &other) const noexcept {
@@ -60,6 +61,31 @@ BigUInt &BigUInt::operator+=(const BigUInt &other) {
   }
 
   _bits.normalize();
+  return *this;
+}
+
+BigUInt &BigUInt::operator<<=(int value) {
+  assert(value > 0);
+
+  if (binaryDigits() == usize{0}) {
+    return *this;
+  }
+  _bits <<= value;
+  return *this;
+}
+
+BigUInt &BigUInt::operator>>=(int value) {
+  assert(value > 0);
+
+  if (binaryDigits() == usize{0}) {
+    return *this;
+  }
+
+  if (usize(value) >= binaryDigits()) {
+    _bits = container::BitVector();
+  } else {
+    _bits >>= value;
+  }
   return *this;
 }
 
