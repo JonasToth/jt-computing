@@ -177,6 +177,90 @@ TEST_CASE("BigUInt Addition", "") {
   }
 }
 
+TEST_CASE("BigUInt Subtraction", "") {
+  SECTION("0-0") {
+    BigUInt a{0U};
+    a -= BigUInt{0U};
+    REQUIRE(a == BigUInt{0U});
+  }
+
+  SECTION("a - a == 0") {
+    BigUInt a{12381923U};
+    BigUInt b{a};
+
+    a -= b;
+    REQUIRE(a == 0U);
+  }
+
+  SECTION("6 - 5 == 1") {
+    BigUInt a{6U};
+    BigUInt b{5U};
+    a -= b;
+    REQUIRE(a == 1U);
+  }
+
+  SECTION("6 - 1 == 5") {
+    BigUInt a{6U};
+    BigUInt b{1U};
+    a -= b;
+    REQUIRE(a == 5U);
+  }
+
+  SECTION("2 - 1 == 1") {
+    BigUInt a{2U};
+    BigUInt b{1U};
+    a -= b;
+    REQUIRE(a == 1U);
+  }
+
+  SECTION("10 - 3 == 7") {
+    BigUInt a{10U};
+    BigUInt b{3U};
+
+    a -= b;
+    REQUIRE(a == 7U);
+  }
+
+  SECTION("8 - 1 == 7") {
+    BigUInt a{8U};
+    BigUInt b{1U};
+    a -= b;
+    REQUIRE(a == 7U);
+  }
+
+  SECTION("32 - 16 == 16") {
+    BigUInt a{32U};
+    BigUInt b{16U};
+    a -= b;
+    REQUIRE(a == 16U);
+  }
+
+  SECTION("31 - 16 == 15") {
+    BigUInt a{31U};
+    BigUInt b{16U};
+    a -= b;
+    REQUIRE(a == 15U);
+  }
+
+  SECTION("1039812U - 1239U is the same builtin result") {
+    BigUInt a{1039812U};
+    BigUInt b{1239U};
+    a -= b;
+    REQUIRE(a == 1039812U - 1239U);
+  }
+
+  SECTION("0 - 1 must throw a domain_error") {
+    BigUInt a{0U};
+    BigUInt b{1U};
+    REQUIRE_THROWS_AS(a -= b, std::domain_error);
+  }
+  SECTION("12310914U - 112839149123U must throw a domain_error") {
+    BigUInt a{12310914U};
+    BigUInt b{112839149123U};
+    REQUIRE_THROWS_AS(a -= b, std::domain_error);
+  }
+}
+
 TEST_CASE("Multiplication", "") {
   SECTION("0 x 0") {
     BigUInt a{0U};

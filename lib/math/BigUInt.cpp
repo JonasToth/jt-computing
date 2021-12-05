@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cassert>
 #include <compare>
+#include <stdexcept>
 
 namespace jt::math {
 bool BigUInt::operator==(const BigUInt &other) const noexcept {
@@ -75,6 +76,62 @@ BigUInt &BigUInt::operator+=(const BigUInt &other) {
     carry = nextCarry;
 
     if (!carry) {
+      break;
+    }
+  }
+
+  _bits.normalize();
+  return *this;
+}
+
+BigUInt &BigUInt::operator-=(const BigUInt &other) {
+  const auto magnitudeRelation = *this <=> other;
+
+  // Subtraction on natural numbers is only defined for @c Bigger - Smaller
+  // numbers. Negative numbers can not be represented with @c BigUInt.
+  if (magnitudeRelation == std::strong_ordering::less) {
+    throw std::domain_error{"unsigned-subtraction would yield negative result"};
+  }
+
+  // Both number are equal. The result of subtraction is the neutral element, @c
+  // 0U.
+  if (magnitudeRelation == std::strong_ordering::equal) {
+    *this = BigUInt{0U};
+    return *this;
+  }
+
+  // A number with length 0 is the neutral element @c 0U and will not change
+  // this number.
+  if (other.binaryDigits() == usize{0ULL}) {
+    return *this;
+  }
+
+  assert(magnitudeRelation == std::strong_ordering::greater);
+
+  // 1. Subtract @c other from @c this by subtracting each digit individually.
+  //    If @c 0 - 1 is executed, the subtraction "borrows" from the next digit.
+  bool borrow = false;
+  usize i = 0;
+  const usize minDigits = other.binaryDigits();
+  for (; i < minDigits; ++i) {
+    const bool digitDifference = other._bits.get(i) ^ _bits.get(i);
+    const bool nextBorrow = other._bits.get(i) && !_bits.get(i);
+
+    _bits.set(i, digitDifference ^ borrow);
+    borrow = nextBorrow || (!digitDifference && borrow);
+  }
+
+  // 2. There might be an overflow, meaning the @c borrow is positive after the
+  //    subtraction of the minimal amount of digits. The other number is
+  //    exhausted, but the borrow must be subtracted from @c this properly.
+  for (const usize maxDigits = binaryDigits(); i < maxDigits; ++i) {
+    const bool digitDifference = borrow ^ _bits.get(i);
+    const bool nextBorrow = borrow && !_bits.get(i);
+
+    _bits.set(i, digitDifference);
+    borrow = nextBorrow;
+
+    if (!borrow) {
       break;
     }
   }
