@@ -36,6 +36,16 @@ public:
   /// BigUInt and using the generalized implementation.
   BigUInt &operator+=(std::unsigned_integral auto value);
 
+  /// Implement assign-subtract with another @c BigUInt. The result must be a
+  /// non-negative number.
+  /// @note The algorithm uses borrowing and not a complement represenation.
+  /// @throws @c std::domain_error if @c other is bigger than @c this.
+  BigUInt &operator-=(const BigUInt &other);
+  /// Implement an overload for assign-subtract for builtin types.
+  /// @sa operator-=(const BigUInt& other)
+  /// @throws @c std::domain_error if @c value is bigger than @c this.
+  BigUInt &operator-=(std::unsigned_integral auto value);
+
   /// Implement assign-multiply with another @c BigUInt.
   BigUInt &operator*=(const BigUInt &other);
   /// Implement assign-multiply with another @c unsigned type by constructing a
@@ -78,6 +88,10 @@ BigUInt::operator<=>(std::unsigned_integral auto other) const noexcept {
 
 BigUInt &BigUInt::operator+=(std::unsigned_integral auto value) {
   return *this += BigUInt{value};
+}
+
+BigUInt &BigUInt::operator-=(std::unsigned_integral auto value) {
+  return *this -= BigUInt{value};
 }
 
 BigUInt &BigUInt::operator*=(std::unsigned_integral auto value) {
