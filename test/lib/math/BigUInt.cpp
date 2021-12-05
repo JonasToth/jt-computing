@@ -45,6 +45,48 @@ TEST_CASE("BigUInt Comparison", "") {
   }
 }
 
+TEST_CASE("BigUInt <=> relation", "") {
+  SECTION("With other BigUInt") {
+    BigUInt a{u32{1249U}};
+    BigUInt b{u32{1234U}};
+    BigUInt c{u32{1249U}};
+    BigUInt d{u32{5U}};
+    BigUInt e{u32{7U}};
+
+    REQUIRE_FALSE(a < a);
+    REQUIRE_FALSE(a < b);
+    REQUIRE(b < c);
+    REQUIRE_FALSE(b < b);
+    REQUIRE_FALSE(a < c);
+
+    REQUIRE(d < e);
+    REQUIRE_FALSE(e < d);
+  }
+
+  SECTION("With builtin unsigned") {
+    BigUInt a{u32{1249U}};
+
+    REQUIRE_FALSE(a < 1249U);
+    REQUIRE(a < u64{12492UL});
+    REQUIRE_FALSE(a < 124U);
+    REQUIRE(a < u64{1250UL});
+
+    BigUInt b{u32{5U}};
+    REQUIRE(b < 7U);
+    REQUIRE_FALSE(BigUInt{7U} < 5U);
+    REQUIRE(3U < b);
+  }
+
+  SECTION("<= >= >") {
+    BigUInt a{2341U};
+
+    REQUIRE(a <= 2341U);
+    REQUIRE(a > 2340U);
+    REQUIRE(a >= 2341U);
+    REQUIRE(2341U > BigUInt{23U});
+  }
+}
+
 TEST_CASE("BigUInt Addition", "") {
   SECTION("0+0") {
     BigUInt a{0U};

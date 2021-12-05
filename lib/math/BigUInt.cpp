@@ -3,20 +3,38 @@
 
 #include <algorithm>
 #include <cassert>
+#include <compare>
 
 namespace jt::math {
 bool BigUInt::operator==(const BigUInt &other) const noexcept {
-  if (other._bits.size() != _bits.size()) {
-    return false;
+  return (*this <=> other) == std::strong_ordering::equal;
+}
+std::strong_ordering BigUInt::operator<=>(const BigUInt &other) const noexcept {
+  auto digitsComparison = binaryDigits() <=> other.binaryDigits();
+  // - This number has less digits => this number must be smaller than other.
+  // - This number has more digits => this number must be bigger than other.
+  if (digitsComparison != std::strong_ordering::equal) {
+    return digitsComparison;
   }
 
-  for (usize i = 0ULL; i < _bits.size(); ++i) {
-    if (other._bits.get(i) != _bits.get(i)) {
-      return false;
+  assert(other.binaryDigits() == binaryDigits());
+
+  if (binaryDigits() == usize{0ULL}) {
+    return std::strong_ordering::equal;
+  }
+
+  for (usize i = binaryDigits(); i > 0; --i) {
+    const usize idx = i - 1;
+    if (_bits.get(idx) != other._bits.get(idx)) {
+      // *this is smaller than @c other if the first differing digit is 'false'.
+      // Otherwise @c other is smaller.
+      return _bits.get(idx) == false ? std::strong_ordering::less
+                                     : std::strong_ordering::greater;
     }
   }
 
-  return true;
+  // All digits are identical, so this number is not smaller than @c other.
+  return std::strong_ordering::equal;
 }
 
 BigUInt &BigUInt::operator+=(const BigUInt &other) {

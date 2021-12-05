@@ -4,6 +4,7 @@
 #include "jt-computing/Types.hpp"
 #include "jt-computing/container/BitVector.hpp"
 
+#include <compare>
 #include <concepts>
 
 namespace jt::math {
@@ -23,6 +24,12 @@ public:
   bool operator==(const BigUInt &other) const noexcept;
   bool operator==(std::unsigned_integral auto other) const noexcept;
 
+  /// Compare the length of both numbers, because both are canonicalized to not
+  /// have leading zeros.
+  std::strong_ordering operator<=>(const BigUInt &other) const noexcept;
+  std::strong_ordering
+  operator<=>(std::unsigned_integral auto other) const noexcept;
+
   /// Implement assign-add with another @c BigUInt.
   BigUInt &operator+=(const BigUInt &other);
   /// Implement assign-add with another @c unsigned type by constructing a @c
@@ -30,9 +37,9 @@ public:
   BigUInt &operator+=(std::unsigned_integral auto value);
 
   /// Implement assign-multiply with another @c BigUInt.
-  BigUInt& operator*=(const BigUInt& other);
-  /// Implement assign-multiply with another @c unsigned type by constructing a @c
-  /// BigUInt and using the generalized implementation.
+  BigUInt &operator*=(const BigUInt &other);
+  /// Implement assign-multiply with another @c unsigned type by constructing a
+  /// @c BigUInt and using the generalized implementation.
   BigUInt &operator*=(std::unsigned_integral auto value);
 
   /// Shifts the underlying @c BitVector by @c value positions to the left.
@@ -62,6 +69,11 @@ BigUInt::BigUInt(std::unsigned_integral auto value) : _bits{value} {
 
 bool BigUInt::operator==(std::unsigned_integral auto other) const noexcept {
   return *this == BigUInt{other};
+}
+
+std::strong_ordering
+BigUInt::operator<=>(std::unsigned_integral auto other) const noexcept {
+  return *this <=> BigUInt{other};
 }
 
 BigUInt &BigUInt::operator+=(std::unsigned_integral auto value) {
