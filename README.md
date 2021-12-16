@@ -2,8 +2,10 @@
 
 # `jt-computing` - Me Discovering Computation
 
-This project covers my journey to discover the heart of computing using `C++`
+This project covers my journey to (re)discover the heart of computing using `C++`
 and its generic coding strenghts.
+The goal is to implement _everything_ from scratch with software only.
+_Everything_ means only things I find interesting or hard. Its educational.
 
 ## Running the tests
 
@@ -36,7 +38,7 @@ It must be always green though.
 
 ## Authors
 
-* **Jonas Toth** - [@filipdutescu](https://github.com/JonasToth)
+* **Jonas Toth** - [@JonasToth](https://github.com/JonasToth)
 
 ## License
 
