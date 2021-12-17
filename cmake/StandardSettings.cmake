@@ -13,8 +13,7 @@ option(${PROJECT_NAME}_ENABLE_CONAN "Enable the Conan package manager for this p
 # Unit testing
 #
 # Currently supporting: Catch2.
-option(${PROJECT_NAME}_ENABLE_UNIT_TESTING "Enable unit tests for the projects (from the `test` subfolder)." ON)
-option(${PROJECT_NAME}_USE_CATCH2 "Use the Catch2 project for creating unit tests." OFF)
+option(${PROJECT_NAME}_ENABLE_TESTING "Enable unit tests for the projects (from the `test` subfolder)." ON)
 
 #
 # Static analyzers
