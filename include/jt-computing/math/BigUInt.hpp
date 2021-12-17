@@ -6,6 +6,7 @@
 
 #include <compare>
 #include <concepts>
+#include <utility>
 
 namespace jt::math {
 
@@ -72,6 +73,12 @@ public:
 private:
   container::BitVector _bits;
 };
+
+/// Perfom natural number division with euclids algorithm.
+/// @throws std::invalid_argument if @c divisor == 0.
+/// @returns {quotient, modulus}
+std::pair<BigUInt, BigUInt> divmod(const BigUInt &dividend,
+                                   const BigUInt &divisor);
 
 BigUInt::BigUInt(std::unsigned_integral auto value) : _bits{value} {
   _bits.normalize();

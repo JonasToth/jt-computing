@@ -202,4 +202,16 @@ BigUInt &BigUInt::operator>>=(int value) {
 bool BigUInt::isEven() const noexcept {
   return _bits.size() == 0U || !_bits.get(0U);
 }
+
+std::pair<BigUInt, BigUInt> divmod(const BigUInt &dividend,
+                                   const BigUInt &divisor) {
+  if (divisor == 0U) {
+    throw std::invalid_argument{"divison by zero is not possible"};
+  }
+
+  if (dividend == 0U) {
+    return {BigUInt{0U}, BigUInt{0U}};
+  }
+  return {BigUInt{0U}, BigUInt{0U}};
+}
 } // namespace jt::math
