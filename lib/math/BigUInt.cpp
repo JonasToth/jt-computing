@@ -29,8 +29,8 @@ std::strong_ordering BigUInt::operator<=>(const BigUInt &other) const noexcept {
     if (_bits.get(idx) != other._bits.get(idx)) {
       // *this is smaller than @c other if the first differing digit is 'false'.
       // Otherwise @c other is smaller.
-      return _bits.get(idx) == false ? std::strong_ordering::less
-                                     : std::strong_ordering::greater;
+      return !_bits.get(idx) ? std::strong_ordering::less
+                             : std::strong_ordering::greater;
     }
   }
 
@@ -54,11 +54,11 @@ BigUInt &BigUInt::operator+=(const BigUInt &other) {
 
   // 2. Execute the addition of the other number digits to @c this until
   //    @c other is exhausted.
-  bool carry = false;
-  usize i = 0;
+  bool carry            = false;
+  usize i               = 0;
   const usize minDigits = other.binaryDigits();
   for (; i < minDigits; ++i) {
-    const bool digitSum = other._bits.get(i) ^ _bits.get(i);
+    const bool digitSum  = other._bits.get(i) ^ _bits.get(i);
     const bool nextCarry = other._bits.get(i) && _bits.get(i);
 
     _bits.set(i, digitSum ^ carry);
@@ -69,7 +69,7 @@ BigUInt &BigUInt::operator+=(const BigUInt &other) {
   //    addition of the minimal amount of digits. The other number is exhausted,
   //    but the carry must be added to @c this properly.
   for (const usize maxDigits = binaryDigits(); i < maxDigits; ++i) {
-    const bool digitSum = carry ^ _bits.get(i);
+    const bool digitSum  = carry ^ _bits.get(i);
     const bool nextCarry = carry && _bits.get(i);
 
     _bits.set(i, digitSum);
@@ -110,12 +110,12 @@ BigUInt &BigUInt::operator-=(const BigUInt &other) {
 
   // 1. Subtract @c other from @c this by subtracting each digit individually.
   //    If @c 0 - 1 is executed, the subtraction "borrows" from the next digit.
-  bool borrow = false;
-  usize i = 0;
+  bool borrow           = false;
+  usize i               = 0;
   const usize minDigits = other.binaryDigits();
   for (; i < minDigits; ++i) {
     const bool digitDifference = other._bits.get(i) ^ _bits.get(i);
-    const bool nextBorrow = other._bits.get(i) && !_bits.get(i);
+    const bool nextBorrow      = other._bits.get(i) && !_bits.get(i);
 
     _bits.set(i, digitDifference ^ borrow);
     borrow = nextBorrow || (!digitDifference && borrow);
@@ -126,7 +126,7 @@ BigUInt &BigUInt::operator-=(const BigUInt &other) {
   //    exhausted, but the borrow must be subtracted from @c this properly.
   for (const usize maxDigits = binaryDigits(); i < maxDigits; ++i) {
     const bool digitDifference = borrow ^ _bits.get(i);
-    const bool nextBorrow = borrow && !_bits.get(i);
+    const bool nextBorrow      = borrow && !_bits.get(i);
 
     _bits.set(i, digitDifference);
     borrow = nextBorrow;
@@ -141,7 +141,7 @@ BigUInt &BigUInt::operator-=(const BigUInt &other) {
 }
 
 static BigUInt egyptianMultiplication(BigUInt n, BigUInt a) {
-  const auto one = BigUInt{1U};
+  const auto one                = BigUInt{1U};
   const auto multiplyAccumulate = [&one](BigUInt accumulator, BigUInt _n,
                                          BigUInt _a) {
     while (true) {
@@ -201,5 +201,44 @@ BigUInt &BigUInt::operator>>=(int value) {
 
 bool BigUInt::isEven() const noexcept {
   return _bits.size() == 0U || !_bits.get(0U);
+}
+
+static BigUInt largestDoubling(const BigUInt &a, BigUInt b) {
+  assert(b != 0U);
+  while ((a - b) >= b) {
+    b <<= 1;
+  }
+  return b;
+}
+
+std::pair<BigUInt, BigUInt> divmod(BigUInt dividend, const BigUInt &divisor) {
+  if (divisor == 0U) {
+    throw std::invalid_argument{"divison by zero is not possible"};
+  }
+
+  if (dividend == 0U) {
+    return {BigUInt{0U}, BigUInt{0U}};
+  }
+  if (dividend < divisor) {
+    return {BigUInt{0U}, dividend};
+  }
+  BigUInt helper = largestDoubling(dividend, divisor);
+  BigUInt quotient{1U};
+
+  dividend -= helper;
+
+  while (helper != divisor) {
+    // Half 'c' with a shift.
+    helper >>= 1U;
+    // Double 'quotient' with a shift.
+    quotient <<= 1U;
+
+    if (helper <= dividend) {
+      dividend -= helper;
+      quotient += 1U;
+    }
+  }
+
+  return {quotient, dividend};
 }
 } // namespace jt::math

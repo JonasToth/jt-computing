@@ -221,6 +221,7 @@ message(STATUS "Finished building requirements for installing the package.\n")
 # Unit testing setup
 #
 
+set (${PROJECT_NAME}_ENABLE_TESTING ON CACHE BOOL "Enable testing or not")
 if(${PROJECT_NAME}_ENABLE_TESTING)
   enable_testing()
   message(STATUS "Build unit tests for the project. Tests should always be found in the test folder\n")

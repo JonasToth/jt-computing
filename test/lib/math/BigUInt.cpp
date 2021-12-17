@@ -391,3 +391,36 @@ TEST_CASE("OddityCheck", "") {
     REQUIRE(a.isOdd());
   }
 }
+
+TEST_CASE("DivMod", "") {
+  SECTION("division by 0 throws exception") {
+    BigUInt a{10U};
+    BigUInt b{0U};
+    REQUIRE_THROWS_AS(divmod(a, b), std::invalid_argument);
+  }
+  SECTION("0 divided by anything is 0 with no remainder") {
+    BigUInt a{10U};
+    BigUInt b{0U};
+    REQUIRE(divmod(b, a) == std::pair{BigUInt{0U}, BigUInt{0U}});
+  }
+  SECTION("<small> divided by <big> is 0, remainder <small>") {
+    BigUInt a{10U};
+    BigUInt b{30U};
+    REQUIRE(divmod(a, b) == std::pair{BigUInt{0U}, a});
+  }
+  SECTION("10 / 5 == {2,0}") {
+    BigUInt a{10U};
+    BigUInt b{5U};
+    REQUIRE(divmod(a, b) == std::pair{BigUInt{2U}, BigUInt{0U}});
+  }
+  SECTION("13 / 5 == {2,3}") {
+    BigUInt a{13U};
+    BigUInt b{5U};
+    REQUIRE(divmod(a, b) == std::pair{BigUInt{2U}, BigUInt{3U}});
+  }
+  SECTION("1239410 / 1247 == {993,1139}") {
+    BigUInt a{1239410U};
+    BigUInt b{1247U};
+    REQUIRE(divmod(a, b) == std::pair{BigUInt{993U}, BigUInt{1139U}});
+  }
+}

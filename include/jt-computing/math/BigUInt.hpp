@@ -6,6 +6,7 @@
 
 #include <compare>
 #include <concepts>
+#include <utility>
 
 namespace jt::math {
 
@@ -73,6 +74,12 @@ private:
   container::BitVector _bits;
 };
 
+/// Perfom natural number division and return the quotient and the
+/// modulus/remainder.
+/// @throws std::invalid_argument if @c divisor == 0.
+/// @returns {quotient, modulus}
+std::pair<BigUInt, BigUInt> divmod(BigUInt dividend, const BigUInt &divisor);
+
 BigUInt::BigUInt(std::unsigned_integral auto value) : _bits{value} {
   _bits.normalize();
 }
@@ -97,6 +104,11 @@ BigUInt &BigUInt::operator-=(std::unsigned_integral auto value) {
 BigUInt &BigUInt::operator*=(std::unsigned_integral auto value) {
   return *this *= BigUInt{value};
 }
+
+inline BigUInt operator+(BigUInt a, const BigUInt &b) { return a += b; }
+inline BigUInt operator-(BigUInt a, const BigUInt &b) { return a -= b; }
+inline BigUInt operator*(BigUInt a, const BigUInt &b) { return a *= b; }
+
 } // namespace jt::math
 
 #endif /* end of include guard: BIGUINT_HPP_83XPJVDC */
