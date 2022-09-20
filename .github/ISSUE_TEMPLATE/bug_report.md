@@ -3,7 +3,7 @@ name: Bug report
 about: Create a report to help me improve
 title: "[BUG]"
 labels: bug
-assignees: ''
+assignees: 'JonasToth'
 
 ---
 
@@ -28,6 +28,7 @@ If applicable, add screenshots to help explain your problem.
 
 * OS: [e.g. Windows]
 * Version [e.g. 10]
+* Compiler: [e.g. gcc-11]
 
 **Additional context**
 Add any other context about the problem here.
