@@ -98,6 +98,12 @@ private:
 /// @returns {quotient, modulus}
 std::pair<BigUInt, BigUInt> divmod(BigUInt dividend, const BigUInt &divisor);
 
+template <std::unsigned_integral NaturalNumber>
+std::pair<NaturalNumber, NaturalNumber> divmod(NaturalNumber dividend,
+                                               NaturalNumber divisor) {
+  return {dividend / divisor, dividend % divisor};
+}
+
 BigUInt::BigUInt(std::unsigned_integral auto value) : _bits{value} {
   _bits.normalize();
 }

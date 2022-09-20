@@ -1,10 +1,17 @@
 #include "jt-computing/math/BigUInt.hpp"
+#include "jt-computing/math/Concepts.hpp"
 
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
 using namespace jt;
 using namespace jt::math;
+
+// Verify that the concept for natural numbers works.
+static_assert(Computable<BigUInt>);
+static_assert(NaturalNumber<BigUInt>);
+static_assert(NaturalNumber<unsigned int>);
+static_assert(!NaturalNumber<int>);
 
 TEST_CASE("BigUInt Construction", "") {
   SECTION("2^11") {
