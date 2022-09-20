@@ -18,6 +18,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
+    - name: Set up GCC
+      uses: egor-tensin/setup-gcc@v1
+      with:
+        version: 11
       
     - name: cache dependencies
       uses: actions/cache@v2
