@@ -53,6 +53,24 @@ public:
   /// @c BigUInt and using the generalized implementation.
   BigUInt &operator*=(std::unsigned_integral auto value);
 
+  /// Implement assign-division with another @c BigUInt that drops the remainder
+  /// of the division.
+  /// @sa divmod
+  /// @throws std::invalid_argument if @c other == 0U
+  BigUInt &operator/=(const BigUInt &other);
+  /// Implement assign-division with another @c unsigned type by constructing a
+  /// @c BigUInt and using the generalized implementation.
+  BigUInt &operator/=(std::unsigned_integral auto value);
+
+  /// Implement assign-modulo-division with another @c BigUInt that drops the
+  /// quotient of the division and assigns the remainder to *this.
+  /// @sa divmod
+  /// @throws std::invalid_argument if @c other == 0U
+  BigUInt &operator%=(const BigUInt &other);
+  /// Implement assign-modulo-division with another @c unsigned type by
+  /// constructing a @c BigUInt and using the generalized implementation.
+  BigUInt &operator%=(std::unsigned_integral auto value);
+
   /// Shifts the underlying @c BitVector by @c value positions to the left.
   /// This doubles the @c BigUInt @c value times.
   /// @pre value > 0
@@ -105,9 +123,49 @@ BigUInt &BigUInt::operator*=(std::unsigned_integral auto value) {
   return *this *= BigUInt{value};
 }
 
+BigUInt &BigUInt::operator/=(std::unsigned_integral auto value) {
+  return *this /= BigUInt{value};
+}
+
 inline BigUInt operator+(BigUInt a, const BigUInt &b) { return a += b; }
+inline BigUInt operator+(std::unsigned_integral auto a, const BigUInt &b) {
+  return BigUInt{a} += b;
+}
+inline BigUInt operator+(BigUInt a, std::unsigned_integral auto b) {
+  return a += b;
+}
+
 inline BigUInt operator-(BigUInt a, const BigUInt &b) { return a -= b; }
+inline BigUInt operator-(std::unsigned_integral auto a, const BigUInt &b) {
+  return BigUInt{a} -= b;
+}
+inline BigUInt operator-(BigUInt a, std::unsigned_integral auto b) {
+  return a -= b;
+}
+
 inline BigUInt operator*(BigUInt a, const BigUInt &b) { return a *= b; }
+inline BigUInt operator*(std::unsigned_integral auto a, const BigUInt &b) {
+  return BigUInt{a} *= b;
+}
+inline BigUInt operator*(BigUInt a, std::unsigned_integral auto b) {
+  return a *= b;
+}
+
+inline BigUInt operator/(BigUInt a, const BigUInt &b) { return a /= b; }
+inline BigUInt operator/(std::unsigned_integral auto a, const BigUInt &b) {
+  return BigUInt{a} /= b;
+}
+inline BigUInt operator/(BigUInt a, std::unsigned_integral auto b) {
+  return a /= b;
+}
+
+inline BigUInt operator%(BigUInt a, const BigUInt &b) { return a %= b; }
+inline BigUInt operator%(std::unsigned_integral auto a, const BigUInt &b) {
+  return BigUInt{a} %= b;
+}
+inline BigUInt operator%(BigUInt a, std::unsigned_integral auto b) {
+  return a %= b;
+}
 
 } // namespace jt::math
 
