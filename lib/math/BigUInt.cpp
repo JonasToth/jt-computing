@@ -174,6 +174,18 @@ BigUInt &BigUInt::operator*=(const BigUInt &other) {
   return *this;
 }
 
+BigUInt &BigUInt::operator/=(const BigUInt &other) {
+  const auto quotient = divmod(*this, other).first;
+  *this               = quotient;
+  return *this;
+}
+
+BigUInt &BigUInt::operator%=(const BigUInt &other) {
+  const auto modulus = divmod(*this, other).second;
+  *this              = modulus;
+  return *this;
+}
+
 BigUInt &BigUInt::operator<<=(int value) {
   assert(value > 0);
 

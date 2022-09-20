@@ -305,6 +305,80 @@ TEST_CASE("Multiplication", "") {
   }
 }
 
+TEST_CASE("Division", "") {
+  SECTION("0 / 0") {
+    BigUInt a{0U};
+    REQUIRE_THROWS_AS(a /= BigUInt{0U}, std::invalid_argument);
+  }
+  SECTION("1 / 0") {
+    BigUInt a{1U};
+    REQUIRE_THROWS_AS(a /= BigUInt{0U}, std::invalid_argument);
+  }
+  SECTION("0 / 10") {
+    BigUInt a{0U};
+    a /= BigUInt{10U};
+    REQUIRE(a == BigUInt{0U});
+  }
+  SECTION("1 / 10") {
+    BigUInt a{1U};
+    a /= BigUInt{10U};
+    REQUIRE(a == BigUInt{0U});
+  }
+  SECTION("10 / 1") {
+    BigUInt a{10U};
+    a /= BigUInt{1U};
+    REQUIRE(a == BigUInt{10U});
+  }
+  SECTION("42 / 10") {
+    BigUInt a{42U};
+    a /= BigUInt{10U};
+    REQUIRE(a == BigUInt{4U});
+  }
+
+  SECTION("1283912381092 / 564123") {
+    BigUInt a{1283912381092ULL};
+    a /= BigUInt{564123ULL};
+    REQUIRE(a == BigUInt{1283912381092ULL / 564123ULL});
+  }
+}
+
+TEST_CASE("Modulus", "") {
+  SECTION("0 % 0") {
+    BigUInt a{0U};
+    REQUIRE_THROWS_AS(a %= BigUInt{0U}, std::invalid_argument);
+  }
+  SECTION("1 % 0") {
+    BigUInt a{1U};
+    REQUIRE_THROWS_AS(a %= BigUInt{0U}, std::invalid_argument);
+  }
+  SECTION("0 % 10") {
+    BigUInt a{0U};
+    a %= BigUInt{10U};
+    REQUIRE(a == BigUInt{0U});
+  }
+  SECTION("1 % 10") {
+    BigUInt a{1U};
+    a %= BigUInt{10U};
+    REQUIRE(a == BigUInt{1U});
+  }
+  SECTION("10 % 1") {
+    BigUInt a{10U};
+    a %= BigUInt{1U};
+    REQUIRE(a == BigUInt{0U});
+  }
+  SECTION("42 % 10") {
+    BigUInt a{42U};
+    a %= BigUInt{10U};
+    REQUIRE(a == BigUInt{2U});
+  }
+
+  SECTION("1283912381092 % 564123") {
+    BigUInt a{1283912381092ULL};
+    a %= BigUInt{564123ULL};
+    REQUIRE(a == BigUInt{1283912381092ULL % 564123ULL});
+  }
+}
+
 TEST_CASE("BigUInt LeftShift", "") {
   SECTION("Shift 0 by 1 remains 0") {
     BigUInt a{0U};
