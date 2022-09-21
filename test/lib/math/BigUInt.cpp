@@ -341,6 +341,13 @@ TEST_CASE("Division", "") {
     a /= BigUInt{10U};
     REQUIRE(a == BigUInt{4U});
   }
+  SECTION("1872 / 15") {
+    BigUInt a{1872U};
+    a /= 15U;
+    const auto [q, r] = divmod(a, BigUInt{15U});
+    REQUIRE(a == 15U * q + r);
+    REQUIRE(a == 124U);
+  }
 
   SECTION("1283912381092 / 564123") {
     BigUInt a{1283912381092ULL};
