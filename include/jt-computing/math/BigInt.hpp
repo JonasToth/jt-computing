@@ -35,9 +35,47 @@ public:
   std::strong_ordering
   operator<=>(std::signed_integral auto other) const noexcept;
 
+  /// Implement assign-add with another @c BigInt.
+  BigInt &operator+=(const BigInt &other);
+  /// Implement assign-add with another @c BigUInt.
+  BigInt &operator+=(BigUInt other);
+  /// Implement assign-add with another integral value by constructing a
+  /// @c BigInt and using the generalized implementation.
+  BigInt &operator+=(std::integral auto value);
+
+  /// Invert the sign of the @c BigInt.
+  BigInt &operator-() noexcept;
+
+  /// Implement assign-subtract with another @c BigInt.
+  BigInt &operator-=(BigInt other);
+  /// Implement assign-subtract with another @c BigUInt.
+  BigInt &operator-=(BigUInt other);
+  /// Implement assign-subtract with another integral value by constructing a
+  /// @c BigInt and using the generalized implementation.
+  BigInt &operator-=(std::integral auto value);
+
+  /// Implement assign-multiply with another @c BigInt.
+  BigInt &operator*=(const BigInt &other);
+  /// Implement assign-multiply with another @c BigUInt.
+  BigInt &operator*=(const BigUInt &other);
+  /// Implement assign-multiply with another integral value by constructing a
+  /// @c BigInt and using the generalized implementation.
+  BigInt &operator*=(std::integral auto value);
+
+  /// Implement assign-multiply with another @c BigInt.
+  BigInt &operator/=(const BigInt &other);
+  /// Implement assign-multiply with another @c BigUInt.
+  BigInt &operator/=(const BigUInt &other);
+  /// Implement assign-multiply with another integral value by constructing a
+  /// @c BigInt and using the generalized implementation.
+  BigInt &operator/=(std::integral auto value);
+
   /// @returns @c true if the number is smaller 0. It is not possible to have a
   ///          negative 0 by definition of this type.
   [[nodiscard]] bool isNegative() const noexcept { return _isNegative; }
+
+  /// @returns @c true if the number is divisible by 2.
+  [[nodiscard]] bool isEven() const noexcept { return _val.isEven(); }
 
   /// @returns a reference to the internal @c BigUInt, which is also the
   ///          absolute value of the integer.
@@ -68,6 +106,41 @@ BigInt::operator<=>(std::unsigned_integral auto other) const noexcept {
 std::strong_ordering
 BigInt::operator<=>(std::signed_integral auto other) const noexcept {
   return *this <=> BigInt{other};
+}
+
+inline BigInt &BigInt::operator+=(BigUInt other) {
+  return *this += BigInt{std::move(other)};
+}
+BigInt &BigInt::operator+=(std::integral auto value) {
+  return *this += BigInt{value};
+}
+
+inline BigInt &BigInt::operator-() noexcept {
+  _isNegative = !isNegative();
+  return *this;
+}
+inline BigInt &BigInt::operator-=(BigInt other) { return *this += -other; }
+inline BigInt &BigInt::operator-=(BigUInt other) {
+  return *this += -BigInt{std::move(other)};
+}
+BigInt &BigInt::operator-=(std::integral auto value) {
+  return *this += -BigInt{value};
+}
+
+inline BigInt &BigInt::operator*=(const BigUInt &other) {
+  _val *= other;
+  return *this;
+}
+BigInt &BigInt::operator*=(std::integral auto value) {
+  return *this *= BigInt{value};
+}
+
+inline BigInt &BigInt::operator/=(const BigUInt &other) {
+  _val /= other;
+  return *this;
+}
+BigInt &BigInt::operator/=(std::integral auto value) {
+  return *this /= BigInt{value};
 }
 } // namespace jt::math
 

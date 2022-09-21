@@ -133,3 +133,111 @@ TEST_CASE("BigInt Comparison", "") {
     REQUIRE(10LL >= BigInt{10ULL});
   }
 }
+
+TEST_CASE("BigInt Computation", "") {
+  SECTION("+=") {
+    BigInt a{0};
+
+    a += BigInt{0};
+    REQUIRE(a == 0);
+
+    a += BigInt{10};
+    REQUIRE(a == 10);
+
+    a += -10;
+    REQUIRE(a == 0);
+
+    a += -10;
+    REQUIRE(a == -10);
+
+    a += -10;
+    REQUIRE(a == -20);
+
+    a += 20U;
+    REQUIRE(a == 0);
+
+    a += BigUInt{20U};
+    REQUIRE(a == 20U);
+  }
+
+  SECTION("-=") {
+    BigInt a{0};
+
+    a -= BigInt{0};
+    REQUIRE(a == 0);
+
+    a -= BigInt{10};
+    REQUIRE(a == -10);
+
+    a -= -10;
+    REQUIRE(a == 0);
+
+    a -= 10U;
+    REQUIRE(a == -10);
+
+    a -= BigInt{-20};
+    REQUIRE(a == 10);
+
+    a -= BigUInt{5U};
+    REQUIRE(a == 5U);
+  }
+
+  SECTION("*=") {
+    BigInt a{0};
+    a *= BigInt{-1};
+    REQUIRE(a == 0);
+    REQUIRE(!a.isNegative());
+
+    a *= BigInt{0};
+    REQUIRE(a == 0);
+
+    a += 1;
+    REQUIRE(a == 1);
+
+    a *= BigInt{10};
+    REQUIRE(a == 10);
+
+    a *= -10;
+    REQUIRE(a == -100);
+
+    a *= BigInt{-10};
+    REQUIRE(a == 1000);
+
+    a *= BigInt{-1};
+    REQUIRE(a == -1000);
+
+    a *= BigUInt{2U};
+    REQUIRE(a == -2000);
+  }
+
+  SECTION("/=") {
+    BigInt a{0};
+    a /= -1;
+    REQUIRE(!a.isNegative());
+    REQUIRE(a == 0);
+
+    REQUIRE_THROWS_AS(a /= BigInt{0}, std::invalid_argument);
+    REQUIRE(a == 0);
+
+    a += 112351;
+    REQUIRE(a == BigInt{112351});
+
+    a /= BigInt{10};
+    REQUIRE(a == 11235);
+
+    a /= -2;
+    REQUIRE(a == -5617);
+
+    a /= BigInt{-1};
+    REQUIRE(a == BigUInt{5617U});
+
+    a /= 3U;
+    REQUIRE(a == 1872);
+
+    a = -a;
+    REQUIRE(a == -1872);
+
+    a /= BigUInt{15U};
+    REQUIRE(a == -124);
+  }
+}
