@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cassert>
 #include <compare>
+#include <ostream>
 #include <stdexcept>
 
 namespace jt::math {
@@ -252,5 +253,40 @@ std::pair<BigUInt, BigUInt> divmod(BigUInt dividend, const BigUInt &divisor) {
   }
 
   return {quotient, dividend};
+}
+
+std::ostream &operator<<(std::ostream &os, BigUInt n) {
+  std::string reverseDigits;
+  while (n > 0U) {
+    const auto [quotient, remainder] = divmod(n, BigUInt{10U});
+    n                                = quotient;
+
+    if (remainder == 0U) {
+      reverseDigits += '0';
+    } else if (remainder == 1U) {
+      reverseDigits += '1';
+    } else if (remainder == 2U) {
+      reverseDigits += '2';
+    } else if (remainder == 3U) {
+      reverseDigits += '3';
+    } else if (remainder == 4U) {
+      reverseDigits += '4';
+    } else if (remainder == 5U) {
+      reverseDigits += '5';
+    } else if (remainder == 6U) {
+      reverseDigits += '6';
+    } else if (remainder == 7U) {
+      reverseDigits += '7';
+    } else if (remainder == 8U) {
+      reverseDigits += '8';
+    } else if (remainder == 9U) {
+      reverseDigits += '9';
+    } else {
+      assert(false && "Unrechable");
+    }
+  }
+  std::reverse(reverseDigits.begin(), reverseDigits.end());
+  os << reverseDigits;
+  return os;
 }
 } // namespace jt::math

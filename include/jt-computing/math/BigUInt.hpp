@@ -7,6 +7,7 @@
 #include <compare>
 #include <concepts>
 #include <utility>
+#include <iosfwd>
 
 namespace jt::math {
 
@@ -103,6 +104,8 @@ std::pair<NaturalNumber, NaturalNumber> divmod(NaturalNumber dividend,
                                                NaturalNumber divisor) {
   return {dividend / divisor, dividend % divisor};
 }
+
+std::ostream &operator<<(std::ostream &os, BigUInt n);
 
 BigUInt::BigUInt(std::unsigned_integral auto value) : _bits{value} {
   _bits.normalize();
