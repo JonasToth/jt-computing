@@ -107,6 +107,8 @@ std::pair<NaturalNumber, NaturalNumber> divmod(NaturalNumber dividend,
 
 std::ostream &operator<<(std::ostream &os, BigUInt n);
 
+std::istream &operator>>(std::istream &is, BigUInt& n);
+
 BigUInt::BigUInt(std::unsigned_integral auto value) : _bits{value} {
   _bits.normalize();
 }

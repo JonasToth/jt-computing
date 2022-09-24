@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <sstream>
 #include <string>
 
 using namespace jt;
@@ -17,13 +18,15 @@ int main(int argc, char **argv) {
   }
 
   assert(argc >= 2);
-  usize numberToTest{std::stoull(argv[1])};
 
-  std::cout << "Finding the length of collatz chain for '" << numberToTest
-            << "'" << std::endl;
+  std::stringstream ss(argv[1]);
+  math::BigUInt n{0U};
+  ss >> n;
 
-  usize chainLength{0U};
-  math::BigUInt n{numberToTest};
+  std::cout << "Finding the length of collatz chain for '" << n << "'"
+            << std::endl;
+
+  math::BigUInt chainLength{0U};
   math::BigUInt peak{1U};
 
   while (n != 1U) {
@@ -39,8 +42,8 @@ int main(int argc, char **argv) {
     peak = std::max(peak, n);
   }
 
-  std::cout << "'" << numberToTest << "' took '" << chainLength
-            << "' steps to reach 1." << std::endl;
+  std::cout << "'" << n << "' took '" << chainLength << "' steps to reach 1."
+            << std::endl;
   std::cout << "The highest number in the chain is '" << peak << "'."
             << std::endl;
 
