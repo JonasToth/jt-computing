@@ -13,10 +13,13 @@ int main(int argc, char **argv) {
     std::cerr << "Usage: " << argv[0] << "\n\n"
               << "Finds the first <n> prime numbers using the sieve of "
                  "eratosthenes. Each prime is printed on its own line\n";
+    return EXIT_FAILURE;
   }
 
   assert(argc >= 2);
   usize maximumNumber{std::stoull(argv[1])};
+
+  std::cout << "Finding all primes up to " << maximumNumber << std::endl;
 
   const auto primes = math::sieveEratosthenes<usize>(maximumNumber);
 
@@ -24,5 +27,5 @@ int main(int argc, char **argv) {
     std::cout << prime << "\n";
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
