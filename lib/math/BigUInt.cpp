@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cassert>
 #include <compare>
+#include <istream>
 #include <ostream>
 #include <stdexcept>
 
@@ -288,5 +289,24 @@ std::ostream &operator<<(std::ostream &os, BigUInt n) {
   std::reverse(reverseDigits.begin(), reverseDigits.end());
   os << reverseDigits;
   return os;
+}
+
+std::istream &operator>>(std::istream &is, BigUInt &n) {
+  std::vector<u8> digitsHighestFirst;
+
+  // Read from the stream as long as the next character is a digit.
+  // Extracts each digit into 'digitsHighestFirst'.
+  while (std::isdigit(is.peek()) != 0) {
+    digitsHighestFirst.emplace_back(static_cast<u8>(is.get()) - '0');
+  }
+  std::reverse(digitsHighestFirst.begin(), digitsHighestFirst.end());
+  auto &digitsLowestFirst = digitsHighestFirst;
+
+  BigUInt position{1U};
+  n = BigUInt{0U};
+  for (usize i{0U}; i < digitsLowestFirst.size(); i += 1U, position *= 10U) {
+    n += position * digitsLowestFirst[i];
+  }
+  return is;
 }
 } // namespace jt::math
