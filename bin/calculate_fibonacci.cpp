@@ -4,11 +4,12 @@
 #include <iostream>
 #include <unordered_map>
 
+using namespace std;
 using namespace jt;
+using namespace jt::math;
 
-static math::BigUInt fibbonacci(usize n) {
-  using namespace jt::math;
-  static std::vector<BigUInt> memoized{0_N, 1_N};
+static BigUInt fibbonacci(usize n) {
+  static vector<BigUInt> memoized{0_N, 1_N};
   if (n == 0) {
     return memoized[0];
   }
@@ -31,49 +32,47 @@ static math::BigUInt fibbonacci(usize n) {
 int main(int argc, char *argv[]) {
   if (argc != 1) {
     assert(argc >= 1);
-    std::cerr << "Usage: " << argv[0] << "\n\n"
-              << "Computes the 10th fibonacci number by plain recursion and "
-                 "assert its result.\n";
+    cerr << "Usage: " << argv[0] << "\n\n"
+         << "Computes multiple fibonacci numbers with memoization.\n";
     return EXIT_FAILURE;
   }
 
-  using namespace jt::math;
   const auto fib0      = fibbonacci(0U);
   const auto expected0 = 0_N;
-  std::cout << "fib(0) = 0? -> " << (fib0 == expected0 ? "t" : "f") << "\n";
+  cout << "fib(0) = 0? -> " << (fib0 == expected0 ? "t" : "f") << "\n";
 
   const auto fib1      = fibbonacci(1U);
   const auto expected1 = 1_N;
-  std::cout << "fib(1) = 1? -> " << (fib1 == expected1 ? "t" : "f") << "\n";
+  cout << "fib(1) = 1? -> " << (fib1 == expected1 ? "t" : "f") << "\n";
 
   const auto fib2      = fibbonacci(2U);
   const auto expected2 = 1_N;
-  std::cout << "fib(2) = 1? -> " << (fib2 == expected2 ? "t" : "f") << "\n";
+  cout << "fib(2) = 1? -> " << (fib2 == expected2 ? "t" : "f") << "\n";
 
   const auto fib3      = fibbonacci(3U);
   const auto expected3 = 2_N;
-  std::cout << "fib(3) = 2? -> " << (fib3 == expected3 ? "t" : "f") << "\n";
+  cout << "fib(3) = 2? -> " << (fib3 == expected3 ? "t" : "f") << "\n";
 
   const auto fib5      = fibbonacci(5U);
   const auto expected5 = 5_N;
-  std::cout << "fib(5) = 5? -> " << (fib5 == expected5 ? "t" : "f") << "\n";
+  cout << "fib(5) = 5? -> " << (fib5 == expected5 ? "t" : "f") << "\n";
 
   const auto fib6      = fibbonacci(6U);
   const auto expected6 = 8_N;
-  std::cout << "fib(6) = 8? -> " << (fib6 == expected6 ? "t" : "f") << "\n";
+  cout << "fib(6) = 8? -> " << (fib6 == expected6 ? "t" : "f") << "\n";
 
   const auto fib7      = fibbonacci(7U);
   const auto expected7 = 13_N;
-  std::cout << "fib(7) = 13? -> " << (fib7 == expected7 ? "t" : "f") << "\n";
+  cout << "fib(7) = 13? -> " << (fib7 == expected7 ? "t" : "f") << "\n";
 
   const auto fib10      = fibbonacci(10U);
   const auto expected10 = 55_N;
-  std::cout << "fib(10) = 55? -> " << (fib10 == expected10 ? "t" : "f") << "\n";
+  cout << "fib(10) = 55? -> " << (fib10 == expected10 ? "t" : "f") << "\n";
 
   const auto fib61      = fibbonacci(61U);
   const auto expected61 = 2504730781961_N;
-  std::cout << "fib(61) = 2504730781961? -> "
-            << (fib61 == expected61 ? "t" : "f") << "\n";
+  cout << "fib(61) = 2504730781961? -> " << (fib61 == expected61 ? "t" : "f")
+       << "\n";
 
   return EXIT_SUCCESS;
 }
