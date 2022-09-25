@@ -7,6 +7,7 @@
 #include <compare>
 #include <concepts>
 #include <iosfwd>
+#include <limits>
 #include <utility>
 
 namespace jt::math {
@@ -89,6 +90,11 @@ public:
   /// Returns @c !isEven().
   [[nodiscard]] bool isOdd() const noexcept { return !isEven(); }
 
+  /// Tries to convert to a builtin type. If the value does not fit, it throws
+  /// an 'std::out_of_range' exception instead of performing a narrowing
+  /// conversion.
+  template <std::unsigned_integral Target> Target convertTo() const;
+
 private:
   container::BitVector _bits;
 };
@@ -138,6 +144,21 @@ BigUInt &BigUInt::operator*=(std::unsigned_integral auto value) {
 
 BigUInt &BigUInt::operator/=(std::unsigned_integral auto value) {
   return *this /= BigUInt{value};
+}
+
+template <std::unsigned_integral Target> Target BigUInt::convertTo() const {
+  Target result{0U};
+  if (*this > std::numeric_limits<Target>::max()) {
+    throw std::out_of_range{"Conversion would narrow"};
+  }
+
+  for (usize i = 0U; i < _bits.size(); i++) {
+    if (_bits.get(i)) {
+      result |= (1U << i);
+    }
+  }
+
+  return result;
 }
 
 inline BigUInt operator+(BigUInt a, const BigUInt &b) { return a += b; }

@@ -29,6 +29,28 @@ TEST_CASE("BigUInt Construction", "") {
     REQUIRE(bu.binaryDigits() == 0);
   }
 }
+
+TEST_CASE("BigUInt ConversionToBuiltin", "") {
+  SECTION("u8 fits") {
+    const auto N = 255_N;
+    const auto C = N.convertTo<u8>();
+    REQUIRE(C == 255U);
+  }
+  SECTION("u8 wouldNarrow") {
+    const auto N = 256_N;
+    REQUIRE_THROWS_AS(N.convertTo<u8>(), std::out_of_range);
+
+    const auto C = N.convertTo<u16>();
+    REQUIRE(C == 256U);
+  }
+
+  SECTION("usize random") {
+    const auto N = 12389614_N;
+    const auto C = N.convertTo<usize>();
+    REQUIRE(C == 12389614ULL);
+  }
+}
+
 TEST_CASE("BigUInt Comparison", "") {
   SECTION("With other BigUInt") {
     BigUInt a{u32{1249U}};
