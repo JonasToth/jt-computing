@@ -309,4 +309,8 @@ std::istream &operator>>(std::istream &is, BigUInt &n) {
   }
   return is;
 }
+
+BigUInt operator"" _N(unsigned long long int literal) {
+  return BigUInt{literal};
+}
 } // namespace jt::math

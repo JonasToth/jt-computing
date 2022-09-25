@@ -19,15 +19,16 @@ int main(int argc, char **argv) {
 
   assert(argc >= 2);
 
+  using namespace jt::math;
   std::stringstream ss(argv[1]);
-  math::BigUInt n{0U};
+  auto n = 0_N;
   ss >> n;
 
   std::cout << "Finding the length of collatz chain for '" << n << "'"
             << std::endl;
 
-  math::BigUInt chainLength{0U};
-  math::BigUInt peak{1U};
+  auto chainLength = 0_N;
+  auto peak        = 1_N;
 
   while (n != 1U) {
     if (n.isEven()) {
