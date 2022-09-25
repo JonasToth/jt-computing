@@ -90,6 +90,21 @@ inline BigInt operator"" _Z(unsigned long long literal) {
   return BigInt{literal};
 }
 
+/// Allow to change the sign of a 'BigUInt' to create a whole number from a
+/// natural number.
+inline BigInt operator-(BigUInt n) noexcept {
+  auto r = BigInt{std::move(n)};
+  return -r;
+}
+
+/// Write 'z' to 'os', optionally adhering to the base modifiers.
+/// @sa operator<<(std::ostream&, BigUInt)
+std::ostream &operator<<(std::ostream &os, const BigInt &z);
+
+/// Parse 'z' from 'is', optionally adhering to the base modifiers.
+/// @sa operator>>(std::istream&, BigUInt&)
+std::istream &operator>>(std::istream &is, BigInt &z);
+
 template <std::signed_integral Z> auto castToUnsigned(Z value) {
   return static_cast<std::make_unsigned_t<Z>>(std::abs(value));
 }

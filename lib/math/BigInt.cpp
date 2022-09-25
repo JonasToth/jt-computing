@@ -101,4 +101,35 @@ BigInt &BigInt::operator/=(const BigInt &other) {
   }
   return *this;
 }
+
+std::ostream &operator<<(std::ostream &os, const BigInt &z) {
+  if (z.isNegative()) {
+    os << "-";
+  }
+  os << z.abs();
+  return os;
+}
+std::istream &operator>>(std::istream &is, BigInt &z) {
+  bool negative = false;
+
+  // Consume the sign.
+  switch (is.peek()) {
+  case '-':
+    negative = true;
+    (void)is.get();
+    break;
+  case '+':
+    negative = false;
+    (void)is.get();
+    break;
+  }
+  BigUInt n{0U};
+  is >> n;
+  if (negative) {
+    z = -BigInt{std::move(n)};
+  } else {
+    z = BigInt{std::move(n)};
+  }
+  return is;
+}
 } // namespace jt::math

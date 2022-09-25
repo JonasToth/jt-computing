@@ -111,8 +111,10 @@ std::pair<NaturalNumber, NaturalNumber> divmod(NaturalNumber dividend,
   return {dividend / divisor, dividend % divisor};
 }
 
+/// Write 'n' to 'os', optionally adhering to the base modifiers.
 std::ostream &operator<<(std::ostream &os, BigUInt n);
 
+/// Parse 'n' from 'is', optionally adhering to the base modifiers.
 std::istream &operator>>(std::istream &is, BigUInt &n);
 
 BigUInt operator"" _N(unsigned long long literal);
