@@ -512,3 +512,8 @@ TEST_CASE("DivMod", "") {
     REQUIRE(divmod(a, b) == std::pair{BigUInt{993U}, BigUInt{1139U}});
   }
 }
+
+TEST_CASE("Literal", "") {
+  const auto N = 123098124_N;
+  REQUIRE(N == BigUInt{123098124U});
+}
