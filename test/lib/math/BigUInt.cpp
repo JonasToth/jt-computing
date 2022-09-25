@@ -4,6 +4,8 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
+#include <iomanip>
+
 using namespace jt;
 using namespace jt::math;
 
@@ -535,19 +537,96 @@ TEST_CASE("DivMod", "") {
   }
 }
 
-TEST_CASE("IO", "") {
-  SECTION("Printing") {
-    std::stringstream ss;
-    const auto N = 120397124981723_N;
-    ss << N;
-    REQUIRE(ss.str() == "120397124981723");
+TEST_CASE("Printing", "") {
+  const auto printTwice = [](usize builtin, auto... mods) {
+    std::stringstream ssBuiltin;
+    (ssBuiltin << ... << mods) << builtin;
+
+    const auto N = BigUInt{builtin};
+    std::stringstream ssBigUInt;
+    (ssBigUInt << ... << mods) << N;
+
+    return std::pair{ssBuiltin.str(), ssBigUInt.str()};
+  };
+
+  const auto N = 120397124981723U;
+
+  SECTION("Printing Base 8") {
+    SECTION("Without Base") {
+      const auto [builtin, own] = printTwice(N, std::oct, std::noshowbase);
+      REQUIRE(builtin == "3330004367351733");
+      REQUIRE(builtin == own);
+    }
+
+    SECTION("With Base") {
+      const auto [builtin, own] = printTwice(N, std::oct, std::showbase);
+      REQUIRE(builtin == "03330004367351733");
+      REQUIRE(builtin == own);
+    }
   }
 
-  SECTION("Parsing") {
-    std::stringstream ss{"120397124981723"};
-    auto result = 0_N;
-    ss >> result;
-    REQUIRE(result == 120397124981723_N);
+  SECTION("Printing Base 10") {
+    SECTION("Without Base") {
+      const auto [builtin, own] = printTwice(N, std::dec, std::noshowbase);
+      REQUIRE(builtin == "120397124981723");
+      REQUIRE(builtin == own);
+    }
+
+    SECTION("With Base") {
+      const auto [builtin, own] = printTwice(N, std::dec, std::showbase);
+      REQUIRE(builtin == "120397124981723");
+      REQUIRE(builtin == own);
+    }
+  }
+
+  SECTION("Printing Base 16") {
+    SECTION("Without Base") {
+      const auto [builtin, own] = printTwice(N, std::hex, std::noshowbase);
+      REQUIRE(builtin == "6d8023ddd3db");
+      REQUIRE(builtin == own);
+    }
+
+    SECTION("With Base") {
+      const auto [builtin, own] = printTwice(N, std::hex, std::showbase);
+      REQUIRE(builtin == "0x6d8023ddd3db");
+      REQUIRE(builtin == own);
+    }
+  }
+}
+
+TEST_CASE("Parsing", "") {
+  const auto parseTwice = [](const std::string &rawValue, auto mod) {
+    auto builtin = 0ULL;
+    std::stringstream ssBuiltin{rawValue};
+    ssBuiltin >> mod >> builtin;
+
+    auto N = 0_N;
+    std::stringstream ssBigUInt{rawValue};
+    ssBigUInt >> mod >> N;
+
+    return std::pair{builtin, N};
+  };
+
+  SECTION("Parsing Base 8") {
+    const auto [builtin, own] = parseTwice("3330004367351733", std::oct);
+    REQUIRE(builtin == 120397124981723ULL);
+    REQUIRE(own == 120397124981723_N);
+  }
+
+  SECTION("Parsing Base 10") {
+    const auto [builtin, own] = parseTwice("120397124981723", std::dec);
+    REQUIRE(builtin == 120397124981723ULL);
+    REQUIRE(own == 120397124981723_N);
+  }
+  SECTION("Parsing Base 16 small letters") {
+    const auto [builtin, own] = parseTwice("6d8023ddd3db", std::hex);
+    REQUIRE(builtin == 120397124981723ULL);
+    REQUIRE(own == 120397124981723_N);
+  }
+  SECTION("Parsing Base 16 big letters") {
+    const auto [builtin, own] = parseTwice("6D8023DDD3DB", std::hex);
+    REQUIRE(builtin == 120397124981723ULL);
+    REQUIRE(own == 120397124981723_N);
   }
 }
 

@@ -257,6 +257,23 @@ std::pair<BigUInt, BigUInt> divmod(BigUInt dividend, const BigUInt &divisor) {
   return {quotient, dividend};
 }
 
+template <u8 Base> char digitToChar(u8 digit) {
+  static_assert(Base == 2 || Base == 8 || Base == 10 || Base == 16,
+                "Only the common number bases, either power of 2 or base 10 "
+                "are supported");
+  if (digit >= Base) {
+    throw std::out_of_range{"Digit must be < Base"};
+  }
+  if constexpr (Base == 2 || Base == 8 || Base == 10) {
+    return static_cast<char>('0' + digit);
+  } else if constexpr (Base == 16) {
+    return digit < 10 ? static_cast<char>('0' + digit)
+                      : static_cast<char>((digit - 10) + 'a');
+  }
+
+  assert(false && "Unreachable");
+}
+
 template <u8 Base> std::string writeInBase(BigUInt n) {
   static_assert(Base == 2 || Base == 8 || Base == 10 || Base == 16,
                 "Only the common number bases, either power of 2 or base 10 "
@@ -265,11 +282,9 @@ template <u8 Base> std::string writeInBase(BigUInt n) {
   std::string reverseDigits;
   const auto base = BigUInt{Base};
   while (n > 0U) {
-    const auto [quotient, remainder] = divmod(n, base);
-    n                                = quotient;
-
-    assert(remainder >= 0U && remainder < base && "Bad Modulus Result");
-    reverseDigits += static_cast<char>('0' + remainder.convertTo<u8>());
+    auto [quotient, remainder] = divmod(n, base);
+    n                          = std::move(quotient);
+    reverseDigits += digitToChar<Base>(remainder.convertTo<u8>());
   }
 
   std::reverse(reverseDigits.begin(), reverseDigits.end());
@@ -277,7 +292,22 @@ template <u8 Base> std::string writeInBase(BigUInt n) {
 }
 
 std::ostream &operator<<(std::ostream &os, BigUInt n) {
-  os << writeInBase<10>(std::move(n));
+  const auto flags = os.flags();
+  if ((flags & std::ios_base::dec) != 0) {
+    os << writeInBase<10>(std::move(n));
+  } else if ((flags & std::ios_base::oct) != 0) {
+    if ((flags & std::ios_base::showbase) != 0) {
+      os << "0";
+    }
+    os << writeInBase<8>(std::move(n));
+  } else if ((flags & std::ios_base::hex) != 0) {
+    if ((flags & std::ios_base::showbase) != 0) {
+      os << "0x";
+    }
+    os << writeInBase<16>(std::move(n));
+  } else {
+    assert(false && "Either number base must be configured");
+  }
   return os;
 }
 
@@ -297,17 +327,48 @@ BigUInt interpretDigitsInBase(const std::vector<u8> &digitsHighestFirst) {
   return result;
 }
 
-std::istream &operator>>(std::istream &is, BigUInt &n) {
-  std::vector<u8> digitsHighestFirst;
+template <u8 Base> std::optional<u8> nextDigit(std::istream &is) {
+  int c = is.peek();
+  if constexpr (Base == 2 || Base == 8 || Base == 10) {
+    if (std::isdigit(c)) {
+      return static_cast<u8>(is.get() - '0');
+    }
+  } else if constexpr (Base == 16) {
+    if ((c >= '0') && (c <= '9')) {
+      (void)is.get();
+      return static_cast<u8>(c - '0');
+    }
+    if ((c >= 'A') && (c <= 'F')) {
+      (void)is.get();
+      return static_cast<u8>(c - 'A' + 10);
+    }
+    if ((c >= 'a') && (c <= 'f')) {
+      (void)is.get();
+      return static_cast<u8>(c - 'a' + 10);
+    }
+  }
+  return std::nullopt;
+}
 
+template <u8 Base> BigUInt extractNumber(std::istream &is) {
+  std::vector<u8> digitsHighestFirst;
   // Read from the stream as long as the next character is a digit.
   // Extracts each digit into 'digitsHighestFirst'.
-  while (std::isdigit(is.peek()) != 0) {
-    const int numericalDigit = is.get() - '0';
-    assert(numericalDigit >= 0);
-    digitsHighestFirst.emplace_back(static_cast<u8>(numericalDigit));
+  while (auto digit = nextDigit<Base>(is)) {
+    digitsHighestFirst.emplace_back(digit.value());
   }
-  n = interpretDigitsInBase<10>(digitsHighestFirst);
+  return interpretDigitsInBase<Base>(digitsHighestFirst);
+}
+
+std::istream &operator>>(std::istream &is, BigUInt &n) {
+  const auto flags = is.flags();
+  if ((flags & std::ios_base::dec) != 0) {
+    n = extractNumber<10>(is);
+  } else if ((flags & std::ios_base::oct) != 0) {
+    n = extractNumber<8>(is);
+  } else if ((flags & std::ios_base::hex) != 0) {
+    n = extractNumber<16>(is);
+  }
   return is;
 }
 
