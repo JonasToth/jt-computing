@@ -535,6 +535,22 @@ TEST_CASE("DivMod", "") {
   }
 }
 
+TEST_CASE("IO", "") {
+  SECTION("Printing") {
+    std::stringstream ss;
+    const auto N = 120397124981723_N;
+    ss << N;
+    REQUIRE(ss.str() == "120397124981723");
+  }
+
+  SECTION("Parsing") {
+    std::stringstream ss{"120397124981723"};
+    auto result = 0_N;
+    ss >> result;
+    REQUIRE(result == 120397124981723_N);
+  }
+}
+
 TEST_CASE("Literal", "") {
   const auto N = 123098124_N;
   REQUIRE(N == BigUInt{123098124U});

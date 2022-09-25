@@ -6,6 +6,7 @@
 #include <compare>
 #include <istream>
 #include <ostream>
+#include <ranges>
 #include <stdexcept>
 
 namespace jt::math {
@@ -256,39 +257,44 @@ std::pair<BigUInt, BigUInt> divmod(BigUInt dividend, const BigUInt &divisor) {
   return {quotient, dividend};
 }
 
-std::ostream &operator<<(std::ostream &os, BigUInt n) {
+template <u8 Base> std::string writeInBase(BigUInt n) {
+  static_assert(Base == 2 || Base == 8 || Base == 10 || Base == 16,
+                "Only the common number bases, either power of 2 or base 10 "
+                "are supported");
+
   std::string reverseDigits;
+  const auto base = BigUInt{Base};
   while (n > 0U) {
-    const auto [quotient, remainder] = divmod(n, BigUInt{10U});
+    const auto [quotient, remainder] = divmod(n, base);
     n                                = quotient;
 
-    if (remainder == 0U) {
-      reverseDigits += '0';
-    } else if (remainder == 1U) {
-      reverseDigits += '1';
-    } else if (remainder == 2U) {
-      reverseDigits += '2';
-    } else if (remainder == 3U) {
-      reverseDigits += '3';
-    } else if (remainder == 4U) {
-      reverseDigits += '4';
-    } else if (remainder == 5U) {
-      reverseDigits += '5';
-    } else if (remainder == 6U) {
-      reverseDigits += '6';
-    } else if (remainder == 7U) {
-      reverseDigits += '7';
-    } else if (remainder == 8U) {
-      reverseDigits += '8';
-    } else if (remainder == 9U) {
-      reverseDigits += '9';
-    } else {
-      assert(false && "Unrechable");
-    }
+    assert(remainder >= 0U && remainder < base && "Bad Modulus Result");
+    reverseDigits += static_cast<char>('0' + remainder.convertTo<u8>());
   }
+
   std::reverse(reverseDigits.begin(), reverseDigits.end());
-  os << reverseDigits;
+  return reverseDigits;
+}
+
+std::ostream &operator<<(std::ostream &os, BigUInt n) {
+  os << writeInBase<10>(std::move(n));
   return os;
+}
+
+template <u8 Base>
+BigUInt interpretDigitsInBase(const std::vector<u8> &digitsHighestFirst) {
+  static_assert(Base == 2 || Base == 8 || Base == 10 || Base == 16,
+                "Only the common number bases, either power of 2 or base 10 "
+                "are supported");
+  const auto base = BigUInt{Base};
+  auto result     = 0_N;
+  auto position   = 1_N;
+  for (u8 digit : std::ranges::reverse_view(digitsHighestFirst)) {
+    result += position * digit;
+    position *= base;
+  }
+
+  return result;
 }
 
 std::istream &operator>>(std::istream &is, BigUInt &n) {
@@ -297,16 +303,11 @@ std::istream &operator>>(std::istream &is, BigUInt &n) {
   // Read from the stream as long as the next character is a digit.
   // Extracts each digit into 'digitsHighestFirst'.
   while (std::isdigit(is.peek()) != 0) {
-    digitsHighestFirst.emplace_back(static_cast<u8>(is.get()) - '0');
+    const int numericalDigit = is.get() - '0';
+    assert(numericalDigit >= 0);
+    digitsHighestFirst.emplace_back(static_cast<u8>(numericalDigit));
   }
-  std::reverse(digitsHighestFirst.begin(), digitsHighestFirst.end());
-  auto &digitsLowestFirst = digitsHighestFirst;
-
-  BigUInt position{1U};
-  n = BigUInt{0U};
-  for (usize i{0U}; i < digitsLowestFirst.size(); i += 1U, position *= 10U) {
-    n += position * digitsLowestFirst[i];
-  }
+  n = interpretDigitsInBase<10>(digitsHighestFirst);
   return is;
 }
 
