@@ -86,6 +86,10 @@ private:
   BigUInt _val{0U};
 };
 
+inline BigInt operator"" _Z(unsigned long long literal) {
+  return BigInt{literal};
+}
+
 template <std::signed_integral Z> auto castToUnsigned(Z value) {
   return static_cast<std::make_unsigned_t<Z>>(std::abs(value));
 }

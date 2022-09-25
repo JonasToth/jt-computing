@@ -47,6 +47,16 @@ TEST_CASE("BigInt Construction", "") {
     REQUIRE(!bi4.isNegative());
     REQUIRE(bi4.abs() == BigUInt{10231U});
   }
+
+  SECTION("Literal") {
+    const auto bi1 = -10_Z;
+    REQUIRE(bi1.isNegative());
+    REQUIRE(bi1.abs() == 10_N);
+
+    const auto bi2 = 129387123_Z;
+    REQUIRE(!bi2.isNegative());
+    REQUIRE(bi2.abs() == 129387123_N);
+  }
 }
 
 TEST_CASE("BigInt Comparison", "") {
