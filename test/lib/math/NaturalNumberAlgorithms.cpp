@@ -81,3 +81,16 @@ TEST_CASE("SieveEratosthenes", "") {
   REQUIRE(first1000.back() == BigUInt{997U});
   REQUIRE(first1000.size() == usize{168U});
 }
+
+TEST_CASE("GCD", "") {
+  SECTION("NaturalNumbers") {
+    REQUIRE(gcd(5_N, 10_N) == 5_N);
+    REQUIRE(gcd(10_N, 5_N) == 5_N);
+    REQUIRE(gcd(15_N, 5_N) == 5_N);
+    REQUIRE(gcd(31_N, 37_N) == 1_N);
+    REQUIRE(gcd(37_N, 31_N) == 1_N);
+    REQUIRE(gcd(12309182049_N, 12039812471827398123_N) == 3_N);
+
+    REQUIRE(gcd(123048U, 1124U) == 4U);
+  }
+}

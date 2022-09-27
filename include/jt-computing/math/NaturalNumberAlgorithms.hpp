@@ -30,6 +30,9 @@ template <NaturalNumber N> bool isPrime(NaturalNumber auto n);
 template <NaturalNumber N>
 std::vector<N> sieveEratosthenes(const usize &maximum);
 
+/// Computes the greatest-common-divisor for natural numbers.
+template <NaturalNumber N> N gcd(N a, N b);
+
 template <NaturalNumber N> std::vector<N> getPrimeFactors(N n) {
   std::vector<N> result;
 
@@ -159,6 +162,14 @@ std::vector<N> sieveEratosthenes(const usize &maximum) {
   }
 
   return collectedPrimes;
+}
+
+template <NaturalNumber N> N gcd(N a, N b) {
+  while (b != N{0U}) {
+    a %= b;
+    std::swap(a, b);
+  }
+  return a;
 }
 
 } // namespace jt::math
