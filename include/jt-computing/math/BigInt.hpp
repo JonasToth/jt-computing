@@ -1,4 +1,3 @@
-
 #ifndef BIGINT_HPP_12391LAA
 #define BIGINT_HPP_12391LAA
 
@@ -80,6 +79,9 @@ public:
   /// @returns a reference to the internal @c BigUInt, which is also the
   ///          absolute value of the integer.
   [[nodiscard]] const BigUInt &abs() const noexcept { return _val; }
+
+  /// Switch the sign of the number.
+  void negate() noexcept { _isNegative = !isNegative(); }
 
 private:
   bool _isNegative{false};
