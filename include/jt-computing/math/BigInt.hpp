@@ -139,7 +139,7 @@ BigInt &BigInt::operator+=(std::integral auto value) {
 }
 
 inline BigInt &BigInt::operator-() noexcept {
-  _isNegative = !isNegative();
+  negate();
   return *this;
 }
 inline BigInt &BigInt::operator-=(BigInt other) { return *this += -other; }

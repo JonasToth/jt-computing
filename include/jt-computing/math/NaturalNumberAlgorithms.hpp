@@ -33,6 +33,9 @@ std::vector<N> sieveEratosthenes(const usize &maximum);
 /// Computes the greatest-common-divisor for natural numbers.
 template <NaturalNumber N> N gcd(N a, N b);
 
+/// Computes the least-common-multiple for natural numbers.
+template <NaturalNumber N> N lcm(const N &a, const N &b);
+
 template <NaturalNumber N> std::vector<N> getPrimeFactors(N n) {
   std::vector<N> result;
 
@@ -172,6 +175,12 @@ template <NaturalNumber N> N gcd(N a, N b) {
   return a;
 }
 
+template <NaturalNumber N> N lcm(const N &a, const N &b) {
+  const auto g = gcd(a, b);
+  const auto p = a * b;
+  const auto result = p / g;
+  return result;
+}
 } // namespace jt::math
 
 #endif
