@@ -91,6 +91,13 @@ TEST_CASE("GCD", "") {
     REQUIRE(gcd(37_N, 31_N) == 1_N);
     REQUIRE(gcd(12309182049_N, 12039812471827398123_N) == 3_N);
 
-    REQUIRE(gcd(123048U, 1124U) == 4U);
+    REQUIRE(gcd(123'048U, 1'124U) == 4U);
+  }
+}
+
+TEST_CASE("LCM", "") {
+  SECTION("NaturalNumbers") {
+    REQUIRE(lcm(12_N, 18_N) == 36_N);
+    REQUIRE(lcm(3'528_N, 3'780_N) == 52'920_N);
   }
 }
