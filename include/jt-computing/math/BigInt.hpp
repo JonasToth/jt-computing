@@ -14,6 +14,8 @@ namespace jt::math {
 /// @note the 0 is always positive, "-0" has the same representation as "0".
 class BigInt {
 public:
+  BigInt() = default;
+
   /// Construct a @c BigInt from any builtin integer type.
   template <std::signed_integral Z> explicit BigInt(Z value);
   template <std::unsigned_integral Z> explicit BigInt(Z value) : _val{value} {}

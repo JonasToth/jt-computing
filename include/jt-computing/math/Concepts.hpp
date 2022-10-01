@@ -24,8 +24,7 @@ concept Computable = requires(N a, N b, N c) {
 template <typename N>
 concept NaturalNumber = std::unsigned_integral<N> ||
                         (Computable<N> &&
-                         std::equality_comparable<N> &&
-                         std::copy_constructible<N> &&
+                         std::regular<N> &&
                          std::totally_ordered<N> &&
                          !std::signed_integral<N>);
 // clang-format on

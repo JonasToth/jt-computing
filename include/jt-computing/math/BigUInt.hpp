@@ -16,6 +16,8 @@ namespace jt::math {
 /// The vector is always normalized, meaning it does not have leading zeros.
 class BigUInt {
 public:
+  BigUInt() = default;
+
   /// Construct the number from a builtin unsigned integer @c value.
   explicit BigUInt(std::unsigned_integral auto value);
 
