@@ -34,6 +34,10 @@ TEST_CASE("Rational Construction", "") {
   }
 }
 
+TEST_CASE("Rational from Double", "") {
+  REQUIRE(234234.23_Q == Rational{234234});
+}
+
 TEST_CASE("Rational Comparison", "") {
   SECTION("Identical by Construction") {
     REQUIRE(Rational{14, 5_N} == Rational{14_N, 5_N});

@@ -85,6 +85,8 @@ Rational &Rational::operator-() noexcept {
   return *this;
 }
 
+Rational operator"" _Q(long double rational) { return Rational{i64(rational)}; }
+
 std::ostream &operator<<(std::ostream &os, const Rational &z) {
   os << z.getNumerator() << "/" << z.getDenominator();
   return os;
