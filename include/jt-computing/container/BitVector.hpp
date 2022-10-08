@@ -9,14 +9,10 @@
 #include <vector>
 
 namespace jt::container {
+
 class BitVector {
 public:
   BitVector() = default;
-  ~BitVector() = default;
-  BitVector(const BitVector &) = default;
-  BitVector(BitVector &&) = default;
-  BitVector &operator=(const BitVector &) = default;
-  BitVector &operator=(BitVector &&) = default;
 
   /// Construct a @c BitVector that has enough bits to represent @c value and
   /// assign @c values bit pattern to the individual bits.

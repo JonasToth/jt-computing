@@ -49,7 +49,7 @@ inline Rational operator"" _Q(unsigned long long number) {
   return Rational{number, 1_Z};
 }
 // https://de.wikipedia.org/wiki/Stellenwertsystem#Darstellung_rationaler_Zahlen
-// inline Rational operator"" _Q(long double rational) { return Rational{}; }
+Rational operator"" _Q(long double rational);
 
 /// Write 'z' to 'os', optionally adhering to the base modifiers.
 /// @sa operator<<(std::ostream&, BigUInt)
