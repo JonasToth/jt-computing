@@ -7,6 +7,7 @@
 #include "jt-computing/math/Concepts.hpp"
 
 #include <cmath>
+#include <functional>
 #include <vector>
 
 namespace jt::math {
@@ -35,6 +36,10 @@ template <NaturalNumber N> N gcd(N a, N b);
 
 /// Computes the least-common-multiple for natural numbers.
 template <NaturalNumber N> N lcm(const N &a, const N &b);
+
+/// Algorithm for exponentiation of natural numbers.
+template <NaturalNumber N, typename MultiplicativeFunction = std::multiplies<N>>
+N square_multiply(N a, N b, MultiplicativeFunction F = {});
 
 template <NaturalNumber N> std::vector<N> getPrimeFactors(N n) {
   std::vector<N> result;
@@ -176,10 +181,26 @@ template <NaturalNumber N> N gcd(N a, N b) {
 }
 
 template <NaturalNumber N> N lcm(const N &a, const N &b) {
-  const auto g = gcd(a, b);
-  const auto p = a * b;
+  const auto g      = gcd(a, b);
+  const auto p      = a * b;
   const auto result = p / g;
   return result;
+}
+#include <iostream>
+template <NaturalNumber N, typename MultiplicativeFunction>
+N square_multiply(N a, N b, MultiplicativeFunction F) {
+  auto accumulator = N{1U};
+  if (a == N{0U}) {
+    return accumulator;
+  }
+  while (b > N{0U}) {
+    if (isOdd(b)) {
+      accumulator = F(accumulator, a);
+    }
+    a = F(a, a);
+    b /= N{2U};
+  }
+  return accumulator;
 }
 } // namespace jt::math
 
