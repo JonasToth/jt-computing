@@ -205,6 +205,9 @@ inline BigUInt operator%(BigUInt a, std::unsigned_integral auto b) {
   return a %= b;
 }
 
+inline bool isEven(const BigUInt &n) noexcept { return n.isEven(); }
+inline bool isOdd(const BigUInt &n) noexcept { return n.isOdd(); }
+
 } // namespace jt::math
 
 #endif /* end of include guard: BIGUINT_HPP_83XPJVDC */
