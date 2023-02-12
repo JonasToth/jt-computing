@@ -17,7 +17,6 @@ private:
   N modulus;
 };
 
-#if 0
 /// Perform subtraction of two @c NaturalNumbers modulus @c n.
 template <NaturalNumber N> struct minus_mod {
   explicit minus_mod(N n) : modulus{std::move(n)} {}
@@ -27,7 +26,6 @@ template <NaturalNumber N> struct minus_mod {
 private:
   N modulus;
 };
-#endif
 
 /// Perform multiplication of two @c NaturalNumbers modulus @c n.
 template <NaturalNumber N> struct multiplies_mod {
