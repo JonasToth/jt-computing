@@ -4,6 +4,8 @@
 
 #include <array>
 #include <initializer_list>
+#include <iomanip>
+#include <random>
 
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
@@ -53,7 +55,7 @@ TEST_CASE("GenericPower", "") {
 }
 
 namespace {
-template <Computable T, int N> class SmallSquareMatrix {
+template <std::regular T, int N> class SmallSquareMatrix {
 public:
   SmallSquareMatrix() { _data.fill(T{0U}); }
 
@@ -87,7 +89,7 @@ public:
     return _data.at(std::size_t(i) * N + std::size_t(j));
   }
 
-  template <Computable TT, int NN>
+  template <std::regular TT, int NN>
   friend bool operator==(const SmallSquareMatrix<TT, NN> &a,
                          const SmallSquareMatrix<TT, NN> &b) noexcept;
 
@@ -95,7 +97,7 @@ private:
   std::array<T, std::size_t{N} * N> _data;
 };
 
-template <Computable T, int N>
+template <std::regular T, int N>
 SmallSquareMatrix<T, N> operator*(const SmallSquareMatrix<T, N> &a,
                                   const SmallSquareMatrix<T, N> &b) {
   SmallSquareMatrix<T, N> result{};
@@ -108,18 +110,18 @@ SmallSquareMatrix<T, N> operator*(const SmallSquareMatrix<T, N> &a,
   }
   return result;
 }
-template <Computable T, int N>
+template <std::regular T, int N>
 bool operator==(const SmallSquareMatrix<T, N> &a,
                 const SmallSquareMatrix<T, N> &b) noexcept {
   return std::equal(a._data.begin(), a._data.end(), b._data.begin());
 }
-template <Computable T, int N>
+template <std::regular T, int N>
 bool operator!=(const SmallSquareMatrix<T, N> &a,
                 const SmallSquareMatrix<T, N> &b) {
   return !(a == b);
 }
 
-template <Computable T, int N>
+template <std::regular T, int N>
 std::ostream &operator<<(std::ostream &os, const SmallSquareMatrix<T, N> &m) {
   for (int i = 0; i < N; ++i) {
     for (int j = 0; j < N; ++j) {
@@ -164,5 +166,63 @@ TEST_CASE("PowerSquareMatrix", "") {
         "803673341511728991697231970827639856157644500784741"
         "74626"_N};
     REQUIRE(pow == result);
+  }
+}
+
+TEST_CASE("Graph Transitive Closure", "") {
+  auto rd                   = std::random_device{};
+  auto gen                  = std::mt19937{rd()};
+  auto dist                 = std::uniform_real_distribution<float>{0.0, 1.0};
+
+  constexpr auto gridWidth  = 6;
+  constexpr auto matrixSize = gridWidth * gridWidth;
+  auto probabilityGraph     = SmallSquareMatrix<float, matrixSize>(1);
+  const auto edgeIdx        = [](int r, int c) { return r * gridWidth + c; };
+
+  // Construct the adjacency matrix with probabilities first.
+  for (int row = 0; row < gridWidth; ++row) {
+    for (int col = 0; col < gridWidth; ++col) {
+      const auto centerIdx                   = edgeIdx(row, col);
+
+      // "Upper" neighbour exists.
+      if (row > 0) {
+        const auto upperIdx                   = edgeIdx(row - 1, col);
+        const auto upperP                     = dist(gen);
+        probabilityGraph(centerIdx, upperIdx) = upperP;
+        probabilityGraph(upperIdx, centerIdx) = upperP;
+      }
+      // "Left" neighbour exists.
+      if (col > 0) {
+        const auto leftIdx                   = edgeIdx(row, col - 1);
+        const auto leftP                     = dist(gen);
+        probabilityGraph(centerIdx, leftIdx) = leftP;
+        probabilityGraph(leftIdx, centerIdx) = leftP;
+      }
+    }
+  }
+  const auto threshold = 0.3F;
+  auto adjancyMatrix   = SmallSquareMatrix<bool, matrixSize>{};
+  for (int row = 0; row < gridWidth; ++row) {
+    for (int col = 0; col < gridWidth; ++col) {
+      const auto idx = edgeIdx(row, col);
+      for (int i = 0; i < matrixSize; ++i) {
+        adjancyMatrix(i, idx) = probabilityGraph(i, idx) > threshold;
+      }
+    }
+  }
+
+  std::cout << std::setprecision(2) << std::setw(4) << std::fixed;
+  for (int row = 0; row < matrixSize; ++row) {
+    for (int col = 0; col < matrixSize; ++col) {
+      std::cout << probabilityGraph(row, col) << " ";
+    }
+    std::cout << "\n";
+  }
+
+  for (int i = 0; i < matrixSize; ++i) {
+    for (int j = 0; j < matrixSize; ++j) {
+      std::cout << (adjancyMatrix(i, j) ? "x" : " ");
+    }
+    std::cout << "\n";
   }
 }
