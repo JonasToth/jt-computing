@@ -7,6 +7,7 @@
 #include <istream>
 #include <ostream>
 #include <ranges>
+#include <sstream>
 #include <stdexcept>
 
 namespace jt::math {
@@ -374,5 +375,11 @@ std::istream &operator>>(std::istream &is, BigUInt &n) {
 
 BigUInt operator"" _N(unsigned long long int literal) {
   return BigUInt{literal};
+}
+BigUInt operator""_N(char const *literal, std::size_t /*len*/) {
+  auto r  = 0_N;
+  auto ss = std::stringstream{literal};
+  ss >> r;
+  return r;
 }
 } // namespace jt::math

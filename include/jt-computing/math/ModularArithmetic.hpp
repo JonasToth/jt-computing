@@ -2,7 +2,7 @@
 #define MODULAR_ARITHMETIC_HPP
 
 #include "jt-computing/Types.hpp"
-#include "jt-computing/math/Concepts.hpp"
+#include "jt-computing/math/AlgebraConcepts.hpp"
 
 #include <utility>
 
@@ -36,6 +36,10 @@ template <NaturalNumber N> struct multiplies_mod {
 private:
   N modulus;
 };
+
+template <NaturalNumber N> N identity_element(multiplies_mod<N> /*op*/) {
+  return N{1U};
+}
 
 /// Perform divides of two @c NaturalNumbers modulus @c n.
 template <NaturalNumber N> struct divides_mod {

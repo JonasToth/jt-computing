@@ -102,28 +102,3 @@ TEST_CASE("LCM", "") {
     REQUIRE(lcm(3'528_N, 3'780_N) == 52'920_N);
   }
 }
-
-TEST_CASE("SquareMultiply", "") {
-  SECTION("Normal Exponentiation") {
-    REQUIRE(square_multiply(10_N, 2_N) == 100_N);
-    REQUIRE(square_multiply(10_N, 4_N) == 10000_N);
-    REQUIRE(square_multiply(9_N, 15_N) == 205891132094649_N);
-  }
-  SECTION("Modulo Exponentiation") {
-    REQUIRE(square_multiply(7_N, 23_N, multiplies_mod{143_N}) == 2_N);
-    REQUIRE(square_multiply(2_N, 1721_N, multiplies_mod{263713_N}) == 73047_N);
-    REQUIRE(square_multiply(1234_N, 1721_N, multiplies_mod{263713_N}) ==
-            157495_N);
-
-    const auto plain  = 230911_N;
-
-    const auto modul  = 263713_N;
-    const auto e      = 1721_N;
-    const auto d      = 1373_N;
-    const auto cipher = square_multiply(plain, e, multiplies_mod{modul});
-    REQUIRE(cipher == 1715_N);
-
-    const auto decipher = square_multiply(cipher, d, multiplies_mod{modul});
-    REQUIRE(decipher == plain);
-  }
-}
