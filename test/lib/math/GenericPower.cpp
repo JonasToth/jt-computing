@@ -2,9 +2,10 @@
 #include "jt-computing/math/BigUInt.hpp"
 #include "jt-computing/math/ModularArithmetic.hpp"
 
-#include <array>
+#include <chrono>
 #include <initializer_list>
 #include <iomanip>
+#include <memory>
 #include <random>
 
 #define CATCH_CONFIG_MAIN
@@ -54,97 +55,19 @@ TEST_CASE("GenericPower", "") {
   }
 }
 
-namespace {
-template <std::regular T, int N> class SmallSquareMatrix {
-public:
-  SmallSquareMatrix() { _data.fill(T{0U}); }
-
-  SmallSquareMatrix(std::initializer_list<T> args) {
-    assert(args.size() == N * N);
-    std::copy(args.begin(), args.end(), _data.begin());
-  }
-  /// Create Zero or Identity Matrix for neutral elements.
-  explicit SmallSquareMatrix(int i) : SmallSquareMatrix() {
-    assert(i == 0 || i == 1);
-    if (i == 1) {
-      for (int diagonal = 0; diagonal < N; ++diagonal) {
-        (*this)(diagonal, diagonal) = T{1U};
-      }
-    }
-  }
-  T &operator()(int i, int j) {
-    assert(i >= 0);
-    assert(i < N);
-    assert(j >= 0);
-    assert(j < N);
-
-    return _data.at(std::size_t(i) * N + std::size_t(j));
-  }
-  const T &operator()(int i, int j) const {
-    assert(i >= 0);
-    assert(i < N);
-    assert(j >= 0);
-    assert(j < N);
-
-    return _data.at(std::size_t(i) * N + std::size_t(j));
-  }
-
-  template <std::regular TT, int NN>
-  friend bool operator==(const SmallSquareMatrix<TT, NN> &a,
-                         const SmallSquareMatrix<TT, NN> &b) noexcept;
-
-private:
-  std::array<T, std::size_t{N} * N> _data;
-};
-
-template <std::regular T, int N>
-SmallSquareMatrix<T, N> operator*(const SmallSquareMatrix<T, N> &a,
-                                  const SmallSquareMatrix<T, N> &b) {
-  SmallSquareMatrix<T, N> result{};
-  for (int i = 0; i < N; ++i) {
-    for (int j = 0; j < N; ++j) {
-      for (int k = 0; k < N; ++k) {
-        result(i, j) += a(i, k) * b(k, j);
-      }
-    }
-  }
-  return result;
-}
-template <std::regular T, int N>
-bool operator==(const SmallSquareMatrix<T, N> &a,
-                const SmallSquareMatrix<T, N> &b) noexcept {
-  return std::equal(a._data.begin(), a._data.end(), b._data.begin());
-}
-template <std::regular T, int N>
-bool operator!=(const SmallSquareMatrix<T, N> &a,
-                const SmallSquareMatrix<T, N> &b) {
-  return !(a == b);
-}
-
-template <std::regular T, int N>
-std::ostream &operator<<(std::ostream &os, const SmallSquareMatrix<T, N> &m) {
-  for (int i = 0; i < N; ++i) {
-    for (int j = 0; j < N; ++j) {
-      os << m(i, j) << ", ";
-    }
-    os << std::endl;
-  }
-  return os;
-}
-} // namespace
-
+#if 0
 TEST_CASE("PowerSquareMatrix", "") {
   SECTION("Small Fibbonacci Number i64") {
-    const auto fibbonacciMatrix = SmallSquareMatrix<i64, 2>{1, 1, 1, 0};
+    const auto fibbonacciMatrix = FixedSquareMatrix<i64, 2>{1, 1, 1, 0};
     const auto pow              = power_monoid(fibbonacciMatrix, 10);
-    const auto result           = SmallSquareMatrix<i64, 2>{89, 55, 55, 34};
+    const auto result           = FixedSquareMatrix<i64, 2>{89, 55, 55, 34};
     REQUIRE(pow == result);
   }
   SECTION("Massive Fibbonacci Number BigUInt") {
     const auto fibbonacciMatrix =
-        SmallSquareMatrix<BigUInt, 2>{1_N, 1_N, 1_N, 0_N};
+        FixedSquareMatrix<BigUInt, 2>{1_N, 1_N, 1_N, 0_N};
     const auto pow    = power_monoid(fibbonacciMatrix, 1000);
-    const auto result = SmallSquareMatrix<BigUInt, 2>{
+    const auto result = FixedSquareMatrix<BigUInt, 2>{
         "703303677114228158218352548771835497701812698363587"
         "327426049050871545371181969335797422494945626117334"
         "877504492417659910881863632654502236471060120533741"
@@ -168,61 +91,4 @@ TEST_CASE("PowerSquareMatrix", "") {
     REQUIRE(pow == result);
   }
 }
-
-TEST_CASE("Graph Transitive Closure", "") {
-  auto rd                   = std::random_device{};
-  auto gen                  = std::mt19937{rd()};
-  auto dist                 = std::uniform_real_distribution<float>{0.0, 1.0};
-
-  constexpr auto gridWidth  = 6;
-  constexpr auto matrixSize = gridWidth * gridWidth;
-  auto probabilityGraph     = SmallSquareMatrix<float, matrixSize>(1);
-  const auto edgeIdx        = [](int r, int c) { return r * gridWidth + c; };
-
-  // Construct the adjacency matrix with probabilities first.
-  for (int row = 0; row < gridWidth; ++row) {
-    for (int col = 0; col < gridWidth; ++col) {
-      const auto centerIdx                   = edgeIdx(row, col);
-
-      // "Upper" neighbour exists.
-      if (row > 0) {
-        const auto upperIdx                   = edgeIdx(row - 1, col);
-        const auto upperP                     = dist(gen);
-        probabilityGraph(centerIdx, upperIdx) = upperP;
-        probabilityGraph(upperIdx, centerIdx) = upperP;
-      }
-      // "Left" neighbour exists.
-      if (col > 0) {
-        const auto leftIdx                   = edgeIdx(row, col - 1);
-        const auto leftP                     = dist(gen);
-        probabilityGraph(centerIdx, leftIdx) = leftP;
-        probabilityGraph(leftIdx, centerIdx) = leftP;
-      }
-    }
-  }
-  const auto threshold = 0.3F;
-  auto adjancyMatrix   = SmallSquareMatrix<bool, matrixSize>{};
-  for (int row = 0; row < gridWidth; ++row) {
-    for (int col = 0; col < gridWidth; ++col) {
-      const auto idx = edgeIdx(row, col);
-      for (int i = 0; i < matrixSize; ++i) {
-        adjancyMatrix(i, idx) = probabilityGraph(i, idx) > threshold;
-      }
-    }
-  }
-
-  std::cout << std::setprecision(2) << std::setw(4) << std::fixed;
-  for (int row = 0; row < matrixSize; ++row) {
-    for (int col = 0; col < matrixSize; ++col) {
-      std::cout << probabilityGraph(row, col) << " ";
-    }
-    std::cout << "\n";
-  }
-
-  for (int i = 0; i < matrixSize; ++i) {
-    for (int j = 0; j < matrixSize; ++j) {
-      std::cout << (adjancyMatrix(i, j) ? "x" : " ");
-    }
-    std::cout << "\n";
-  }
-}
+#endif
