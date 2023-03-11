@@ -19,21 +19,21 @@ using namespace jt::math;
 
 namespace {
 
-template <int GridSize> struct GridNode {
-  int row    = 0;
-  int column = 0;
+template <i32 GridSize> struct GridNode {
+  i32 row    = 0;
+  i32 column = 0;
 };
-template <int GridSize>
+template <i32 GridSize>
 bool operator<(const GridNode<GridSize> &n1, const GridNode<GridSize> &n2) {
   return (n1.row * GridSize + n1.column) < (n2.row * GridSize + n2.column);
 }
 
-template <int N>
+template <i32 N>
 std::ostream &operator<<(std::ostream &os,
                          const FixedSquareMatrix<bool, N, std::logical_or<bool>,
                                                  std::logical_and<bool>> &m) {
-  for (int i = 0; i < N; ++i) {
-    for (int j = 0; j < N; ++j) {
+  for (i32 i = 0; i < N; ++i) {
+    for (i32 j = 0; j < N; ++j) {
       os << (m(i, j) ? "x" : " ");
     }
     os << "\n";
@@ -67,11 +67,11 @@ int main(int argc, char **argv) {
   constexpr auto gridWidth  = 25;
   constexpr auto matrixSize = gridWidth * gridWidth;
   auto probabilityGraph     = FixedSquareMatrix<float, matrixSize>(1);
-  const auto edgeIdx        = [](int r, int c) { return r * gridWidth + c; };
+  const auto edgeIdx        = [](i32 r, i32 c) { return r * gridWidth + c; };
 
   // Construct the adjacency matrix with probabilities first.
-  for (int row = 0; row < gridWidth; ++row) {
-    for (int col = 0; col < gridWidth; ++col) {
+  for (i32 row = 0; row < gridWidth; ++row) {
+    for (i32 col = 0; col < gridWidth; ++col) {
       const auto centerIdx = edgeIdx(row, col);
 
       // "Upper" neighbour exists.
@@ -95,10 +95,10 @@ int main(int argc, char **argv) {
   auto adjancyMatrix =
       FixedSquareMatrix<bool, matrixSize, std::logical_or<bool>,
                         std::logical_and<bool>>(0U);
-  for (int row = 0; row < gridWidth; ++row) {
-    for (int col = 0; col < gridWidth; ++col) {
+  for (i32 row = 0; row < gridWidth; ++row) {
+    for (i32 col = 0; col < gridWidth; ++col) {
       const auto idx = edgeIdx(row, col);
-      for (int i = 0; i < matrixSize; ++i) {
+      for (i32 i = 0; i < matrixSize; ++i) {
         adjancyMatrix(i, idx) = probabilityGraph(i, idx) >= threshold;
       }
     }
@@ -112,8 +112,8 @@ int main(int argc, char **argv) {
   const auto maxColors       = 16;
   auto clusterColor          = std::map<GridNode<gridWidth>, int>{};
   auto nodesWithoutComponent = std::set<GridNode<gridWidth>>{};
-  for (int row = 0; row < gridWidth; ++row) {
-    for (int col = 0; col < gridWidth; ++col) {
+  for (i32 row = 0; row < gridWidth; ++row) {
+    for (i32 col = 0; col < gridWidth; ++col) {
       nodesWithoutComponent.insert({row, col});
     }
   }
@@ -122,7 +122,7 @@ int main(int argc, char **argv) {
   auto clusters =
       std::map<GridNode<gridWidth>, std::set<GridNode<gridWidth>>>{};
 
-  for (int color = 0; !nodesWithoutComponent.empty();
+  for (i32 color = 0; !nodesWithoutComponent.empty();
        color     = (color + 1) % maxColors) {
     // Extract the next node that forms a component.
     const auto nodeIt = nodesWithoutComponent.begin();

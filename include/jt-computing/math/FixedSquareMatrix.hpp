@@ -1,5 +1,6 @@
 #pragma once
 
+#include "jt-computing/Types.hpp"
 #include "jt-computing/math/AlgebraConcepts.hpp"
 
 #include <algorithm>
@@ -10,7 +11,7 @@
 
 namespace jt::math {
 
-template <std::regular T, int N, typename Plus = std::plus<T>,
+template <std::regular T, i32 N, typename Plus = std::plus<T>,
           typename Times = std::multiplies<T>>
   requires(SemiRing<Plus, Times, T>)
 class FixedSquareMatrix {
@@ -36,7 +37,7 @@ public:
     std::copy(args.begin(), args.end(), _data.get());
   }
   /// Create Zero or Identity Matrix of neutral elements.
-  explicit FixedSquareMatrix(int i, Plus plus = {}, Times times = {})
+  explicit FixedSquareMatrix(i32 i, Plus plus = {}, Times times = {})
       : FixedSquareMatrix(std::move(plus), std::move(times)) {
     assert(i == 0 || i == 1);
     if (i == 1) {
@@ -61,21 +62,21 @@ public:
   FixedSquareMatrix &operator=(FixedSquareMatrix &&other) noexcept = default;
   ~FixedSquareMatrix() noexcept                                    = default;
 
-  T &operator()(int i, int j) {
+  T &operator()(i32 i, i32 j) {
     assert(i >= 0);
     assert(i < N);
     assert(j >= 0);
     assert(j < N);
 
-    return _data[std::size_t(i) * N + std::size_t(j)];
+    return _data[static_cast<usize>(i * N + j)];
   }
-  const T &operator()(int i, int j) const {
+  const T &operator()(i32 i, i32 j) const {
     assert(i >= 0);
     assert(i < N);
     assert(j >= 0);
     assert(j < N);
 
-    return _data[std::size_t(i) * N + std::size_t(j)];
+    return _data[static_cast<usize>(i * N + j)];
   }
 
   friend bool operator==(const FixedSquareMatrix &a,
@@ -90,9 +91,9 @@ public:
   friend FixedSquareMatrix operator*(const FixedSquareMatrix &a,
                                      const FixedSquareMatrix &b) {
     auto result = FixedSquareMatrix{};
-    for (int i = 0; i < N; ++i) {
-      for (int j = 0; j < N; ++j) {
-        for (int k = 0; k < N; ++k) {
+    for (i32 i = 0; i < N; ++i) {
+      for (i32 j = 0; j < N; ++j) {
+        for (i32 k = 0; k < N; ++k) {
           result(i, j) = a._plus(result(i, j), a._times(a(i, k), b(k, j)));
         }
       }
@@ -100,7 +101,7 @@ public:
     return result;
   }
 
-  template <typename AA, int NN, typename PPlus, typename TTimes>
+  template <typename AA, i32 NN, typename PPlus, typename TTimes>
   friend std::ostream &
   operator<<(std::ostream &os,
              const FixedSquareMatrix<AA, NN, PPlus, TTimes> &m);
@@ -111,11 +112,11 @@ private:
   Times _times;
 };
 
-template <typename AA, int NN, typename PPlus, typename TTimes>
+template <typename AA, i32 NN, typename PPlus, typename TTimes>
 std::ostream &operator<<(std::ostream &os,
                          const FixedSquareMatrix<AA, NN, PPlus, TTimes> &m) {
-  for (int i = 0; i < NN; ++i) {
-    for (int j = 0; j < NN; ++j) {
+  for (i32 i = 0; i < NN; ++i) {
+    for (i32 j = 0; j < NN; ++j) {
       os << m(i, j) << ", ";
     }
     os << std::endl;
