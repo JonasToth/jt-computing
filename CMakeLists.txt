@@ -92,7 +92,7 @@ target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
 include(cmake/CompilerWarnings.cmake)
 set_project_warnings(${PROJECT_NAME})
 
-verbose_message("Applied compiler warnings. Using standard C++20.\n")
+verbose_message("Applied compiler warnings. Using standard C++23.\n")
 
 #
 # Enable Doxygen

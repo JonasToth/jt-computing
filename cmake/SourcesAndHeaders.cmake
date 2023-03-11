@@ -2,6 +2,7 @@ set(sources
     lib/container/BitVector.cpp
     lib/math/BigUInt.cpp
     lib/math/BigInt.cpp
+    lib/math/NaturalN.cpp
     lib/math/Rational.cpp
 )
 
@@ -18,6 +19,7 @@ set(headers
     include/jt-computing/math/FixedSquareMatrix.hpp
     include/jt-computing/math/GenericPower.hpp
     include/jt-computing/math/ModularArithmetic.hpp
+    include/jt-computing/math/NaturalN.hpp
     include/jt-computing/math/NaturalNumberAlgorithms.hpp
     include/jt-computing/math/Rational.hpp
 )
@@ -29,6 +31,7 @@ set(test_sources
     lib/math/GenericPower.cpp
     lib/math/MainTests.cpp
     lib/math/ModularArithmetic.cpp
+    lib/math/NaturalN.cpp
     lib/math/NaturalNumberAlgorithms.cpp
     lib/math/Rational.cpp
 )
