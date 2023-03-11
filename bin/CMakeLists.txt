@@ -17,3 +17,7 @@ target_compile_features(percolation_power.x PUBLIC cxx_std_20)
 add_executable(shortest_path.x shortest_path.cpp)
 target_link_libraries(shortest_path.x PRIVATE ${PROJECT_NAME}::${PROJECT_NAME})
 target_compile_features(shortest_path.x PUBLIC cxx_std_20)
+
+add_executable(toy_rsa.x toy_rsa.cpp)
+target_link_libraries(toy_rsa.x PRIVATE ${PROJECT_NAME}::${PROJECT_NAME})
+target_compile_features(toy_rsa.x PUBLIC cxx_std_20)
