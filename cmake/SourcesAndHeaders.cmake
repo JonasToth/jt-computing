@@ -15,6 +15,7 @@ set(headers
     include/jt-computing/math/BigInt.hpp
     include/jt-computing/math/BigUInt.hpp
     include/jt-computing/math/Concepts.hpp
+    include/jt-computing/math/FixedSquareMatrix.hpp
     include/jt-computing/math/GenericPower.hpp
     include/jt-computing/math/ModularArithmetic.hpp
     include/jt-computing/math/NaturalNumberAlgorithms.hpp
