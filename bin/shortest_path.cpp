@@ -81,13 +81,13 @@ int main(int /*argc*/, char ** /*argv*/) {
   // NOLINTBEGIN
   constexpr auto N = 7;
   const auto distances = FixedSquareMatrix<Dist, N, MinimalDist, std::plus<Dist>>{
-  Dist{0}     , Dist{6}     , Dist::inf() , Dist{3}     , Dist::inf() , Dist::inf() , Dist::inf() ,
-  Dist::inf() , Dist{0}     , Dist::inf() , Dist::inf() , Dist{2}     , Dist{10}    , Dist::inf() ,
-  Dist{7}     , Dist::inf() , Dist{0}     , Dist::inf() , Dist::inf() , Dist::inf() , Dist::inf() ,
-  Dist::inf() , Dist::inf() , Dist{5}     , Dist{0}     , Dist::inf() , Dist{4}     , Dist::inf() ,
-  Dist::inf() , Dist::inf() , Dist::inf() , Dist::inf() , Dist{0}     , Dist::inf() , Dist{3}     ,
-  Dist::inf() , Dist::inf() , Dist{6}     , Dist::inf() , Dist{7}     , Dist{0}     , Dist{8}     ,
-  Dist::inf() , Dist{9}     , Dist::inf() , Dist::inf() , Dist::inf() , Dist::inf() , Dist{0}     ,
+      Dist{0}    , Dist{6}    , Dist::inf(), Dist{3}    , Dist::inf(), Dist::inf(), Dist::inf(),
+      Dist::inf(), Dist{0}    , Dist::inf(), Dist::inf(), Dist{2}    , Dist{10}   , Dist::inf(),
+      Dist{7}    , Dist::inf(), Dist{0}    , Dist::inf(), Dist::inf(), Dist::inf(), Dist::inf(),
+      Dist::inf(), Dist::inf(), Dist{5}    , Dist{0}    , Dist::inf(), Dist{4}    , Dist::inf(),
+      Dist::inf(), Dist::inf(), Dist::inf(), Dist::inf(), Dist{0}    , Dist::inf(), Dist{3}    ,
+      Dist::inf(), Dist::inf(), Dist{6}    , Dist::inf(), Dist{7}    , Dist{0}    , Dist{8}    ,
+      Dist::inf(), Dist{9}    , Dist::inf(), Dist::inf(), Dist::inf(), Dist::inf(), Dist{0}    ,
   };
   // NOLINTEND
   // clang-format on
