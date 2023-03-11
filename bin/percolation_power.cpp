@@ -4,6 +4,7 @@
 #include <chrono>
 #include <cstdlib>
 #include <fstream>
+#include <functional>
 #include <initializer_list>
 #include <iomanip>
 #include <iostream>
@@ -28,22 +29,9 @@ bool operator<(const GridNode<GridSize> &n1, const GridNode<GridSize> &n2) {
 }
 
 template <int N>
-FixedSquareMatrix<bool, N> operator*(const FixedSquareMatrix<bool, N> &a,
-                                     const FixedSquareMatrix<bool, N> &b) {
-  auto result = FixedSquareMatrix<bool, N>(0U);
-  for (int i = 0; i < N; ++i) {
-    for (int j = 0; j < N; ++j) {
-      for (int k = 0; k < N; ++k) {
-        result(i, j) |= a(i, k) && b(k, j);
-      }
-    }
-  }
-  return result;
-}
-
-template <int N>
 std::ostream &operator<<(std::ostream &os,
-                         const FixedSquareMatrix<bool, N> &m) {
+                         const FixedSquareMatrix<bool, N, std::logical_or<bool>,
+                                                 std::logical_and<bool>> &m) {
   for (int i = 0; i < N; ++i) {
     for (int j = 0; j < N; ++j) {
       os << (m(i, j) ? "x" : " ");
@@ -104,7 +92,9 @@ int main(int argc, char **argv) {
       }
     }
   }
-  auto adjancyMatrix = FixedSquareMatrix<bool, matrixSize>{};
+  auto adjancyMatrix =
+      FixedSquareMatrix<bool, matrixSize, std::logical_or<bool>,
+                        std::logical_and<bool>>(0U);
   for (int row = 0; row < gridWidth; ++row) {
     for (int col = 0; col < gridWidth; ++col) {
       const auto idx = edgeIdx(row, col);
