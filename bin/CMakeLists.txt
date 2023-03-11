@@ -9,3 +9,6 @@ target_link_libraries(collatz_chain.x PRIVATE ${PROJECT_NAME}::${PROJECT_NAME})
 
 add_executable(percolation_power.x percolation_power.cpp)
 target_link_libraries(percolation_power.x PRIVATE ${PROJECT_NAME}::${PROJECT_NAME})
+
+add_executable(shortest_path.x shortest_path.cpp)
+target_link_libraries(shortest_path.x PRIVATE ${PROJECT_NAME}::${PROJECT_NAME})
