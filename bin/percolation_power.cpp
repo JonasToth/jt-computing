@@ -1,3 +1,4 @@
+#include "jt-computing/math/FixedSquareMatrix.hpp"
 #include "jt-computing/math/GenericPower.hpp"
 
 #include <chrono>
@@ -26,87 +27,6 @@ bool operator<(const GridNode<GridSize> &n1, const GridNode<GridSize> &n2) {
   return (n1.row * GridSize + n1.column) < (n2.row * GridSize + n2.column);
 }
 
-template <std::regular T, int N> class FixedSquareMatrix {
-public:
-  static_assert(N > 0, "Matrix must have positive dimension");
-
-  FixedSquareMatrix() : _data{std::make_unique<T[]>(N * N)} {
-    assert(_data.get() != nullptr && "Bad Alloc must have been thrown");
-    std::fill_n(_data.get(), N * N, T{0U});
-  }
-
-  FixedSquareMatrix(std::initializer_list<T> args)
-      : _data{std::make_unique<T[]>(N * N)} {
-    if (args.size() != N * N) {
-      throw std::invalid_argument{"Mismatched dimension"};
-    }
-    std::copy(args.begin(), args.end(), _data.get());
-  }
-  /// Create Zero or Identity Matrix for neutral elements.
-  explicit FixedSquareMatrix(int i) : FixedSquareMatrix() {
-    assert(i == 0 || i == 1);
-    if (i == 1) {
-      for (int diagonal = 0; diagonal < N; ++diagonal) {
-        (*this)(diagonal, diagonal) = T{1U};
-      }
-    }
-  }
-
-  FixedSquareMatrix(const FixedSquareMatrix<T, N> &other)
-      : _data{std::make_unique<T[]>(N * N)} {
-    std::copy_n(other._data.get(), N * N, _data.get());
-  }
-  FixedSquareMatrix(FixedSquareMatrix<T, N> &&other) noexcept = default;
-
-  FixedSquareMatrix &operator=(const FixedSquareMatrix<T, N> &other) {
-    if (&other == this) {
-      return *this;
-    }
-    std::copy_n(other._data.get(), N * N, _data.get());
-  }
-  FixedSquareMatrix &
-  operator=(FixedSquareMatrix<T, N> &&other) noexcept = default;
-  ~FixedSquareMatrix() noexcept                       = default;
-
-  T &operator()(int i, int j) {
-    assert(i >= 0);
-    assert(i < N);
-    assert(j >= 0);
-    assert(j < N);
-
-    return _data[std::size_t(i) * N + std::size_t(j)];
-  }
-  const T &operator()(int i, int j) const {
-    assert(i >= 0);
-    assert(i < N);
-    assert(j >= 0);
-    assert(j < N);
-
-    return _data[std::size_t(i) * N + std::size_t(j)];
-  }
-
-  template <std::regular TT, int NN>
-  friend bool operator==(const FixedSquareMatrix<TT, NN> &a,
-                         const FixedSquareMatrix<TT, NN> &b) noexcept;
-
-private:
-  std::unique_ptr<T[]> _data;
-};
-
-template <std::regular T, int N>
-FixedSquareMatrix<T, N> operator*(const FixedSquareMatrix<T, N> &a,
-                                  const FixedSquareMatrix<T, N> &b) {
-  auto result = FixedSquareMatrix<T, N>(0U);
-  for (int i = 0; i < N; ++i) {
-    for (int j = 0; j < N; ++j) {
-      for (int k = 0; k < N; ++k) {
-        result(i, j) += a(i, k) * b(k, j);
-      }
-    }
-  }
-  return result;
-}
-
 template <int N>
 FixedSquareMatrix<bool, N> operator*(const FixedSquareMatrix<bool, N> &a,
                                      const FixedSquareMatrix<bool, N> &b) {
@@ -119,28 +39,6 @@ FixedSquareMatrix<bool, N> operator*(const FixedSquareMatrix<bool, N> &a,
     }
   }
   return result;
-}
-
-template <std::regular T, int N>
-bool operator==(const FixedSquareMatrix<T, N> &a,
-                const FixedSquareMatrix<T, N> &b) noexcept {
-  return std::equal(a._data.get(), a._data.get() + N * N, b._data.get());
-}
-template <std::regular T, int N>
-bool operator!=(const FixedSquareMatrix<T, N> &a,
-                const FixedSquareMatrix<T, N> &b) {
-  return !(a == b);
-}
-
-template <std::regular T, int N>
-std::ostream &operator<<(std::ostream &os, const FixedSquareMatrix<T, N> &m) {
-  for (int i = 0; i < N; ++i) {
-    for (int j = 0; j < N; ++j) {
-      os << m(i, j) << ", ";
-    }
-    os << std::endl;
-  }
-  return os;
 }
 
 template <int N>
@@ -216,10 +114,10 @@ int main(int argc, char **argv) {
     }
   }
 
-  const auto startPower      = std::chrono::steady_clock::now();
-  const auto clusterGraph    = power_monoid(adjancyMatrix, matrixSize - 1);
-  const auto endPower        = std::chrono::steady_clock::now();
-  // std::cout << "ClusterGraph:\n" << clusterGraph << "\n";
+  const auto startPower   = std::chrono::steady_clock::now();
+  const auto clusterGraph = power_monoid(adjancyMatrix, matrixSize - 1);
+  const auto endPower     = std::chrono::steady_clock::now();
+  std::cout << "ClusterGraph:\n" << clusterGraph << "\n";
 
   const auto maxColors       = 16;
   auto clusterColor          = std::map<GridNode<gridWidth>, int>{};
@@ -256,8 +154,10 @@ int main(int argc, char **argv) {
       }
     }
 
-    auto [component, ins] = clusters.insert({newC, std::move(newCluster)});
-    assert(ins && "gridnode must not be part of other component!");
+    auto [component, inserted] = clusters.insert({newC, std::move(newCluster)});
+    if (!inserted) {
+      throw std::logic_error{"Node already exists in different cluster."};
+    }
     clusterColor[newC] = color;
   }
   const auto endCluster = std::chrono::steady_clock::now();
@@ -278,7 +178,10 @@ int main(int argc, char **argv) {
                    endCluster - startCluster)
                    .count()
             << " us\n";
-  assert(clusteredNodes == matrixSize);
+  if (clusteredNodes != matrixSize) {
+    throw std::logic_error{"All nodes must be part of a cluster and always sum "
+                           "up to matrix size. Graph Invariant Violated"};
+  }
 
   std::ofstream graphOutput{argv[2]};
   for (const auto &[initialNode, elements] : clusters) {

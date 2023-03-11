@@ -1,5 +1,7 @@
 #include "jt-computing/math/GenericPower.hpp"
+#include "jt-computing/math/AlgebraConcepts.hpp"
 #include "jt-computing/math/BigUInt.hpp"
+#include "jt-computing/math/FixedSquareMatrix.hpp"
 #include "jt-computing/math/ModularArithmetic.hpp"
 
 #include <chrono>
@@ -13,6 +15,11 @@
 
 using namespace jt;
 using namespace jt::math;
+
+template <>
+std::string jt::math::identity_element(std::plus<std::string> /*op*/) {
+  return "";
+}
 
 TEST_CASE("GenericPower", "") {
   SECTION("Integer Multiplication") {
@@ -55,7 +62,6 @@ TEST_CASE("GenericPower", "") {
   }
 }
 
-#if 0
 TEST_CASE("PowerSquareMatrix", "") {
   SECTION("Small Fibbonacci Number i64") {
     const auto fibbonacciMatrix = FixedSquareMatrix<i64, 2>{1, 1, 1, 0};
@@ -91,4 +97,3 @@ TEST_CASE("PowerSquareMatrix", "") {
     REQUIRE(pow == result);
   }
 }
-#endif

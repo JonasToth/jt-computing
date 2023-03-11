@@ -367,3 +367,4 @@ healthchecksdb
 MigrationBackup/
 compile_commands.json
 .clangd
+build*
