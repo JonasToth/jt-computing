@@ -1,21 +1,33 @@
 #pragma once
 
+#include "jt-computing/math/AlgebraConcepts.hpp"
+
 #include <algorithm>
 #include <cassert>
 #include <concepts>
+#include <iostream>
 #include <memory>
 
 namespace jt::math {
 
-template <std::regular T, int N> class FixedSquareMatrix {
+template <std::regular T, int N, typename Plus = std::plus<T>,
+          typename Times = std::multiplies<T>>
+  requires(SemiRing<Plus, Times, T>)
+class FixedSquareMatrix {
 public:
   static_assert(N > 0, "Matrix must have positive dimension");
 
-  FixedSquareMatrix() : _data{std::make_unique<T[]>(N * N)} {
+  FixedSquareMatrix(Plus plus, Times times)
+      : _data{std::make_unique<T[]>(N * N)}, _plus{std::move(plus)},
+        _times{std::move(times)} {
     assert(_data.get() != nullptr && "Bad Alloc must have been thrown");
-    std::fill_n(_data.get(), N * N, T{0U});
+    std::fill_n(_data.get(), N * N, identity_element(_plus));
   }
 
+  /// Default construction of the matrix with all zeros.
+  FixedSquareMatrix() : FixedSquareMatrix(Plus{}, Times{}) {}
+
+  /// Explicit value initialization.
   FixedSquareMatrix(std::initializer_list<T> args)
       : _data{std::make_unique<T[]>(N * N)} {
     if (args.size() != N * N) {
@@ -23,31 +35,31 @@ public:
     }
     std::copy(args.begin(), args.end(), _data.get());
   }
-  /// Create Zero or Identity Matrix for neutral elements.
-  explicit FixedSquareMatrix(int i) : FixedSquareMatrix() {
+  /// Create Zero or Identity Matrix of neutral elements.
+  explicit FixedSquareMatrix(int i, Plus plus = {}, Times times = {})
+      : FixedSquareMatrix(std::move(plus), std::move(times)) {
     assert(i == 0 || i == 1);
     if (i == 1) {
       for (int diagonal = 0; diagonal < N; ++diagonal) {
-        (*this)(diagonal, diagonal) = T{1U};
+        (*this)(diagonal, diagonal) = identity_element(_times);
       }
     }
   }
 
-  FixedSquareMatrix(const FixedSquareMatrix<T, N> &other)
+  FixedSquareMatrix(const FixedSquareMatrix &other)
       : _data{std::make_unique<T[]>(N * N)} {
     std::copy_n(other._data.get(), N * N, _data.get());
   }
-  FixedSquareMatrix(FixedSquareMatrix<T, N> &&other) noexcept = default;
+  FixedSquareMatrix(FixedSquareMatrix &&other) noexcept = default;
 
-  FixedSquareMatrix &operator=(const FixedSquareMatrix<T, N> &other) {
+  FixedSquareMatrix &operator=(const FixedSquareMatrix &other) {
     if (&other == this) {
       return *this;
     }
     std::copy_n(other._data.get(), N * N, _data.get());
   }
-  FixedSquareMatrix &
-  operator=(FixedSquareMatrix<T, N> &&other) noexcept = default;
-  ~FixedSquareMatrix() noexcept                       = default;
+  FixedSquareMatrix &operator=(FixedSquareMatrix &&other) noexcept = default;
+  ~FixedSquareMatrix() noexcept                                    = default;
 
   T &operator()(int i, int j) {
     assert(i >= 0);
@@ -66,43 +78,44 @@ public:
     return _data[std::size_t(i) * N + std::size_t(j)];
   }
 
-  template <std::regular TT, int NN>
-  friend bool operator==(const FixedSquareMatrix<TT, NN> &a,
-                         const FixedSquareMatrix<TT, NN> &b) noexcept;
+  friend bool operator==(const FixedSquareMatrix &a,
+                         const FixedSquareMatrix &b) noexcept {
+    return std::equal(a._data.get(), a._data.get() + N * N, b._data.get());
+  }
+  friend bool operator!=(const FixedSquareMatrix &a,
+                         const FixedSquareMatrix &b) noexcept {
+    return !(a == b);
+  }
+
+  friend FixedSquareMatrix operator*(const FixedSquareMatrix &a,
+                                     const FixedSquareMatrix &b) {
+    auto result = FixedSquareMatrix{};
+    for (int i = 0; i < N; ++i) {
+      for (int j = 0; j < N; ++j) {
+        for (int k = 0; k < N; ++k) {
+          result(i, j) = a._plus(result(i, j), a._times(a(i, k), b(k, j)));
+        }
+      }
+    }
+    return result;
+  }
+
+  template <typename AA, int NN, typename PPlus, typename TTimes>
+  friend std::ostream &
+  operator<<(std::ostream &os,
+             const FixedSquareMatrix<AA, NN, PPlus, TTimes> &m);
 
 private:
   std::unique_ptr<T[]> _data;
+  Plus _plus;
+  Times _times;
 };
 
-template <std::regular T, int N>
-FixedSquareMatrix<T, N> operator*(const FixedSquareMatrix<T, N> &a,
-                                  const FixedSquareMatrix<T, N> &b) {
-  auto result = FixedSquareMatrix<T, N>(0U);
-  for (int i = 0; i < N; ++i) {
-    for (int j = 0; j < N; ++j) {
-      for (int k = 0; k < N; ++k) {
-        result(i, j) += a(i, k) * b(k, j);
-      }
-    }
-  }
-  return result;
-}
-
-template <std::regular T, int N>
-bool operator==(const FixedSquareMatrix<T, N> &a,
-                const FixedSquareMatrix<T, N> &b) noexcept {
-  return std::equal(a._data.get(), a._data.get() + N * N, b._data.get());
-}
-template <std::regular T, int N>
-bool operator!=(const FixedSquareMatrix<T, N> &a,
-                const FixedSquareMatrix<T, N> &b) {
-  return !(a == b);
-}
-
-template <std::regular T, int N>
-std::ostream &operator<<(std::ostream &os, const FixedSquareMatrix<T, N> &m) {
-  for (int i = 0; i < N; ++i) {
-    for (int j = 0; j < N; ++j) {
+template <typename AA, int NN, typename PPlus, typename TTimes>
+std::ostream &operator<<(std::ostream &os,
+                         const FixedSquareMatrix<AA, NN, PPlus, TTimes> &m) {
+  for (int i = 0; i < NN; ++i) {
+    for (int j = 0; j < NN; ++j) {
       os << m(i, j) << ", ";
     }
     os << std::endl;
