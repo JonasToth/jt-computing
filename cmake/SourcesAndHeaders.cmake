@@ -1,5 +1,6 @@
 set(sources
     lib/container/BitVector.cpp
+    lib/crypto/Sha256.cpp
     lib/math/BigUInt.cpp
     lib/math/BigInt.cpp
     lib/math/NaturalN.cpp
@@ -12,6 +13,7 @@ set(exe_sources
 
 set(headers
     include/jt-computing/container/BitVector.hpp
+    include/jt-computing/crypto/Sha256.hpp
     include/jt-computing/math/AlgebraConcepts.hpp
     include/jt-computing/math/BigInt.hpp
     include/jt-computing/math/BigUInt.hpp
@@ -26,6 +28,7 @@ set(headers
 
 set(test_sources
     lib/container/BitVector.cpp
+    lib/crypto/Sha256.cpp
     lib/math/BigUInt.cpp
     lib/math/BigInt.cpp
     lib/math/GenericPower.cpp
