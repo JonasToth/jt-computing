@@ -28,10 +28,10 @@ std::string Sha256Sum::digest() {
 
     auto hashDigest = std::array<u32, 8>{0};
     if constexpr (std::endian::native == std::endian::little) {
-      std::transform(_state.begin(), _state.end(), hashDigest.begin(),
+      std::transform(H.begin(), H.end(), hashDigest.begin(),
                      [](u32 state) { return std::byteswap(state); });
     } else {
-      std::copy(_state.begin(), _state.end(), hashDigest.begin());
+      std::copy(H.begin(), H.end(), hashDigest.begin());
     }
     auto digestString = str(hashDigest);
     assert(digestString.size() == 64);
@@ -42,61 +42,75 @@ std::string Sha256Sum::digest() {
 }
 
 namespace {
-u32 choose(u32 e, u32 f, u32 g) { return (e & f) ^ (~e & g); }
-u32 majority(u32 a, u32 b, u32 c) { return (a & (b | c)) | (b & c); }
-u32 sig0(u32 x) { return std::rotr(x, 7) ^ std::rotr(x, 18) ^ (x >> 3); }
-u32 sig1(u32 x) { return std::rotr(x, 17) ^ std::rotr(x, 19) ^ (x >> 10); }
+using std::rotr;
+/// Defined in Section 4.1.2, (4.2).
+u32 Ch(u32 x, u32 y, u32 z) { return (x & y) ^ (~x & z); }
+/// Defined in Section 4.1.2, (4.3).
+u32 Maj(u32 x, u32 y, u32 z) { return (x & y) ^ (x & z) ^ (y & z); }
+/// Defined in Section 4.1.2, (4.4).
+u32 Sum0(u32 x) { return rotr(x, 2) ^ rotr(x, 13) ^ rotr(x, 22); }
+/// Defined in Section 4.1.2, (4.5).
+u32 Sum1(u32 x) { return rotr(x, 6) ^ rotr(x, 11) ^ rotr(x, 25); }
+/// Defined in Section 4.1.2, (4.6).
+u32 Sig0(u32 x) { return rotr(x, 7) ^ rotr(x, 18) ^ (x >> 3U); }
+/// Defined in Section 4.1.2, (4.7).
+u32 Sig1(u32 x) { return rotr(x, 17) ^ rotr(x, 19) ^ (x >> 10U); }
 } // namespace
 
 void Sha256Sum::transform() {
-  u32 maj, xorA, ch, xorE, sum, newA, newE;
-  std::array<u32, 64> m;
-  std::array<u32, 8> state;
+  std::array<u32, 64> W;
 
-  // Split data in 32 bit blocks for the 16 first words
-  for (u8 i = 0, j = 0; i < 16; i++, j += 4) {
-    m[i] = (_data[j] << 24) | (_data[j + 1] << 16) | (_data[j + 2] << 8) |
-           (_data[j + 3]);
+  // Section 6.2.2, Step 1. (1)
+  // Insert all data of this block at the start of the message schedule in
+  // big-endian words.
+  auto dataReinterpreted = std::span<u32>{reinterpret_cast<u32 *>(_data.data()),
+                                          blockSize / sizeof(u32)};
+  if constexpr (std::endian::native == std::endian::little) {
+    std::transform(dataReinterpreted.begin(), dataReinterpreted.end(),
+                   W.begin(), [](u32 state) { return std::byteswap(state); });
+  } else {
+    std::copy(dataReinterpreted.begin(), dataReinterpreted.end(), W.begin());
   }
 
-  for (u8 k = 16; k < 64; k++) { // Remaining 48 blocks
-    m[k] = sig1(m[k - 2]) + m[k - 7] + sig0(m[k - 15]) + m[k - 16];
+  // Section 6.2.2, Step 1. (2).
+  // The rest of the message schedule is derived from the previous data words.
+  for (u8 t = 16; t < 64; ++t) {
+    W[t] = Sig1(W[t - 2]) + W[t - 7] + Sig0(W[t - 15]) + W[t - 16];
   }
 
-  for (u8 i = 0; i < 8; ++i) {
-    state[i] = _state[i];
-  }
+  // Section 6.2.2, Step 2.
+  std::array<u32, 8> abcdefgh    = H;
+  auto &[a, b, c, d, e, f, g, h] = abcdefgh;
 
-  for (u8 i = 0; i < 64; ++i) {
-    maj  = majority(state[0], state[1], state[2]);
-    xorA = std::rotr(state[0], 2) ^ std::rotr(state[0], 13) ^
-           std::rotr(state[0], 22);
+  // Section 6.2.2, Step 3.
+  for (u8 t = 0; t < 64; ++t) {
+    // clang-format off
+    u32 T1 =   h + 
+             + Sum1(e)
+             + Ch(e, f, g)
+             + K[t]
+             + W[t];
+    u32 T2 = Sum0(a) + Maj(a, b, c);
+    // clang-format on
 
-    ch   = choose(state[4], state[5], state[6]);
-
-    xorE = std::rotr(state[4], 6) ^ std::rotr(state[4], 11) ^
-           std::rotr(state[4], 25);
-
-    sum      = m[i] + Constant[i] + state[7] + ch + xorE;
-    newA     = xorA + maj + sum;
-    newE     = state[3] + sum;
-
-    state[7] = state[6];
-    state[6] = state[5];
-    state[5] = state[4];
-    state[4] = newE;
-    state[3] = state[2];
-    state[2] = state[1];
-    state[1] = state[0];
-    state[0] = newA;
+    h = g;
+    g = f;
+    f = e;
+    e = d + T1;
+    d = c;
+    c = b;
+    b = a;
+    a = T1 + T2;
   }
 
   for (u8 i = 0; i < 8; i++) {
-    _state[i] += state[i];
+    H[i] += abcdefgh[i];
   }
 }
 
 void Sha256Sum::pad() {
+  // Defined in Section 5.1.1.
+  //
   // Insert the padding appropriately.
   // The state _must_ include the bit-length of the message at the end with a
   // 64bit unsigned integer.
@@ -128,9 +142,11 @@ void Sha256Sum::pad() {
   transform();
 }
 void Sha256Sum::reset() {
+  // Defined in 5.3.3.
+  //
   // Initialize the state to the constants.
   // clang-format off
-  _state = {/*A=*/0x6a09e667, /*B=*/0xbb67ae85,
+  H = {/*A=*/0x6a09e667, /*B=*/0xbb67ae85,
             /*C=*/0x3c6ef372, /*D=*/0xa54ff53a,
             /*E=*/0x510e527f, /*F=*/0x9b05688c,
             /*G=*/0x1f83d9ab, /*H=*/0x5be0cd19};

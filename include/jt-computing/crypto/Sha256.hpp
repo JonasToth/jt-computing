@@ -11,6 +11,8 @@
 #include <string>
 
 namespace jt::crypto {
+
+// Implements Sha256 as described in FIPS PUB 180-4.
 class Sha256Sum {
 public:
   void process(CryptHashable auto data);
@@ -35,14 +37,15 @@ private:
   std::array<u8, blockSize> _data{0};
   u64 _blockLength{0};
   u64 _bitLen{0};
-  std::array<u32, 8> _state{
+  /// Defined in Section 5.3.3.
+  std::array<u32, 8> H{
       /*A=*/0x6a09e667, /*B=*/0xbb67ae85, /*C=*/0x3c6ef372,
       /*D=*/0xa54ff53a, /*E=*/0x510e527f, /*F=*/0x9b05688c,
       /*G=*/0x1f83d9ab, /*H=*/0x5be0cd19};
   std::string _digest;
 
   // Constants defined in Section 4.2.3.
-  static constexpr std::array<u32, 64> Constant = {
+  static constexpr std::array<u32, 64> K = {
       0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1,
       0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
       0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786,
@@ -65,6 +68,9 @@ void Sha256Sum::process(CryptHashable auto data) {
   }
   for (auto b : data) {
     _data[_blockLength++] = std::bit_cast<u8>(b);
+
+    // Once a datablock is full, apply the "compression function" that actually
+    // hashes.
     if (_blockLength == blockSize) {
       transform();
 
