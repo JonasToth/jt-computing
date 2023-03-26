@@ -19,6 +19,10 @@ public:
     return process(std::as_bytes(std::span{str}));
   }
 
+  template <std::input_iterator I> void process(I begin, I end) {
+    return process(std::ranges::subrange{begin, end});
+  }
+
   std::string digest();
   void reset();
 
@@ -35,7 +39,7 @@ private:
       /*A=*/0x6a09e667, /*B=*/0xbb67ae85, /*C=*/0x3c6ef372,
       /*D=*/0xa54ff53a, /*E=*/0x510e527f, /*F=*/0x9b05688c,
       /*G=*/0x1f83d9ab, /*H=*/0x5be0cd19};
-  std::string _digest; // FIXME: Remove
+  std::string _digest;
 
   // Constants defined in Section 4.2.3.
   static constexpr std::array<u32, 64> Constant = {

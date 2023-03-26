@@ -23,7 +23,6 @@ std::string str(const std::array<u32, 8> &digest) {
 }
 } // namespace
 std::string Sha256Sum::digest() {
-  // FIXME: Digest means consume
   if (_digest.empty()) {
     pad();
 

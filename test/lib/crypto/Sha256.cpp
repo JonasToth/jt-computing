@@ -1,6 +1,10 @@
 #include "jt-computing/crypto/Sha256.hpp"
 
+#include <cstdio>
 #include <forward_list>
+#include <iterator>
+#include <ranges>
+#include <sstream>
 
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
@@ -154,8 +158,7 @@ TEST_CASE("Hash single-linked list of characters", "") {
   const auto expectedHash = std::string_view{
       "6da1d8d43d91f1af32775e7ec6b1425235b8f31072271b792635cc5451bf2793"};
   const auto s1 = std::string_view{"I am the worst string"};
-
-  Sha256Sum s;
+  auto s        = Sha256Sum{};
   s.process(s1);
   REQUIRE(s.digest() == expectedHash);
   s.reset();
@@ -163,4 +166,33 @@ TEST_CASE("Hash single-linked list of characters", "") {
   const auto charList = std::forward_list<char>{std::begin(s1), std::end(s1)};
   s.process(charList);
   REQUIRE(s.digest() == expectedHash);
+}
+
+TEST_CASE("Hash istream-view", "") {
+  auto iss = std::istringstream{"Stream Class Iterator hashing works"};
+  auto s   = Sha256Sum{};
+
+  s.process(iss.view());
+  REQUIRE(s.digest() ==
+          "fa14ee12d646c67c045bda06c5cfee49be15ea5ffac34b1da25a1b86fb156832");
+}
+TEST_CASE("Hash istream range", "") {
+  auto iss = std::istringstream{"Temporary File Content\r\n"};
+
+  auto s   = Sha256Sum{};
+  s.process(std::ranges::subrange{std::istreambuf_iterator<char>{iss},
+                                  std::istreambuf_iterator<char>{}});
+
+  REQUIRE(s.digest() ==
+          "c04084102785173be85abc3cdd55478facd9833d5fe4062e706992da30ff852d");
+}
+TEST_CASE("Hash istream iterator-interface", "") {
+  auto iss = std::istringstream{"Temporary File Content\r\n"};
+
+  auto s   = Sha256Sum{};
+  s.process(std::istreambuf_iterator<char>{iss},
+            std::istreambuf_iterator<char>{});
+
+  REQUIRE(s.digest() ==
+          "c04084102785173be85abc3cdd55478facd9833d5fe4062e706992da30ff852d");
 }
