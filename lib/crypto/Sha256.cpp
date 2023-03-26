@@ -58,7 +58,7 @@ u32 Sig1(u32 x) { return rotr(x, 17) ^ rotr(x, 19) ^ (x >> 10U); }
 } // namespace
 
 void Sha256Sum::transform() {
-  std::array<u32, 64> W;
+  alignas(cacheLine) std::array<u32, 64> W;
 
   // Section 6.2.2, Step 1. (1)
   // Insert all data of this block at the start of the message schedule in
@@ -79,8 +79,8 @@ void Sha256Sum::transform() {
   }
 
   // Section 6.2.2, Step 2.
-  std::array<u32, 8> abcdefgh    = H;
-  auto &[a, b, c, d, e, f, g, h] = abcdefgh;
+  alignas(cacheLine) std::array<u32, 8> abcdefgh = H;
+  auto &[a, b, c, d, e, f, g, h]                 = abcdefgh;
 
   // Section 6.2.2, Step 3.
   for (u8 t = 0; t < 64; ++t) {

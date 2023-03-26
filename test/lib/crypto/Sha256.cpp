@@ -6,6 +6,7 @@
 #include <ranges>
 #include <sstream>
 
+#define CATCH_CONFIG_ENABLE_BENCHMARKING
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
@@ -195,4 +196,23 @@ TEST_CASE("Hash istream iterator-interface", "") {
 
   REQUIRE(s.digest() ==
           "c04084102785173be85abc3cdd55478facd9833d5fe4062e706992da30ff852d");
+}
+
+TEST_CASE("Benchmark for Sha256", "") {
+  auto generateToHash = []() -> std::string {
+    auto r           = std::string{};
+    const auto mb256 = 1U << 28U;
+    r.reserve(mb256);
+    for (unsigned i = 0; i < mb256; ++i) {
+      const auto ch = 'A' + (i % 26);
+      r += static_cast<char>(ch);
+    }
+    return r;
+  };
+  const auto refStr = generateToHash();
+  BENCHMARK("Hash 256MB string") {
+    auto shaHash = Sha256Sum{};
+    shaHash.process(refStr);
+    return shaHash.digest();
+  };
 }

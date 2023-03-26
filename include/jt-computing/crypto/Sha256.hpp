@@ -6,6 +6,7 @@
 #include <array>
 #include <bit>
 #include <cstddef>
+#include <new>
 #include <ranges>
 #include <span>
 #include <string>
@@ -33,12 +34,13 @@ public:
 
 private:
   static constexpr usize blockSize = 64;
+  static constexpr auto cacheLine  = 64;
 
-  std::array<u8, blockSize> _data{0};
+  alignas(cacheLine) std::array<u8, blockSize> _data{0};
   u64 _blockLength{0};
   u64 _bitLen{0};
   /// Defined in Section 5.3.3.
-  std::array<u32, 8> H{
+  alignas(cacheLine) std::array<u32, 8> H{
       /*A=*/0x6a09e667, /*B=*/0xbb67ae85, /*C=*/0x3c6ef372,
       /*D=*/0xa54ff53a, /*E=*/0x510e527f, /*F=*/0x9b05688c,
       /*G=*/0x1f83d9ab, /*H=*/0x5be0cd19};
