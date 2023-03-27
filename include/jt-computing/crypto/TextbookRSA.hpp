@@ -3,17 +3,25 @@
 #include "jt-computing/math/Concepts.hpp"
 #include "jt-computing/math/GenericPower.hpp"
 #include "jt-computing/math/ModularArithmetic.hpp"
+#include "jt-computing/math/NaturalN.hpp"
 
+#include <iomanip>
+#include <iostream>
 #include <memory>
+#include <sstream>
 
 namespace jt::crypto {
 
-template <math::NaturalNumber N> class TextbookRSAPublic {
-public:
-  TextbookRSAPublic(N modul, N e)
-      : _modulus{std::move(modul)}, _e{std::move(e)} {}
+enum class Key {
+  Private, ///< Private Key in RSA.
+  Public,  ///< Public Key in RSA.
+};
 
-  N encrypt(N plainText) {
+template <Key K, math::NaturalNumber N = math::NaturalN> class TextbookRSA {
+public:
+  TextbookRSA(N modul, N e) : _modulus{std::move(modul)}, _e{std::move(e)} {}
+
+  [[nodiscard]] N apply(N plainText) const {
     return math::power_monoid(plainText, _e, math::multiplies_mod{_modulus});
   }
 
@@ -22,17 +30,34 @@ private:
   N _e;
 };
 
-template <math::NaturalNumber N> class TextbookRSAPrivate {
+template <math::NaturalNumber N = math::NaturalN> class RSASha256Signature {
 public:
-  TextbookRSAPrivate(N modul, N d)
-      : _modulus{std::move(modul)}, _d{std::move(d)} {}
+  explicit RSASha256Signature(TextbookRSA<Key::Private, N> key)
+      : _key{std::move(key)} {}
 
-  N decrypt(N cipherText) {
-    return math::power_monoid(cipherText, _d, math::multiplies_mod{_modulus});
+  [[nodiscard]] std::string signEMSA_PKCS1v1_5(std::string_view sha256Hash) const {
+    // See "PKCS #1 V2.2: RSA - Section 9.2 EMSA-PKCS1-v1_5"
+    std::string rawSignaturePadded =
+        // Padding bytes.
+        "1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        "fffffffff00"
+        // ASN.1 Encoding for the Algorithm ID. Defined in Note (1).
+        "3031300d060960864801650304020105000420";
+
+    rawSignaturePadded += sha256Hash;
+    auto signature = N{0U};
+    std::istringstream{rawSignaturePadded} >> std::hex >> signature;
+
+    const auto encrypted = _key.apply(signature);
+
+    std::ostringstream oss;
+    oss << std::hex << encrypted;
+
+    return oss.str();
   }
 
 private:
-  N _modulus;
-  N _d;
+  TextbookRSA<Key::Private, N> _key;
 };
 } // namespace jt::crypto

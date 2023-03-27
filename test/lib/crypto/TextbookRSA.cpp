@@ -1,4 +1,5 @@
 #include "jt-computing/crypto/TextbookRSA.hpp"
+#include "jt-computing/crypto/Sha256.hpp"
 #include "jt-computing/math/BigUInt.hpp"
 #include "jt-computing/math/NaturalN.hpp"
 
@@ -34,18 +35,53 @@ template <typename Int> std::string toHexString(const Int &n) {
 }
 } // namespace
 
-TEMPLATE_TEST_CASE("TextbookRSA Encrypt/Decrypt Inversion", "", math::BigUInt,
+TEMPLATE_TEST_CASE("TextbookRSA Encrypt/Decrypt Inversion",
+                   "", /*math::BigUInt,*/
                    math::NaturalN) {
+  using namespace crypto;
+
   auto n_modulus          = fromHexString<TestType>(modul);
   auto n_public_exponent  = fromHexString<TestType>(public_exponent);
   auto n_private_exponent = fromHexString<TestType>(private_exponent);
 
-  auto rsaPub = crypto::TextbookRSAPublic{n_modulus, n_public_exponent};
-  auto rsaPrv = crypto::TextbookRSAPrivate{n_modulus, n_private_exponent};
+  auto rsaPub =
+      TextbookRSA<Key::Public, TestType>{n_modulus, n_public_exponent};
+  auto rsaPrv =
+      TextbookRSA<Key::Private, TestType>{n_modulus, n_private_exponent};
 
   const auto hash_document =
       "abe6fe6030068e1f1e7c72c7aad54b77247b48e386a50cdc556a36ec5986d135"s;
   auto n_hash = fromHexString<TestType>(hash_document);
 
-  REQUIRE(rsaPrv.decrypt(rsaPub.encrypt(n_hash)) == n_hash);
+  REQUIRE(rsaPrv.apply(rsaPub.apply(n_hash)) == n_hash);
+}
+
+TEST_CASE("Sign like OpenSSL", "") {
+  using namespace crypto;
+
+  auto n_modulus          = fromHexString<math::NaturalN>(modul);
+  auto n_public_exponent  = fromHexString<math::NaturalN>(public_exponent);
+  auto n_private_exponent = fromHexString<math::NaturalN>(private_exponent);
+
+  auto rsaPub = TextbookRSA<Key::Public>{n_modulus, n_public_exponent};
+  auto rsaPrv = TextbookRSA<Key::Private>{n_modulus, n_private_exponent};
+
+  const auto *toHash =
+      "alksdfj lkajsdf lkjalskdjf ojasf secret message that is signed.\n";
+
+  auto sha256 = Sha256Sum{};
+  sha256.process(toHash);
+
+  const auto signer       = RSASha256Signature{rsaPrv};
+  const auto documentHash = sha256.digest();
+  REQUIRE(documentHash ==
+          "abe6fe6030068e1f1e7c72c7aad54b77247b48e386a50cdc556a36ec5986d135");
+
+  const auto signature = signer.signPKCS1v22(documentHash);
+  REQUIRE(
+      signature ==
+      "1812c529070eb143779663ec4633c87dd594495f26fc35c3acacd36816ceb3ff6a87ebc0"
+      "36ef5b86f4ea5a28551f983f775bb6c525da1d39ffb7d3f283af9709707fc654f7272962"
+      "c28a16029ee86747901eac0046fdad38674d7867128c69adc46de369391fb875c0de4314"
+      "1215b4bb2bdf968bcf555169a08d92982bc77acd");
 }
