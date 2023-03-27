@@ -198,7 +198,7 @@ TEST_CASE("Hash istream iterator-interface", "") {
           "c04084102785173be85abc3cdd55478facd9833d5fe4062e706992da30ff852d");
 }
 
-TEST_CASE("Benchmark for Sha256", "") {
+TEST_CASE("Benchmark for Sha256", "[.]") {
   auto generateToHash = []() -> std::string {
     auto r           = std::string{};
     const auto mb256 = 1U << 28U;
