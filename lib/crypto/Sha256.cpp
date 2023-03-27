@@ -147,9 +147,9 @@ void Sha256Sum::reset() {
   // Initialize the state to the constants.
   // clang-format off
   H = {/*A=*/0x6a09e667, /*B=*/0xbb67ae85,
-            /*C=*/0x3c6ef372, /*D=*/0xa54ff53a,
-            /*E=*/0x510e527f, /*F=*/0x9b05688c,
-            /*G=*/0x1f83d9ab, /*H=*/0x5be0cd19};
+       /*C=*/0x3c6ef372, /*D=*/0xa54ff53a,
+       /*E=*/0x510e527f, /*F=*/0x9b05688c,
+       /*G=*/0x1f83d9ab, /*H=*/0x5be0cd19};
   // clang-format on
 
   // Reset the internal values that are used to pad and process the data.
