@@ -88,7 +88,7 @@ message(STATUS "Added all header and implementation files.\n")
 #
 
 set (CXX_EXTENSIONS OFF)
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)
 include(cmake/CompilerWarnings.cmake)
 set_project_warnings(${PROJECT_NAME})
 
