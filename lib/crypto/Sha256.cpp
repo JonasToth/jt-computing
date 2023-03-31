@@ -85,7 +85,7 @@ void Sha256Sum::transform() {
   // Section 6.2.2, Step 3.
   for (u8 t = 0; t < 64; ++t) {
     // clang-format off
-    u32 T1 =   h + 
+    u32 T1 =   h
              + Sum1(e)
              + Ch(e, f, g)
              + K[t]
