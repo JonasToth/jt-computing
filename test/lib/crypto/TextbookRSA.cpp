@@ -72,16 +72,19 @@ TEST_CASE("Sign like OpenSSL", "") {
   auto sha256 = Sha256Sum{};
   sha256.process(toHash);
 
-  const auto signer       = RSASha256Signature{rsaPrv};
+  const auto signer       = RSASha256Signing{rsaPrv};
   const auto documentHash = sha256.digest();
   REQUIRE(documentHash ==
           "abe6fe6030068e1f1e7c72c7aad54b77247b48e386a50cdc556a36ec5986d135");
 
-  const auto signature = signer.signPKCS1v22(documentHash);
+  const auto signature = signer.signEMSA_PKCS1v1_5(documentHash);
   REQUIRE(
       signature ==
       "1812c529070eb143779663ec4633c87dd594495f26fc35c3acacd36816ceb3ff6a87ebc0"
       "36ef5b86f4ea5a28551f983f775bb6c525da1d39ffb7d3f283af9709707fc654f7272962"
       "c28a16029ee86747901eac0046fdad38674d7867128c69adc46de369391fb875c0de4314"
       "1215b4bb2bdf968bcf555169a08d92982bc77acd");
+
+  const auto verifier = RSASha256SigVerification{rsaPub};
+  REQUIRE(verifier.verifyEMSA_PKCS1v1_5(signature, documentHash));
 }
