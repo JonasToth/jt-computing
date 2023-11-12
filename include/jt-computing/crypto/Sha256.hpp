@@ -27,25 +27,19 @@ public:
   std::string digest();
   void reset();
 
-  [[nodiscard]] u64 currentBlockLength() const noexcept { return _blockLength; }
-  [[nodiscard]] u64 currentBitLength() const noexcept { return _bitLen; }
-
 private:
   static constexpr usize blockSize = 64;
   static constexpr auto cacheLine  = 64;
-
   alignas(cacheLine) std::array<u8, blockSize> _data{0};
-  u64 _blockLength{0};
-  u64 _bitLen{0};
+
   /// Defined in Section 5.3.3.
   alignas(cacheLine) std::array<u32, 8> H{
       /*A=*/0x6a09e667, /*B=*/0xbb67ae85, /*C=*/0x3c6ef372,
       /*D=*/0xa54ff53a, /*E=*/0x510e527f, /*F=*/0x9b05688c,
       /*G=*/0x1f83d9ab, /*H=*/0x5be0cd19};
-  std::string _digest;
 
   // Constants defined in Section 4.2.3.
-  static constexpr std::array<u32, 64> K = {
+  alignas(cacheLine) static constexpr std::array<u32, 64> K = {
       0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1,
       0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
       0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786,
@@ -58,7 +52,14 @@ private:
       0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
       0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2};
 
-  void transform();
+  u64 _blockLength{0};
+  u64 _bitLen{0};
+  std::string _digest;
+
+  __attribute__((target("default"))) void transform();
+#if 0
+  __attribute__((target("sse4.2"))) void transform();
+#endif
   void pad();
 };
 

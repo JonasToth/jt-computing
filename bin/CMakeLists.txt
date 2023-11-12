@@ -21,3 +21,8 @@ target_compile_features(shortest_path.x PUBLIC cxx_std_20)
 add_executable(toy_rsa.x toy_rsa.cpp)
 target_link_libraries(toy_rsa.x PRIVATE ${PROJECT_NAME}::${PROJECT_NAME})
 target_compile_features(toy_rsa.x PUBLIC cxx_std_20)
+
+find_package(TBB REQUIRED)
+add_executable(sha256sum.x sha256sum.cpp)
+target_link_libraries(sha256sum.x PRIVATE ${PROJECT_NAME}::${PROJECT_NAME} TBB::tbb)
+target_compile_features(sha256sum.x PUBLIC cxx_std_20)
