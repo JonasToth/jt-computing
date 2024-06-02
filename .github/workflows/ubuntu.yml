@@ -9,6 +9,7 @@ on:
 env:
   BUILD_TYPE: Release
   INSTALL_LOCATION: .local
+  CMAKE_CXX_FLAGS: -march=x86-64-v2
 
 jobs:
   build:
@@ -22,7 +23,7 @@ jobs:
     - name: Set up GCC
       uses: egor-tensin/setup-gcc@v1
       with:
-        version: 12
+        version: 13
       
     - name: cache dependencies
       uses: actions/cache@v2
@@ -37,6 +38,9 @@ jobs:
         cd Catch2
         cmake -Bbuild -H. -DBUILD_TESTING=OFF
         sudo cmake --build build/ --target install
+
+    - name: Install TBB
+      run: sudo apt-get install -y --no-install-recommends libtbb-dev
 
     - name: configure
       run: cmake -Bbuild -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/$INSTALL_LOCATION -DJTComputing_ENABLE_TESTING=ON
