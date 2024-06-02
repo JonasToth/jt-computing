@@ -9,7 +9,7 @@ project(
   LANGUAGES CXX
 )
 
-find_package(Catch2 REQUIRED)
+find_package(Catch2 2 REQUIRED)
 verbose_message("Adding tests under ${CMAKE_PROJECT_NAME}Tests...")
 
 foreach(file ${test_sources})
