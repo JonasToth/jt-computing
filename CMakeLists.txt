@@ -81,6 +81,8 @@ set_target_properties(
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
 )
+find_package(TBB REQUIRED)
+target_link_libraries(${PROJECT_NAME} PUBLIC TBB::tbb)
 message(STATUS "Added all header and implementation files.\n")
 
 #

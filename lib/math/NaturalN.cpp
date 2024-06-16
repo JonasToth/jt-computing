@@ -253,6 +253,20 @@ bool NaturalN::isEven() const noexcept {
   return (_digits[0] & 0x1U) == 0U;
 }
 
+std::size_t NaturalN::trailingZeroDigits() const {
+  auto bits = std::size_t{0U};
+
+  for (auto const &d : _digits) {
+    if (d == 0U) {
+      bits += 32U;
+    } else {
+      return bits += static_cast<std::size_t>(std::countr_zero(d));
+    }
+  }
+  std::unreachable();
+  return bits;
+}
+
 void NaturalN::_normalize() {
   while (!_digits.empty() && _digits.back() == u32{0U}) {
     _digits.pop_back();

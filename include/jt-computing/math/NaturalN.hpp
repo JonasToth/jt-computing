@@ -2,6 +2,7 @@
 
 #include "jt-computing/Types.hpp"
 
+#include <bit>
 #include <cassert>
 #include <climits>
 #include <compare>
@@ -31,6 +32,15 @@ public:
   /// Construct the number from a builtin unsigned integer @c value.
   explicit NaturalN(std::unsigned_integral auto value);
 
+  [[nodiscard]] std::size_t size() const noexcept { return _digits.size(); }
+  [[nodiscard]] std::size_t binaryDigits() const noexcept {
+    if (_digits.empty()) {
+      return 0UL;
+    }
+    return bitsPerDigit * _digits.size() -
+           static_cast<std::size_t>(std::countl_zero(_digits.back()));
+  }
+
   bool operator==(const NaturalN &other) const noexcept;
   std::strong_ordering operator<=>(const NaturalN &other) const noexcept;
 
@@ -49,6 +59,8 @@ public:
   /// an 'std::out_of_range' exception instead of performing a narrowing
   /// conversion.
   template <std::unsigned_integral Target> Target convertTo() const;
+
+  [[nodiscard]] std::size_t trailingZeroDigits() const;
 
 private:
   void _normalize();
