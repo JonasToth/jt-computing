@@ -5,7 +5,6 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <syncstream>
 #include <vector>
 
 #include "jt-computing/crypto/Sha256.hpp"
