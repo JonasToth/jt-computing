@@ -201,30 +201,36 @@ bool isDivisibleBySmallPrime(NaturalN const &number) {
 }
 
 bool likelyPrimeByMillerRabin(NaturalN const &number) {
-  std::cerr << "Number " << number << " must perform Miller-Rabin-Test\n";
+  auto const n_minus_1     = number - 1_U;
+  auto const trailingZeros = n_minus_1.trailingZeroDigits();
 
-  auto const n_minus_1 = number - 1_U;
-  auto d               = n_minus_1;
-  auto trailingZeros   = n_minus_1.trailingZeroDigits();
-  auto s               = NaturalN{trailingZeros};
+  // Divide a power of 2 out of @c n-1.
+  auto d                   = n_minus_1;
   d <<= static_cast<i32>(trailingZeros);
 
   for (int i = 0; i < 30; ++i) {
-    auto const a = randomNumberSmallerThan(number);
-    std::cerr << "Check Iteration: " << i << " with number " << a << "\n";
-    auto const power = power_monoid(a, d, multiplies_mod{number});
-    if (power == 1_U) {
-      std::cerr << "First Condition is True: " << number << std::endl;
+    auto const a = randomNumberSmallerThan(n_minus_1);
+    auto x       = power_monoid(a, d, multiplies_mod{number});
+    if (x == 1_U || x == n_minus_1) {
       continue;
     }
-    auto const r = randomNumberSmallerThan(s);
-    auto const powerAgain =
-        power_monoid(a, power_monoid(2_U, r) * d, multiplies_mod{number});
-    if (powerAgain == n_minus_1) {
-      std::cerr << "Second Condition is True: " << number << std::endl;
-      continue;
+
+    {
+      bool canContinueWitnessTesting = false;
+      for (std::size_t j = 0; j < trailingZeros; ++j) {
+        x = power_monoid(x, 2_U, multiplies_mod{number});
+        if (x == 1_U) {
+          return false;
+        }
+        if (x == n_minus_1) {
+          canContinueWitnessTesting = true;
+          break;
+        }
+      }
+      if (!canContinueWitnessTesting) {
+        return false;
+      }
     }
-    return false;
   }
   return true;
 }
@@ -234,11 +240,13 @@ NaturalN findNextPrime(NaturalN startingPoint) {
   if (startingPoint.isEven()) {
     startingPoint += 1_U;
   }
-  while (isDivisibleBySmallPrime(startingPoint) ||
-         !likelyPrimeByMillerRabin(startingPoint)) {
+  while (!isLikelyPrime(startingPoint)) {
     startingPoint += 2_U;
   }
-  std::cerr << "Found Prime: " << startingPoint << "\n";
   return startingPoint;
+}
+
+bool isLikelyPrime(NaturalN const &number) {
+  return !isDivisibleBySmallPrime(number) && likelyPrimeByMillerRabin(number);
 }
 } // namespace jt::math

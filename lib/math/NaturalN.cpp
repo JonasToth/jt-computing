@@ -12,6 +12,18 @@
 #include <stdexcept>
 
 namespace jt::math {
+
+namespace {
+NaturalN fromBigUInt(BigUInt const &value) {
+  std::stringstream ss;
+  ss << value;
+  NaturalN r;
+  ss >> r;
+  return r;
+}
+} // namespace
+NaturalN::NaturalN(BigUInt const &value) : NaturalN{fromBigUInt(value)} {}
+
 bool NaturalN::operator==(const NaturalN &other) const noexcept {
   return (*this <=> other) == std::strong_ordering::equal;
 }

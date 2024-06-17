@@ -1,9 +1,9 @@
 #ifndef MODULAR_ARITHMETIC_HPP
 #define MODULAR_ARITHMETIC_HPP
 
-#include "jt-computing/Types.hpp"
-#include "jt-computing/math/AlgebraConcepts.hpp"
+#include "jt-computing/math/Concepts.hpp"
 
+#include <optional>
 #include <utility>
 
 namespace jt::math {
@@ -50,6 +50,37 @@ template <NaturalNumber N> struct divides_mod {
 private:
   N modulus;
 };
+
+/// Invert @p a under modular division by @p n.
+/// If the number is not invertible, return @c std::nullopt.
+template <class Integer>
+std::optional<Integer> modular_inverse(Integer a, Integer n) {
+  // https://www.extendedeuclideanalgorithm.com/multiplicative_inverse.php
+  auto t    = Integer{0U};
+  auto newt = Integer{1U};
+  auto r    = n;
+  auto newr = a;
+
+  while (newr != Integer{0U}) {
+    auto quotient = r / newr;
+    auto nextT    = t - quotient * newt;
+    t             = std::move(newt);
+    newt          = std::move(nextT);
+
+    auto nextR    = r - quotient * newr;
+    r             = newr;
+    newr          = std::move(nextR);
+  }
+
+  if (r > Integer{1U}) {
+    return std::nullopt;
+  }
+  if (t < 0) {
+    return t + n;
+  }
+  return t;
+}
+
 } // namespace jt::math
 
 #endif

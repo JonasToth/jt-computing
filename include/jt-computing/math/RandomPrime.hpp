@@ -22,4 +22,7 @@ NaturalN randomNumberSmallerThan(NaturalN const &threshold);
 /// @return the first prime number after @p startingPoint according to
 ///         Miller-Rabin-Test.
 NaturalN findNextPrime(NaturalN startingPoint);
+
+/// Performs the probabilistic Miller-Rabin Primality Tests for @p number.
+bool isLikelyPrime(NaturalN const& number);
 } // namespace jt::math

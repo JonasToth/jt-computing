@@ -5,6 +5,19 @@
 #include <compare>
 
 namespace jt::math {
+
+namespace {
+BigUInt fromNaturalN(NaturalN const &value) {
+  std::stringstream ss;
+  ss << value;
+  BigUInt r;
+  ss >> r;
+  return r;
+}
+} // namespace
+
+BigInt::BigInt(NaturalN const &value) : BigInt{fromNaturalN(value)} {}
+
 bool BigInt::operator==(const BigInt &other) const noexcept {
   // The signs of both numbers differ, they can not be equal.
   if (isNegative() != other.isNegative()) {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "jt-computing/Types.hpp"
+#include "jt-computing/math/BigUInt.hpp"
 
 #include <bit>
 #include <cassert>
@@ -31,6 +32,7 @@ public:
 
   /// Construct the number from a builtin unsigned integer @c value.
   explicit NaturalN(std::unsigned_integral auto value);
+  explicit NaturalN(BigUInt const &value);
 
   [[nodiscard]] std::size_t size() const noexcept { return _digits.size(); }
   [[nodiscard]] std::size_t binaryDigits() const noexcept {

@@ -3,8 +3,10 @@
 
 #include "jt-computing/Types.hpp"
 #include "jt-computing/math/BigUInt.hpp"
+#include "jt-computing/math/NaturalN.hpp"
 
 #include <cmath>
+#include <sstream>
 #include <type_traits>
 
 namespace jt::math {
@@ -20,6 +22,7 @@ public:
   template <std::signed_integral Z> explicit BigInt(Z value);
   template <std::unsigned_integral Z> explicit BigInt(Z value) : _val{value} {}
   explicit BigInt(BigUInt value) : _val{std::move(value)} {}
+  explicit BigInt(NaturalN const &value);
 
   /// Compare the sign to @c other and continue with comparing the value itself.
   bool operator==(const BigInt &other) const noexcept;
@@ -165,6 +168,48 @@ inline BigInt &BigInt::operator/=(const BigUInt &other) {
 BigInt &BigInt::operator/=(std::integral auto value) {
   return *this /= BigInt{value};
 }
+
+inline BigInt operator+(BigInt a, const BigInt &b) { return a += b; }
+inline BigInt operator+(std::unsigned_integral auto a, const BigInt &b) {
+  return BigInt{a} += b;
+}
+inline BigInt operator+(BigInt a, std::unsigned_integral auto b) {
+  return a += b;
+}
+
+inline BigInt operator-(BigInt a, const BigInt &b) { return a -= b; }
+inline BigInt operator-(std::unsigned_integral auto a, const BigInt &b) {
+  return BigInt{a} -= b;
+}
+inline BigInt operator-(BigInt a, std::unsigned_integral auto b) {
+  return a -= b;
+}
+
+inline BigInt operator*(BigInt a, const BigInt &b) { return a *= b; }
+inline BigInt operator*(std::unsigned_integral auto a, const BigInt &b) {
+  return BigInt{a} *= b;
+}
+inline BigInt operator*(BigInt a, std::unsigned_integral auto b) {
+  return a *= b;
+}
+
+inline BigInt operator/(BigInt a, const BigInt &b) { return a /= b; }
+inline BigInt operator/(std::unsigned_integral auto a, const BigInt &b) {
+  return BigInt{a} /= b;
+}
+inline BigInt operator/(BigInt a, std::unsigned_integral auto b) {
+  return a /= b;
+}
+
+#if 0
+inline BigInt operator%(BigInt a, const BigInt &b) { return a %= b; }
+inline BigInt operator%(std::unsigned_integral auto a, const BigInt &b) {
+  return BigInt{a} %= b;
+}
+inline BigInt operator%(BigInt a, std::unsigned_integral auto b) {
+  return a %= b;
+}
+#endif
 } // namespace jt::math
 
 #endif
