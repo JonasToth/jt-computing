@@ -23,4 +23,5 @@ target_link_libraries(toy_rsa.x PRIVATE ${PROJECT_NAME}::${PROJECT_NAME})
 target_compile_features(toy_rsa.x PUBLIC cxx_std_20)
 
 add_executable(sha256sum.x sha256sum.cpp)
+target_link_libraries(sha256sum.x PRIVATE ${PROJECT_NAME}::${PROJECT_NAME})
 target_compile_features(sha256sum.x PUBLIC cxx_std_20)
