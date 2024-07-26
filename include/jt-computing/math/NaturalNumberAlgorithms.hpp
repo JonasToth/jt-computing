@@ -7,8 +7,6 @@
 #include "jt-computing/math/Concepts.hpp"
 
 #include <cmath>
-#include <functional>
-#include <iostream>
 #include <type_traits>
 #include <vector>
 
