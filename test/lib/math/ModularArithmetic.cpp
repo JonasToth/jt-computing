@@ -1,10 +1,10 @@
+#include <catch2/catch_test_macros.hpp>
+
 #include "jt-computing/math/ModularArithmetic.hpp"
 #include "jt-computing/math/BigUInt.hpp"
 #include "jt-computing/math/Concepts.hpp"
 #include "jt-computing/math/GenericPower.hpp"
 #include "jt-computing/math/NaturalN.hpp"
-
-#include <catch2/catch_test_macros.hpp>
 
 import std;
 

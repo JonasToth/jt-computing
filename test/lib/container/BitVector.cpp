@@ -1,9 +1,9 @@
+#include <catch2/catch_test_macros.hpp>
+
 #include "jt-computing/container/BitVector.hpp"
 #include "jt-computing/Types.hpp"
 
 import std;
-
-#include <catch2/catch_test_macros.hpp>
 
 using namespace jt;
 using namespace jt::container;

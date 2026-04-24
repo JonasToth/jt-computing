@@ -1,3 +1,5 @@
+#include <catch2/catch_test_macros.hpp>
+
 #include "jt-computing/math/GenericPower.hpp"
 #include "jt-computing/math/AlgebraConcepts.hpp"
 #include "jt-computing/math/BigUInt.hpp"
@@ -6,8 +8,6 @@
 #include "jt-computing/math/NaturalN.hpp"
 
 import std;
-
-#include <catch2/catch_test_macros.hpp>
 
 using namespace jt;
 using namespace jt::math;

@@ -1,7 +1,7 @@
+#include <catch2/catch_test_macros.hpp>
+
 #include "jt-computing/math/BigUInt.hpp"
 #include "jt-computing/math/Concepts.hpp"
-
-#include <catch2/catch_test_macros.hpp>
 
 import std;
 

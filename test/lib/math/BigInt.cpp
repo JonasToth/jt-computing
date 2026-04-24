@@ -1,6 +1,6 @@
-#include "jt-computing/math/BigInt.hpp"
-
 #include <catch2/catch_test_macros.hpp>
+
+#include "jt-computing/math/BigInt.hpp"
 
 import std;
 

@@ -1,7 +1,7 @@
+#include <catch2/catch_test_macros.hpp>
+
 #include "jt-computing/math/NaturalNumberAlgorithms.hpp"
 #include "jt-computing/math/ModularArithmetic.hpp"
-
-#include <catch2/catch_test_macros.hpp>
 
 using namespace jt;
 using namespace jt::math;
