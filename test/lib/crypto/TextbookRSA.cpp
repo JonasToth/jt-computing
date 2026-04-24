@@ -3,8 +3,8 @@
 #include "jt-computing/math/BigUInt.hpp"
 #include "jt-computing/math/NaturalN.hpp"
 
-#define CATCH_CONFIG_MAIN
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_template_test_macros.hpp>
 
 using namespace jt;
 using namespace std;

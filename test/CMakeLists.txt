@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 4.2)
 
 #
 # Project details
@@ -9,7 +9,7 @@ project(
   LANGUAGES CXX
 )
 
-find_package(Catch2 2 REQUIRED)
+find_package(Catch2 3 REQUIRED)
 verbose_message("Adding tests under ${CMAKE_PROJECT_NAME}Tests...")
 
 foreach(file ${test_sources})
@@ -20,7 +20,7 @@ foreach(file ${test_sources})
   # Set the compiler standard
   #
 
-  target_compile_features(${test_name}_Tests PUBLIC cxx_std_20)
+  target_compile_features(${test_name}_Tests PUBLIC cxx_std_26)
 
   #
   # Setup code coverage if enabled
@@ -41,6 +41,7 @@ foreach(file ${test_sources})
     ${test_name}_Tests
     PUBLIC
       Catch2::Catch2
+      Catch2::Catch2WithMain
       ${CMAKE_PROJECT_NAME}
   )
 

@@ -106,7 +106,7 @@ template <std::unsigned_integral Target> Target NaturalN::convertTo() const {
 std::pair<NaturalN, NaturalN> divmod(NaturalN dividend,
                                      const NaturalN &divisor);
 
-NaturalN operator"" _U(unsigned long long literal);
+NaturalN operator""_U(unsigned long long literal);
 NaturalN operator""_U(char const *literal, std::size_t len);
 
 inline NaturalN operator+(NaturalN a, const NaturalN &b) { return a += b; }

@@ -45,11 +45,11 @@ private:
   BigUInt _denom{1U};
 };
 
-inline Rational operator"" _Q(unsigned long long number) {
+inline Rational operator""_Q(unsigned long long number) {
   return Rational{number, 1_Z};
 }
 // https://de.wikipedia.org/wiki/Stellenwertsystem#Darstellung_rationaler_Zahlen
-Rational operator"" _Q(long double rational);
+Rational operator""_Q(long double rational);
 
 /// Write 'z' to 'os', optionally adhering to the base modifiers.
 /// @sa operator<<(std::ostream&, BigUInt)

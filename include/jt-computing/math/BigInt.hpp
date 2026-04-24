@@ -90,7 +90,7 @@ private:
   BigUInt _val{0U};
 };
 
-inline BigInt operator"" _Z(unsigned long long literal) {
+inline BigInt operator""_Z(unsigned long long literal) {
   return BigInt{literal};
 }
 

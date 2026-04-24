@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 4.2)
 
 #
 # Project details
@@ -17,9 +17,13 @@ string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPERCASE)
 # Set project options
 #
 
+set (CMAKE_CXX_EXTENSIONS OFF)
+set (CMAKE_CXX_STANDARD 26)
+
 include(cmake/StandardSettings.cmake)
 include(cmake/StaticAnalyzers.cmake)
 include(cmake/Utils.cmake)
+include(cmake/Functions.cmake)
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug")
 endif()
@@ -56,8 +60,7 @@ if(${PROJECT_NAME}_BUILD_HEADERS_ONLY)
     endforeach()
   endif()
 else()
-  add_library(
-    ${PROJECT_NAME}
+  add_library(${PROJECT_NAME}
     ${headers}
     ${sources}
   )
@@ -74,25 +77,19 @@ else()
   endif()
 endif()
 
-set_target_properties(
-  ${PROJECT_NAME}
+set_target_properties(${PROJECT_NAME}
   PROPERTIES
-  ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
-  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
-  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
+      ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
+      LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE}"
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
 )
 message(STATUS "Added all header and implementation files.\n")
 
 #
 # Set the project standard and warnings
 #
-
-set (CXX_EXTENSIONS OFF)
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)
 include(cmake/CompilerWarnings.cmake)
 set_project_warnings(${PROJECT_NAME})
-
-verbose_message("Applied compiler warnings. Using standard C++23.\n")
 
 #
 # Enable Doxygen
@@ -107,13 +104,12 @@ verbose_message("Successfully added all dependencies and linked against them.")
 #
 
 # Allow usage of header files in the `src` directory, but only for utilities
-target_include_directories(
-${PROJECT_NAME}
-PUBLIC
-$<INSTALL_INTERFACE:include>
-$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-PRIVATE
-${CMAKE_CURRENT_SOURCE_DIR}/lib
+target_include_directories(${PROJECT_NAME}
+    PUBLIC
+        $<INSTALL_INTERFACE:include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/lib
 )
 
 message(STATUS "Finished setting up include directories.")
@@ -131,31 +127,20 @@ verbose_message("Project is now aliased as ${PROJECT_NAME}::${PROJECT_NAME}.\n")
 
 include(GNUInstallDirs)
 install(
-  TARGETS
-  ${PROJECT_NAME}
-  EXPORT
-  ${PROJECT_NAME}Targets
-  LIBRARY DESTINATION
-  ${CMAKE_INSTALL_LIBDIR}
-  RUNTIME DESTINATION
-  ${CMAKE_INSTALL_BINDIR}
-  ARCHIVE DESTINATION
-  ${CMAKE_INSTALL_LIBDIR}
-  INCLUDES DESTINATION
-  include
-  PUBLIC_HEADER DESTINATION
-  include
+  TARGETS ${PROJECT_NAME}
+  EXPORT ${PROJECT_NAME}Targets
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  INCLUDES DESTINATION include
+  PUBLIC_HEADER DESTINATION include
 )
 
 install(
-  EXPORT
-  ${PROJECT_NAME}Targets
-  FILE
-  ${PROJECT_NAME}Targets.cmake
-  NAMESPACE
-  ${PROJECT_NAME}::
-  DESTINATION
-  ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+  EXPORT ${PROJECT_NAME}Targets
+  FILE ${PROJECT_NAME}Targets.cmake
+  NAMESPACE ${PROJECT_NAME}::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
 
 #

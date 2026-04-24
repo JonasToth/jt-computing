@@ -34,7 +34,6 @@ set(test_sources
     lib/math/BigUInt.cpp
     lib/math/BigInt.cpp
     lib/math/GenericPower.cpp
-    lib/math/MainTests.cpp
     lib/math/ModularArithmetic.cpp
     lib/math/NaturalN.cpp
     lib/math/NaturalNumberAlgorithms.cpp

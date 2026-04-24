@@ -119,7 +119,7 @@ std::ostream &operator<<(std::ostream &os, BigUInt n);
 /// Parse 'n' from 'is', optionally adhering to the base modifiers.
 std::istream &operator>>(std::istream &is, BigUInt &n);
 
-BigUInt operator"" _N(unsigned long long literal);
+BigUInt operator""_N(unsigned long long literal);
 BigUInt operator""_N(char const *literal, std::size_t len);
 
 BigUInt::BigUInt(std::unsigned_integral auto value) : _bits{value} {

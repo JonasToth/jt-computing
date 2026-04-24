@@ -373,7 +373,7 @@ std::istream &operator>>(std::istream &is, BigUInt &n) {
   return is;
 }
 
-BigUInt operator"" _N(unsigned long long int literal) {
+BigUInt operator""_N(unsigned long long int literal) {
   return BigUInt{literal};
 }
 BigUInt operator""_N(char const *literal, std::size_t /*len*/) {
