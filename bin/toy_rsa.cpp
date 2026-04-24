@@ -2,12 +2,14 @@
 #include "jt-computing/math/GenericPower.hpp"
 #include "jt-computing/math/ModularArithmetic.hpp"
 #include "jt-computing/math/NaturalN.hpp"
+#include "jt-computing/Support.hpp"
 
-#include <chrono>
+import std;
 
 using namespace jt;
 using namespace jt::math;
 using namespace std;
+
 namespace {
 template <typename Int = BigUInt>
 Int fromHexString(const std::string &numberHex) {
@@ -83,5 +85,5 @@ int main() {
   std::cout << "Naive u32-NaturalN takes "
             << chrono::duration_cast<chrono::milliseconds>(dNaturalN)
             << " for signature calculation" << std::endl;
-  return EXIT_SUCCESS;
+  return jt::EXIT_SUCCESS;
 }

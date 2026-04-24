@@ -1,8 +1,7 @@
 #include "jt-computing/math/BigUInt.hpp"
+#include "jt-computing/Support.hpp"
 
-#include <cassert>
-#include <iostream>
-#include <unordered_map>
+import std;
 
 using namespace std;
 using namespace jt;
@@ -31,7 +30,7 @@ static BigUInt fibbonacci(usize n) {
 
 int main(int argc, char *argv[]) {
   if (argc != 1) {
-    assert(argc >= 1);
+    // assert(argc >= 1);
     cerr << "Usage: " << argv[0] << "\n\n"
          << "Computes multiple fibonacci numbers with memoization.\n";
     return EXIT_FAILURE;

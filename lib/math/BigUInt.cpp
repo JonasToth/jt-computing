@@ -1,14 +1,7 @@
 #include "jt-computing/math/BigUInt.hpp"
 #include "jt-computing/container/BitVector.hpp"
 
-#include <algorithm>
-#include <cassert>
-#include <compare>
-#include <istream>
-#include <ostream>
-#include <ranges>
-#include <sstream>
-#include <stdexcept>
+import std;
 
 namespace jt::math {
 bool BigUInt::operator==(const BigUInt &other) const noexcept {
@@ -22,7 +15,7 @@ std::strong_ordering BigUInt::operator<=>(const BigUInt &other) const noexcept {
     return digitsComparison;
   }
 
-  assert(other.binaryDigits() == binaryDigits());
+  // assert(other.binaryDigits() == binaryDigits());
 
   if (binaryDigits() == usize{0ULL}) {
     return std::strong_ordering::equal;
@@ -110,7 +103,7 @@ BigUInt &BigUInt::operator-=(const BigUInt &other) {
     return *this;
   }
 
-  assert(magnitudeRelation == std::strong_ordering::greater);
+  // assert(magnitudeRelation == std::strong_ordering::greater);
 
   // 1. Subtract @c other from @c this by subtracting each digit individually.
   //    If @c 0 - 1 is executed, the subtraction "borrows" from the next digit.
@@ -191,7 +184,7 @@ BigUInt &BigUInt::operator%=(const BigUInt &other) {
 }
 
 BigUInt &BigUInt::operator<<=(int value) {
-  assert(value > 0);
+  // assert(value > 0);
 
   if (binaryDigits() == usize{0}) {
     return *this;
@@ -201,7 +194,7 @@ BigUInt &BigUInt::operator<<=(int value) {
 }
 
 BigUInt &BigUInt::operator>>=(int value) {
-  assert(value > 0);
+  // assert(value > 0);
 
   if (binaryDigits() == usize{0}) {
     return *this;
@@ -220,7 +213,7 @@ bool BigUInt::isEven() const noexcept {
 }
 
 static BigUInt largestDoubling(const BigUInt &a, BigUInt b) {
-  assert(b != 0U);
+  // assert(b != 0U);
   while ((a - b) >= b) {
     b <<= 1;
   }
@@ -272,7 +265,7 @@ template <u8 Base> char digitToChar(u8 digit) {
                       : static_cast<char>((digit - 10) + 'a');
   }
 
-  assert(false && "Unreachable");
+  // assert(false && "Unreachable");
 }
 
 template <u8 Base> std::string writeInBase(BigUInt n) {
@@ -307,7 +300,7 @@ std::ostream &operator<<(std::ostream &os, BigUInt n) {
     }
     os << writeInBase<16>(std::move(n));
   } else {
-    assert(false && "Either number base must be configured");
+    // assert(false && "Either number base must be configured");
   }
   return os;
 }

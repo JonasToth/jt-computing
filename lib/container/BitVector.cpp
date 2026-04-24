@@ -1,7 +1,6 @@
 #include "jt-computing/container/BitVector.hpp"
 
-#include <algorithm>
-#include <cassert>
+import std;
 
 namespace jt::container {
 
@@ -15,23 +14,23 @@ void BitVector::normalize() {
 }
 
 BitVector &BitVector::operator<<=(int i) {
-  assert(i > 0);
+  // assert(i > 0);
 
   const auto sizeBefore [[maybe_unused]] = _data.size();
   _data.insert(_data.begin(), usize(i), u8{0});
 
-  assert(sizeBefore + usize(i) == size());
+  // assert(sizeBefore + usize(i) == size());
   return *this;
 }
 
 BitVector &BitVector::operator>>=(int i) {
-  assert(i > 0);
-  assert(usize(i) < size());
+  // assert(i > 0);
+  // assert(usize(i) < size());
 
   const auto sizeBefore [[maybe_unused]] = _data.size();
   _data.erase(_data.begin(), _data.begin() + i);
 
-  assert(sizeBefore - usize(i) == size());
+  // assert(sizeBefore - usize(i) == size());
   return *this;
 }
 

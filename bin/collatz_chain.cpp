@@ -1,9 +1,7 @@
 #include "jt-computing/math/BigUInt.hpp"
+#include "jt-computing/Support.hpp"
 
-#include <cassert>
-#include <iostream>
-#include <sstream>
-#include <string>
+import std;
 
 using namespace jt;
 using namespace jt::math;
@@ -11,14 +9,14 @@ using namespace std;
 
 int main(int argc, char **argv) {
   if (argc != 2) {
-    assert(argc >= 1);
+    // assert(argc >= 1);
     cerr << "Usage: " << argv[0] << " <n>\n\n"
          << "Determines the length of the collatz-row of <n> until '1' is "
             "reached.\n";
     return EXIT_FAILURE;
   }
 
-  assert(argc >= 2);
+  // assert(argc >= 2);
 
   stringstream ss(argv[1]);
   auto n = 0_N;

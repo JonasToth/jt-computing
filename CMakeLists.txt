@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 4.2)
 
+set (CMAKE_EXPERIMENTAL_CXX_IMPORT_STD d0edc3af-4c50-42ea-a356-e2862fe7a444)
+
 #
 # Project details
 #
@@ -17,8 +19,10 @@ string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPERCASE)
 # Set project options
 #
 
-set (CMAKE_CXX_EXTENSIONS OFF)
+set (CMAKE_CXX_EXTENSIONS ON)
 set (CMAKE_CXX_STANDARD 26)
+set (CMAKE_CXX_STANDARD_REQUIRED ON)
+set (CMAKE_CXX_MODULE_STD 1)
 
 include(cmake/StandardSettings.cmake)
 include(cmake/StaticAnalyzers.cmake)
@@ -60,10 +64,12 @@ if(${PROJECT_NAME}_BUILD_HEADERS_ONLY)
     endforeach()
   endif()
 else()
-  add_library(${PROJECT_NAME}
-    ${headers}
-    ${sources}
+  add_library(${PROJECT_NAME} ${headers})
+  target_sources(${PROJECT_NAME}
+        PRIVATE
+            ${sources}
   )
+  jt_compile_setup(${PROJECT_NAME})
 
   if(${PROJECT_NAME}_VERBOSE_OUTPUT)
     verbose_message("Found the following sources:")

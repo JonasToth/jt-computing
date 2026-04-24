@@ -5,11 +5,7 @@
 #include "jt-computing/math/ModularArithmetic.hpp"
 #include "jt-computing/math/NaturalN.hpp"
 
-#include <chrono>
-#include <initializer_list>
-#include <iomanip>
-#include <memory>
-#include <random>
+import std;
 
 #include <catch2/catch_test_macros.hpp>
 

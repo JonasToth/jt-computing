@@ -4,7 +4,7 @@
 #include "jt-computing/Types.hpp"
 #include "jt-computing/math/AlgebraConcepts.hpp"
 
-#include <utility>
+import std;
 
 namespace jt::math {
 /// Perform addition of two @c NaturalNumbers modulus @c n.

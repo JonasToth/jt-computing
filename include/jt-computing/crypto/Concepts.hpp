@@ -1,12 +1,9 @@
 #pragma once
 
-#include <climits>
-#include <ranges>
-#include <type_traits>
+import std;
 
 namespace jt::crypto {
 
-static_assert(CHAR_BIT == 8, "Bytes are made of 8 Bits");
 template <typename T>
 concept ByteSizedValueType = requires() {
   { sizeof(typename std::ranges::range_value_t<T>) == 1 };

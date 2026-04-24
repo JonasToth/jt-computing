@@ -3,11 +3,7 @@
 #include "jt-computing/Types.hpp"
 #include "jt-computing/crypto/Concepts.hpp"
 
-#include <array>
-#include <bit>
-#include <ranges>
-#include <span>
-#include <string>
+import std;
 
 namespace jt::crypto {
 

@@ -1,8 +1,9 @@
-#pragma once
+#ifndef ALGEBRA_CONCEPTS_HPP
+#define ALGEBRA_CONCEPTS_HPP
 
 #include "jt-computing/math/Concepts.hpp"
-#include <functional>
-#include <string>
+
+import std;
 
 namespace jt::math {
 // clang-format off
@@ -34,7 +35,12 @@ template <std::regular T>
 constexpr std::negate<T> inverse_operation(std::plus<T> /*op*/) { return std::negate<T>{}; }
 
 template <std::regular T>
-struct reciprocal { constexpr T operator()(const T& x) const { assert(x != T{0U}); return T{1U} / x; } };
+struct reciprocal {
+    constexpr T operator()(const T& x) const {
+        // assert(x != T{0U});
+        return T{1U} / x;
+    }
+};
 template <std::regular T>
 constexpr reciprocal<T> inverse_operation(std::multiplies<T> /*op*/) { return reciprocal<T>{}; }
 
@@ -67,3 +73,5 @@ concept SemiRing = requires(OpPlus plus, OpTimes times, A a, A b) {
 };
 // clang-format on
 } // namespace jt::math
+
+#endif

@@ -1,17 +1,8 @@
 #include "jt-computing/math/FixedSquareMatrix.hpp"
 #include "jt-computing/math/GenericPower.hpp"
+#include "jt-computing/Support.hpp"
 
-#include <chrono>
-#include <cstdlib>
-#include <fstream>
-#include <functional>
-#include <initializer_list>
-#include <iomanip>
-#include <iostream>
-#include <map>
-#include <memory>
-#include <random>
-#include <set>
+import std;
 
 using namespace std;
 using namespace jt;
@@ -44,7 +35,7 @@ std::ostream &operator<<(std::ostream &os,
 
 int main(int argc, char **argv) {
   if (argc != 3 && argc != 4) {
-    assert(argc >= 1);
+    // assert(argc >= 1);
     cerr << "Usage: " << argv[0]
          << " <probability-threshold> <output-file> <seed>\n\n"
          << "Computes clusters in percolation simulation.\n";

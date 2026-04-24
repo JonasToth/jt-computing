@@ -19,8 +19,7 @@ foreach(file ${test_sources})
   #
   # Set the compiler standard
   #
-
-  target_compile_features(${test_name}_Tests PUBLIC cxx_std_26)
+  jt_compile_setup(${test_name}_Tests)
 
   #
   # Setup code coverage if enabled

@@ -3,11 +3,7 @@
 #include "jt-computing/Types.hpp"
 #include "jt-computing/math/AlgebraConcepts.hpp"
 
-#include <algorithm>
-#include <cassert>
-#include <concepts>
-#include <iostream>
-#include <memory>
+import std;
 
 namespace jt::math {
 
@@ -21,7 +17,7 @@ public:
   FixedSquareMatrix(Plus plus, Times times)
       : _data{std::make_unique<T[]>(N * N)}, _plus{std::move(plus)},
         _times{std::move(times)} {
-    assert(_data.get() != nullptr && "Bad Alloc must have been thrown");
+    // assert(_data.get() != nullptr && "Bad Alloc must have been thrown");
     std::fill_n(_data.get(), N * N, identity_element(_plus));
   }
 
@@ -39,7 +35,7 @@ public:
   /// Create Zero or Identity Matrix of neutral elements.
   explicit FixedSquareMatrix(i32 i, Plus plus = {}, Times times = {})
       : FixedSquareMatrix(std::move(plus), std::move(times)) {
-    assert(i == 0 || i == 1);
+    // assert(i == 0 || i == 1);
     if (i == 1) {
       for (int diagonal = 0; diagonal < N; ++diagonal) {
         (*this)(diagonal, diagonal) = identity_element(_times);
@@ -63,18 +59,18 @@ public:
   ~FixedSquareMatrix() noexcept                                    = default;
 
   T &operator()(i32 i, i32 j) {
-    assert(i >= 0);
-    assert(i < N);
-    assert(j >= 0);
-    assert(j < N);
+    // assert(i >= 0);
+    // assert(i < N);
+    // assert(j >= 0);
+    // assert(j < N);
 
     return _data[static_cast<usize>(i * N + j)];
   }
   const T &operator()(i32 i, i32 j) const {
-    assert(i >= 0);
-    assert(i < N);
-    assert(j >= 0);
-    assert(j < N);
+    // assert(i >= 0);
+    // assert(i < N);
+    // assert(j >= 0);
+    // assert(j < N);
 
     return _data[static_cast<usize>(i * N + j)];
   }

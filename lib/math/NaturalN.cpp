@@ -1,15 +1,7 @@
 #include "jt-computing/math/NaturalN.hpp"
 #include "jt-computing/math/GenericPower.hpp"
 
-#include <algorithm>
-#include <bit>
-#include <cassert>
-#include <compare>
-#include <iostream>
-#include <optional>
-#include <ranges>
-#include <sstream>
-#include <stdexcept>
+import std;
 
 namespace jt::math {
 bool NaturalN::operator==(const NaturalN &other) const noexcept {
@@ -25,7 +17,7 @@ NaturalN::operator<=>(const NaturalN &other) const noexcept {
     return digitsComparison;
   }
 
-  assert(_digits.size() == other._digits.size());
+  // assert(_digits.size() == other._digits.size());
 
   if (_digits.empty()) {
     return std::strong_ordering::equal;
@@ -103,7 +95,7 @@ NaturalN &NaturalN::operator-=(const NaturalN &other) {
     return *this;
   }
 
-  assert(magnitudeRelation == std::strong_ordering::greater);
+  // assert(magnitudeRelation == std::strong_ordering::greater);
 
   // 1. Subtract @c other from @c this by subtracting each digit individually.
   //    If @c 0 - 1 is executed, the subtraction "borrows" from the next digit.
@@ -149,8 +141,8 @@ NaturalN &NaturalN::operator*=(const NaturalN &other) {
 #if 0
     return *this = power_monoid(*this, other, std::plus<NaturalN>{});
 #else
-  assert(!_digits.empty());
-  assert(!other._digits.empty());
+  // assert(!_digits.empty());
+  // assert(!other._digits.empty());
 
   auto result = NaturalN{0U};
   for (usize j = 0; j < other._digits.size(); ++j) {
@@ -176,7 +168,7 @@ NaturalN &NaturalN::operator%=(const NaturalN &other) {
   return *this = divmod(*this, other).second;
 }
 NaturalN &NaturalN::operator<<=(int value) {
-  assert(value >= 0);
+  // assert(value >= 0);
 
   const auto newDigits   = value / bitsPerDigit;
   const auto bitsToShift = value % bitsPerDigit;
@@ -203,12 +195,12 @@ NaturalN &NaturalN::operator<<=(int value) {
     carryOver = nextCarryOver;
   }
 
-  assert(_digits.back() != 0U &&
-         "Inserting a zero digit is only done if necessary");
+  // assert(_digits.back() != 0U && "Inserting a zero digit is only done if
+  // necessary");
   return *this;
 }
 NaturalN &NaturalN::operator>>=(int value) {
-  assert(value >= 0);
+  // assert(value >= 0);
 
   const auto removeDigits = value / bitsPerDigit;
   const auto bitsToShift  = value % bitsPerDigit;
@@ -218,7 +210,7 @@ NaturalN &NaturalN::operator>>=(int value) {
     return *this;
   }
 
-  assert(usize(removeDigits) < _digits.size());
+  // assert(usize(removeDigits) < _digits.size());
   _digits.erase(_digits.begin(), _digits.begin() + removeDigits);
   if (bitsToShift == 0) {
     return *this;
@@ -226,7 +218,7 @@ NaturalN &NaturalN::operator>>=(int value) {
 
   const auto shiftPos  = u32(bitsPerDigit - bitsToShift);
   const auto lowerMask = std::numeric_limits<u32>::max() >> shiftPos;
-  assert(shiftPos < bitsPerDigit);
+  // assert(shiftPos < bitsPerDigit);
 
   if (_digits.size() == 1U) {
     _digits[0] >>= u32(bitsToShift);
@@ -234,7 +226,7 @@ NaturalN &NaturalN::operator>>=(int value) {
     return *this;
   }
 
-  assert(_digits.size() > 1);
+  // assert(_digits.size() > 1);
   for (usize i = 1; i < _digits.size(); ++i) {
     const auto bitsToPreserve = (_digits[i] & lowerMask) << shiftPos;
     _digits[i - 1] >>= u32(bitsToShift);
@@ -260,7 +252,7 @@ void NaturalN::_normalize() {
 }
 
 static NaturalN largestDoubling(const NaturalN &a, NaturalN b) {
-  assert(b != 0_U);
+  // assert(b != 0_U);
   while ((a - b) >= b) {
     b <<= 1;
   }
@@ -314,7 +306,7 @@ template <u8 Base> char digitToChar(u8 digit) {
                       : static_cast<char>((digit - 10) + 'a');
   }
 
-  assert(false && "Unreachable");
+  // assert(false && "Unreachable");
 }
 
 template <u8 Base> std::string writeInBase(NaturalN n) {
@@ -349,7 +341,7 @@ std::ostream &operator<<(std::ostream &os, NaturalN n) {
     }
     os << writeInBase<16>(std::move(n));
   } else {
-    assert(false && "Either number base must be configured");
+    // assert(false && "Either number base must be configured");
   }
   return os;
 }

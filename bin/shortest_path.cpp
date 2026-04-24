@@ -1,11 +1,9 @@
 #include "jt-computing/Types.hpp"
 #include "jt-computing/math/FixedSquareMatrix.hpp"
 #include "jt-computing/math/GenericPower.hpp"
+#include "jt-computing/Support.hpp"
 
-#include <compare>
-#include <iomanip>
-#include <iostream>
-#include <limits>
+import std;
 
 using namespace std;
 using namespace jt;
@@ -16,7 +14,7 @@ namespace {
 class Dist {
 public:
   constexpr Dist() = default;
-  explicit constexpr Dist(i32 d) : value{d} { assert(d >= 0); }
+  explicit constexpr Dist(i32 d) : value{d} { /*assert(d >= 0);*/ }
 
   static constexpr Dist inf() noexcept {
     return Dist{std::numeric_limits<i32>::max()};
@@ -99,5 +97,5 @@ int main(int /*argc*/, char ** /*argv*/) {
   std::cout << "Shortest Path Lengths between each Node:" << std::endl;
   std::cout << shortestPathLengths << std::endl;
 
-  return EXIT_SUCCESS;
+  return jt::EXIT_SUCCESS;
 }

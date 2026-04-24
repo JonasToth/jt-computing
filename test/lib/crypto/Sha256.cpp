@@ -1,13 +1,9 @@
 #include "jt-computing/crypto/Sha256.hpp"
 
-#include <cstdio>
-#include <forward_list>
-#include <iterator>
-#include <ranges>
-#include <sstream>
-
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
+
+import std;
 
 using namespace jt;
 using namespace jt::crypto;

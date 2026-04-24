@@ -1,11 +1,6 @@
 #include "jt-computing/crypto/Sha256.hpp"
 
-#include <algorithm>
-#include <bit>
-#include <cassert>
-#include <immintrin.h>
-#include <iomanip>
-#include <sstream>
+import std;
 
 namespace jt::crypto {
 
@@ -17,7 +12,7 @@ std::string str(const std::array<u32, 8> &digest) {
   for (auto b : bytes) {
     // Note: Cast to @c uint is necessary, because @c u8 turns into a char and
     // not a hex-number.
-    s << std::setw(2) << std::to_integer<uint>(b);
+    s << std::setw(2) << std::to_integer<unsigned int>(b);
   }
 
   return s.str();
@@ -35,7 +30,7 @@ std::string Sha256Sum::digest() {
       std::copy(H.begin(), H.end(), hashDigest.begin());
     }
     auto digestString = str(hashDigest);
-    assert(digestString.size() == 64);
+    // assert(digestString.size() == 64);
     _digest = digestString;
   }
 

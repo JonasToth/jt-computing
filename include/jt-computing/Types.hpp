@@ -1,8 +1,7 @@
 #ifndef TYPES_HPP_CITJNMAZ
 #define TYPES_HPP_CITJNMAZ
 
-#include <cstddef>
-#include <cstdint>
+import std;
 
 namespace jt {
 using pdiff = std::ptrdiff_t;

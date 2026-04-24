@@ -4,11 +4,7 @@
 #include "jt-computing/Types.hpp"
 #include "jt-computing/container/BitVector.hpp"
 
-#include <compare>
-#include <concepts>
-#include <iosfwd>
-#include <limits>
-#include <utility>
+import std;
 
 namespace jt::math {
 

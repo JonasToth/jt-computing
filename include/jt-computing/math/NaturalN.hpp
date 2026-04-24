@@ -1,16 +1,9 @@
-#pragma once
+#ifndef NATURALN_HPP
+#define NATURALN_HPP
 
 #include "jt-computing/Types.hpp"
 
-#include <cassert>
-#include <climits>
-#include <compare>
-#include <concepts>
-#include <iosfwd>
-#include <limits>
-#include <stdexcept>
-#include <utility>
-#include <vector>
+import std;
 
 namespace jt::math {
 
@@ -54,7 +47,7 @@ private:
   void _normalize();
 
   std::vector<u32> _digits;
-  constexpr static int bitsPerDigit{CHAR_BIT * sizeof(u32)};
+  constexpr static int bitsPerDigit{8 * sizeof(u32)};
 };
 
 NaturalN::NaturalN(std::unsigned_integral auto value) {
@@ -74,7 +67,7 @@ template <std::unsigned_integral Target> Target NaturalN::convertTo() const {
   if (_digits.empty()) {
     return result;
   }
-  assert(!_digits.empty());
+  // assert(!_digits.empty());
   if constexpr (std::is_same_v<Target, u64>) {
     if (_digits.size() > 2) {
       throw std::out_of_range{"Conversion would narrow"};
@@ -100,7 +93,7 @@ template <std::unsigned_integral Target> Target NaturalN::convertTo() const {
     }
     return Target(_digits[0]);
   }
-  assert(false && "Unreachable, because all integral types are handled");
+  // assert(false && "Unreachable, because all integral types are handled");
 }
 
 std::pair<NaturalN, NaturalN> divmod(NaturalN dividend,
@@ -130,3 +123,5 @@ inline NaturalN identity_element(std::multiplies<NaturalN> /*op*/) {
 }
 
 } // namespace jt::math
+
+#endif

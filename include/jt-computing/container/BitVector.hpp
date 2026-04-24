@@ -3,10 +3,7 @@
 
 #include "jt-computing/Types.hpp"
 
-#include <climits>
-#include <concepts>
-#include <iostream>
-#include <vector>
+import std;
 
 namespace jt::container {
 
@@ -58,8 +55,8 @@ private:
 };
 
 BitVector::BitVector(std::unsigned_integral auto value)
-    : _data(sizeof(value) * CHAR_BIT, u8{0}) {
-  for (u32 i = 0U; i < CHAR_BIT * sizeof(value); ++i) {
+    : _data(sizeof(value) * 8, u8{0}) {
+  for (u32 i = 0U; i < 8 * sizeof(value); ++i) {
     const bool bitFromValue = value & (static_cast<decltype(value)>(1U) << i);
     set(i, bitFromValue);
   }

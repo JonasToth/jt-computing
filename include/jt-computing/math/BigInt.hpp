@@ -4,8 +4,7 @@
 #include "jt-computing/Types.hpp"
 #include "jt-computing/math/BigUInt.hpp"
 
-#include <cmath>
-#include <type_traits>
+import std;
 
 namespace jt::math {
 

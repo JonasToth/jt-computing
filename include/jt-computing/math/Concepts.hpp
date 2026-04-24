@@ -1,7 +1,7 @@
 #ifndef MATH_CONCEPTS_14ASLDJ
 #define MATH_CONCEPTS_14ASLDJ
 
-#include <concepts>
+import std;
 
 namespace jt::math {
 
