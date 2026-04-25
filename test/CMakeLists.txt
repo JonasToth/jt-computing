@@ -9,6 +9,16 @@ project(
   LANGUAGES CXX
 )
 
+Include(FetchContent)
+
+FetchContent_Declare(
+  Catch2
+  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+  GIT_TAG        v3.12.0
+)
+
+FetchContent_MakeAvailable(Catch2)
+
 find_package(Catch2 3 REQUIRED)
 verbose_message("Adding tests under ${CMAKE_PROJECT_NAME}Tests...")
 
