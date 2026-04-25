@@ -38,10 +38,10 @@ foreach(file ${test_sources})
 
   target_link_libraries(
     ${test_name}_Tests
-    PUBLIC
-      Catch2::Catch2
-      Catch2::Catch2WithMain
-      ${CMAKE_PROJECT_NAME}
+      PUBLIC
+        Catch2::Catch2WithMain
+        Catch2::Catch2
+        ${CMAKE_PROJECT_NAME}
   )
 
   #

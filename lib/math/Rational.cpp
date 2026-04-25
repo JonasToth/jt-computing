@@ -1,5 +1,4 @@
 #include "jt-computing/math/Rational.hpp"
-
 #include "jt-computing/math/NaturalNumberAlgorithms.hpp"
 
 namespace jt::math {
@@ -85,7 +84,7 @@ Rational &Rational::operator-() noexcept {
   return *this;
 }
 
-Rational operator""_Q(long double rational) { return Rational{i64(rational)}; }
+Rational operator""_Q(long double rational) { return Rational{i64(rational), 1_Z}; }
 
 std::ostream &operator<<(std::ostream &os, const Rational &z) {
   os << z.getNumerator() << "/" << z.getDenominator();

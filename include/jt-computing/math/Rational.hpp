@@ -11,8 +11,6 @@ public:
   Rational() = default;
 
   template <std::regular N1> Rational(N1 numerator, const BigInt &denominator);
-  template <std::regular N1>
-  explicit Rational(N1 numerator, BigUInt denominator = 1_N);
 
   /// Compare the sign to @c other and continue with comparing the value itself.
   bool operator==(const Rational &other) const noexcept;
@@ -71,14 +69,6 @@ Rational::Rational(N1 numerator, const BigInt &denominator)
   reduce();
 }
 
-template <std::regular N1>
-Rational::Rational(N1 numerator, BigUInt denominator)
-    : _num{std::move(numerator)}, _denom{std::move(denominator)} {
-  if (_denom == 0U) {
-    throw std::invalid_argument{"Division by 0 detected"};
-  }
-  reduce();
-}
 template <std::regular N> bool Rational::operator==(const N &other) const {
   const auto tmp = Rational{other};
   return *this == tmp;
