@@ -44,6 +44,7 @@ class Sha256Sum {
 public:
   void process(CryptHashable auto const &data);
 
+  void process(char const* str) = delete;
   void process(std::string_view str) {
     auto s = std::span{str};
     auto b = std::as_bytes(s);

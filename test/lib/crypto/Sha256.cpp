@@ -1,5 +1,9 @@
+module;
+
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
+
+module jt.Crypto:TestSha256;
 
 import std;
 import jt.Crypto;
@@ -13,8 +17,9 @@ TEST_CASE("Empty String", "") {
           "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
 }
 TEST_CASE("ShortString", "") {
+  using namespace std::string_view_literals;
   Sha256Sum s;
-  s.process("Hello");
+  s.process("Hello"sv);
   REQUIRE(s.digest() ==
           "185f8db32271fe25f561a6fc938b2e264306ec304eda518007d1764826381969");
 }
@@ -148,7 +153,7 @@ TEST_CASE("Sha256 throws when digested, but not reset", "") {
   REQUIRE(s.digest() ==
           "035bb26c5292066fbdb56e6c05b026bb7b4392e835d976880148c857c614c7a3");
 
-  REQUIRE_THROWS_AS(s.process("More Content"), std::runtime_error);
+  REQUIRE_THROWS_AS(s.process("More Content"sv), std::runtime_error);
 }
 
 TEST_CASE("Hash single-linked list of characters", "") {

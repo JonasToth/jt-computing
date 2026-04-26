@@ -1,5 +1,9 @@
+module;
+
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_template_test_macros.hpp>
+
+module jt.Crypto:TestTextbookRSA;
 
 import std;
 import jt.Crypto;
@@ -64,8 +68,8 @@ TEST_CASE("Sign like OpenSSL", "") {
   auto rsaPub = TextbookRSA<Key::Public>{n_modulus, n_public_exponent};
   auto rsaPrv = TextbookRSA<Key::Private>{n_modulus, n_private_exponent};
 
-  const auto *toHash =
-      "alksdfj lkajsdf lkjalskdjf ojasf secret message that is signed.\n";
+  const auto toHash =
+      "alksdfj lkajsdf lkjalskdjf ojasf secret message that is signed.\n"sv;
 
   auto sha256 = Sha256Sum{};
   sha256.process(toHash);

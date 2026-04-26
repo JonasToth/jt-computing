@@ -1,4 +1,8 @@
+module;
+
 #include <catch2/catch_test_macros.hpp>
+
+module jt.Math:TestBigUInt;
 
 import std;
 import jt.Math;
