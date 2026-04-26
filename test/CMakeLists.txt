@@ -18,8 +18,6 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(Catch2)
-
-find_package(Catch2 3 REQUIRED)
 verbose_message("Adding tests under ${CMAKE_PROJECT_NAME}Tests...")
 
 foreach(file ${test_sources})
