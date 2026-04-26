@@ -1,10 +1,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_template_test_macros.hpp>
 
-#include "jt-computing/crypto/TextbookRSA.hpp"
-#include "jt-computing/crypto/Sha256.hpp"
-#include "jt-computing/math/BigUInt.hpp"
-#include "jt-computing/math/NaturalN.hpp"
+import std;
+import jt.Crypto;
 
 using namespace jt;
 using namespace std;

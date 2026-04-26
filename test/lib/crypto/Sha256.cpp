@@ -1,9 +1,8 @@
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 
-#include "jt-computing/crypto/Sha256.hpp"
-
 import std;
+import jt.Crypto;
 
 using namespace jt;
 using namespace jt::crypto;
@@ -204,7 +203,7 @@ TEST_CASE("Benchmark for Sha256", "[.]") {
     }
     return r;
   };
-  const auto refStr = generateToHash();
+  const std::string refStr = generateToHash();
   BENCHMARK("Hash 256MB string") {
     auto shaHash = Sha256Sum{};
     shaHash.process(refStr);

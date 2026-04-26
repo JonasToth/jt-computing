@@ -1,13 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "jt-computing/math/GenericPower.hpp"
-#include "jt-computing/math/AlgebraConcepts.hpp"
-#include "jt-computing/math/BigUInt.hpp"
-#include "jt-computing/math/FixedSquareMatrix.hpp"
-#include "jt-computing/math/ModularArithmetic.hpp"
-#include "jt-computing/math/NaturalN.hpp"
-
 import std;
+import jt.Math;
 
 using namespace jt;
 using namespace jt::math;

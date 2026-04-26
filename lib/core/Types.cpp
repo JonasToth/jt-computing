@@ -1,9 +1,8 @@
-#ifndef TYPES_HPP_CITJNMAZ
-#define TYPES_HPP_CITJNMAZ
+export module jt.Core:Types;
 
 import std;
 
-namespace jt {
+export namespace jt {
 using pdiff = std::ptrdiff_t;
 using usize = std::size_t;
 using i8    = std::int8_t;
@@ -15,5 +14,3 @@ using u16   = std::uint16_t;
 using u32   = std::uint32_t;
 using u64   = std::uint64_t;
 } // namespace jt
-
-#endif /* end of include guard: TYPES_HPP_CITJNMAZ */

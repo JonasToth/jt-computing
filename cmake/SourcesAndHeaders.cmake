@@ -1,30 +1,28 @@
-set(sources
+set(module_sources
+    lib/core/Core.cppm
+    lib/core/Types.cpp
+    lib/core/Constants.cpp
+
+    lib/container/Container.cppm
     lib/container/BitVector.cpp
+
+    lib/crypto/Crypto.cppm
+    lib/crypto/Concepts.cpp
     lib/crypto/Sha256.cpp
-    lib/math/BigUInt.cpp
+    lib/crypto/TextbookRSA.cpp
+
+    lib/math/Math.cppm
     lib/math/BigInt.cpp
+    lib/math/BigUInt.cpp
+    lib/math/Concepts.cpp
+    lib/math/FixedSquareMatrix.cpp
+    lib/math/GenericPower.cpp
+    lib/math/Helpers.cpp
+    lib/math/ModularArithmetic.cpp
     lib/math/NaturalN.cpp
+    lib/math/NaturalNumberAlgorithms.cpp
     lib/math/Rational.cpp
-)
-
-set(exe_sources
-    ${sources}
-)
-
-set(headers
-    include/jt-computing/container/BitVector.hpp
-    include/jt-computing/crypto/Sha256.hpp
-    include/jt-computing/crypto/TextbookRSA.hpp
-    include/jt-computing/math/AlgebraConcepts.hpp
-    include/jt-computing/math/BigInt.hpp
-    include/jt-computing/math/BigUInt.hpp
-    include/jt-computing/math/Concepts.hpp
-    include/jt-computing/math/FixedSquareMatrix.hpp
-    include/jt-computing/math/GenericPower.hpp
-    include/jt-computing/math/ModularArithmetic.hpp
-    include/jt-computing/math/NaturalN.hpp
-    include/jt-computing/math/NaturalNumberAlgorithms.hpp
-    include/jt-computing/math/Rational.hpp
+    lib/math/Operations.cpp
 )
 
 set(test_sources

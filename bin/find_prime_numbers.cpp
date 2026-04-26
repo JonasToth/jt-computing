@@ -1,7 +1,5 @@
-#include "jt-computing/math/NaturalNumberAlgorithms.hpp"
-#include "jt-computing/Support.hpp"
-
 import std;
+import jt.Math;
 
 using namespace std;
 using namespace jt;

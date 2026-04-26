@@ -54,34 +54,13 @@ include(cmake/Conan.cmake)
 # Find all headers and implementation files
 include(cmake/SourcesAndHeaders.cmake)
 
-if(${PROJECT_NAME}_BUILD_HEADERS_ONLY)
-  add_library(${PROJECT_NAME} INTERFACE)
-
-  if(${PROJECT_NAME}_VERBOSE_OUTPUT)
-    verbose_message("Found the following headers:")
-    foreach(header IN LIST headers)
-      verbose_message("* ${header}")
-    endforeach()
-  endif()
-else()
-  add_library(${PROJECT_NAME} ${headers})
-  target_sources(${PROJECT_NAME}
-        PRIVATE
-            ${sources}
-  )
-  jt_compile_setup(${PROJECT_NAME})
-
-  if(${PROJECT_NAME}_VERBOSE_OUTPUT)
-    verbose_message("Found the following sources:")
-    foreach(source IN LISTS sources)
-      verbose_message("* ${source}")
-    endforeach()
-    verbose_message("Found the following headers:")
-    foreach(header IN LISTS headers)
-      verbose_message("* ${header}")
-    endforeach()
-  endif()
-endif()
+add_library(${PROJECT_NAME} ${headers})
+target_sources(${PROJECT_NAME}
+    PUBLIC
+        FILE_SET cxx_modules TYPE CXX_MODULES FILES
+        ${module_sources}
+)
+jt_compile_setup(${PROJECT_NAME})
 
 set_target_properties(${PROJECT_NAME}
   PROPERTIES
@@ -132,22 +111,22 @@ verbose_message("Project is now aliased as ${PROJECT_NAME}::${PROJECT_NAME}.\n")
 #
 
 include(GNUInstallDirs)
-install(
-  TARGETS ${PROJECT_NAME}
-  EXPORT ${PROJECT_NAME}Targets
-  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  INCLUDES DESTINATION include
-  PUBLIC_HEADER DESTINATION include
-)
-
-install(
-  EXPORT ${PROJECT_NAME}Targets
-  FILE ${PROJECT_NAME}Targets.cmake
-  NAMESPACE ${PROJECT_NAME}::
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
-)
+# install(
+#   TARGETS ${PROJECT_NAME}
+#   EXPORT ${PROJECT_NAME}Targets
+#   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+#   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#   INCLUDES DESTINATION include
+#   PUBLIC_HEADER DESTINATION include
+# )
+#
+# install(
+#   EXPORT ${PROJECT_NAME}Targets
+#   FILE ${PROJECT_NAME}Targets.cmake
+#   NAMESPACE ${PROJECT_NAME}::
+#   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+# )
 
 #
 # Add version header

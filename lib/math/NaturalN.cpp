@@ -1,9 +1,140 @@
-#include "jt-computing/math/NaturalN.hpp"
-#include "jt-computing/math/GenericPower.hpp"
+export module jt.Math:NaturalN;
+
+import :Helpers;
+import :GenericPower;
 
 import std;
+import jt.Core;
 
 namespace jt::math {
+
+/// Represents an arbitrary natural number, using @c BigUInt logic with builtin
+/// interger types instead of individual bits.
+export class NaturalN {
+public:
+  NaturalN() { _digits.reserve(8); }
+
+  NaturalN(const NaturalN &other)            = default;
+  NaturalN(NaturalN &&other)                 = default;
+
+  NaturalN &operator=(const NaturalN &other) = default;
+  NaturalN &operator=(NaturalN &&other)      = default;
+
+  ~NaturalN()                                = default;
+
+  /// Construct the number from a builtin unsigned integer @c value.
+  explicit NaturalN(std::unsigned_integral auto value);
+
+  bool operator==(const NaturalN &other) const noexcept;
+  std::strong_ordering operator<=>(const NaturalN &other) const noexcept;
+
+  NaturalN &operator+=(const NaturalN &other);
+  NaturalN &operator-=(const NaturalN &other);
+  NaturalN &operator*=(const NaturalN &other);
+  NaturalN &operator/=(const NaturalN &other);
+  NaturalN &operator%=(const NaturalN &other);
+  NaturalN &operator<<=(int value);
+  NaturalN &operator>>=(int value);
+
+  [[nodiscard]] bool isEven() const noexcept;
+  [[nodiscard]] bool isOdd() const noexcept { return !isEven(); }
+
+  /// Tries to convert to a builtin type. If the value does not fit, it throws
+  /// an 'std::out_of_range' exception instead of performing a narrowing
+  /// conversion.
+  template <std::unsigned_integral Target> Target convertTo() const;
+
+private:
+  void _normalize();
+
+  std::vector<u32> _digits;
+  constexpr static int bitsPerDigit{8 * sizeof(u32)};
+};
+
+NaturalN::NaturalN(std::unsigned_integral auto value) {
+  if (value > std::numeric_limits<u64>::max()) {
+    throw std::invalid_argument{"Maximal u64::max allowed for int constructor"};
+  }
+  _digits.reserve(32);
+  u64 v{value};
+  while (v > 0U) {
+    _digits.emplace_back(static_cast<u32>(v));
+    v >>= unsigned{bitsPerDigit};
+  }
+}
+
+template <std::unsigned_integral Target> Target NaturalN::convertTo() const {
+  Target result{0U};
+  if (_digits.empty()) {
+    return result;
+  }
+  // assert(!_digits.empty());
+  if constexpr (std::is_same_v<Target, u64>) {
+    if (_digits.size() > 2) {
+      throw std::out_of_range{"Conversion would narrow"};
+    }
+    result += !_digits.empty() ? Target{_digits[0]} : 0U;
+    result += _digits.size() > 1U ? Target{_digits[1]} : 0U;
+  }
+  if constexpr (std::is_same_v<Target, u32>) {
+    if (_digits.size() > 1) {
+      throw std::out_of_range{"Conversion would narrow"};
+    }
+    return _digits[0];
+  }
+  if constexpr (std::is_same_v<Target, u16>) {
+    if (_digits.size() > 1 || _digits[0] > std::numeric_limits<u16>::max()) {
+      throw std::out_of_range{"Conversion would narrow"};
+    }
+    return Target(_digits[0]);
+  }
+  if constexpr (std::is_same_v<Target, u8>) {
+    if (_digits.size() > 1 || _digits[0] > std::numeric_limits<u8>::max()) {
+      throw std::out_of_range{"Conversion would narrow"};
+    }
+    return Target(_digits[0]);
+  }
+  // assert(false && "Unreachable, because all integral types are handled");
+}
+
+export std::pair<NaturalN, NaturalN> divmod(NaturalN dividend,
+                                            const NaturalN &divisor);
+
+export NaturalN operator""_U(unsigned long long literal);
+export NaturalN operator""_U(char const *literal, std::size_t len);
+
+export inline NaturalN operator+(NaturalN a, const NaturalN &b) {
+  return a += b;
+}
+export inline NaturalN operator-(NaturalN a, const NaturalN &b) {
+  return a -= b;
+}
+export inline NaturalN operator*(NaturalN a, const NaturalN &b) {
+  return a *= b;
+}
+export inline NaturalN operator/(NaturalN a, const NaturalN &b) {
+  return a /= b;
+}
+export inline NaturalN operator%(NaturalN a, const NaturalN &b) {
+  return a %= b;
+}
+
+/// Write 'n' to 'os', optionally adhering to the base modifiers.
+export std::ostream &operator<<(std::ostream &os, NaturalN n);
+
+/// Parse 'n' from 'is', optionally adhering to the base modifiers.
+export std::istream &operator>>(std::istream &is, NaturalN &n);
+
+export inline bool isEven(const NaturalN &n) noexcept { return n.isEven(); }
+export inline bool isOdd(const NaturalN &n) noexcept { return n.isOdd(); }
+
+export inline NaturalN identity_element(std::plus<NaturalN> /*op*/) {
+  return 0_U;
+}
+export inline NaturalN identity_element(std::multiplies<NaturalN> /*op*/) {
+  return 1_U;
+}
+
 bool NaturalN::operator==(const NaturalN &other) const noexcept {
   return (*this <=> other) == std::strong_ordering::equal;
 }
@@ -258,8 +389,8 @@ static NaturalN largestDoubling(const NaturalN &a, NaturalN b) {
   }
   return b;
 }
-std::pair<NaturalN, NaturalN> divmod(NaturalN dividend,
-                                     const NaturalN &divisor) {
+export std::pair<NaturalN, NaturalN> divmod(NaturalN dividend,
+                                            const NaturalN &divisor) {
   if (divisor == 0_U) {
     throw std::invalid_argument{"division by zero is not possible"};
   }
@@ -284,29 +415,14 @@ std::pair<NaturalN, NaturalN> divmod(NaturalN dividend,
   return {quotient, dividend};
 }
 
-NaturalN operator""_U(unsigned long long literal) { return NaturalN{literal}; }
-NaturalN operator""_U(const char *literal, std::size_t /*len*/) {
+export NaturalN operator""_U(unsigned long long literal) {
+  return NaturalN{literal};
+}
+export NaturalN operator""_U(const char *literal, std::size_t /*len*/) {
   auto r  = 0_U;
   auto ss = std::stringstream{literal};
   ss >> r;
   return r;
-}
-
-template <u8 Base> char digitToChar(u8 digit) {
-  static_assert(Base == 2 || Base == 8 || Base == 10 || Base == 16,
-                "Only the common number bases, either power of 2 or base 10 "
-                "are supported");
-  if (digit >= Base) {
-    throw std::out_of_range{"Digit must be < Base"};
-  }
-  if constexpr (Base == 2 || Base == 8 || Base == 10) {
-    return static_cast<char>('0' + digit);
-  } else if constexpr (Base == 16) {
-    return digit < 10 ? static_cast<char>('0' + digit)
-                      : static_cast<char>((digit - 10) + 'a');
-  }
-
-  // assert(false && "Unreachable");
 }
 
 template <u8 Base> std::string writeInBase(NaturalN n) {
@@ -326,7 +442,7 @@ template <u8 Base> std::string writeInBase(NaturalN n) {
   return reverseDigits;
 }
 
-std::ostream &operator<<(std::ostream &os, NaturalN n) {
+export std::ostream &operator<<(std::ostream &os, NaturalN n) {
   const auto flags = os.flags();
   if ((flags & std::ios_base::dec) != 0) {
     os << writeInBase<10>(std::move(n));
@@ -347,7 +463,7 @@ std::ostream &operator<<(std::ostream &os, NaturalN n) {
 }
 
 template <u8 Base>
-NaturalN interpretDigitsInBase(const std::vector<u8> &digitsHighestFirst) {
+NaturalN interpretDigitsInBaseNaturalN(const std::vector<u8> &digitsHighestFirst) {
   static_assert(Base == 2 || Base == 8 || Base == 10 || Base == 16,
                 "Only the common number bases, either power of 2 or base 10 "
                 "are supported");
@@ -362,47 +478,24 @@ NaturalN interpretDigitsInBase(const std::vector<u8> &digitsHighestFirst) {
   return result;
 }
 
-template <u8 Base> std::optional<u8> nextDigit(std::istream &is) {
-  int c = is.peek();
-  if constexpr (Base == 2 || Base == 8 || Base == 10) {
-    if (std::isdigit(c)) {
-      return static_cast<u8>(is.get() - '0');
-    }
-  } else if constexpr (Base == 16) {
-    if ((c >= '0') && (c <= '9')) {
-      (void)is.get();
-      return static_cast<u8>(c - '0');
-    }
-    if ((c >= 'A') && (c <= 'F')) {
-      (void)is.get();
-      return static_cast<u8>(c - 'A' + 10);
-    }
-    if ((c >= 'a') && (c <= 'f')) {
-      (void)is.get();
-      return static_cast<u8>(c - 'a' + 10);
-    }
-  }
-  return std::nullopt;
-}
-
-template <u8 Base> NaturalN extractNumber(std::istream &is) {
+template <u8 Base> NaturalN extractNumberAsNaturalN(std::istream &is) {
   std::vector<u8> digitsHighestFirst;
   // Read from the stream as long as the next character is a digit.
   // Extracts each digit into 'digitsHighestFirst'.
   while (auto digit = nextDigit<Base>(is)) {
     digitsHighestFirst.emplace_back(digit.value());
   }
-  return interpretDigitsInBase<Base>(digitsHighestFirst);
+  return interpretDigitsInBaseNaturalN<Base>(digitsHighestFirst);
 }
 
-std::istream &operator>>(std::istream &is, NaturalN &n) {
+export std::istream &operator>>(std::istream &is, NaturalN &n) {
   const auto flags = is.flags();
   if ((flags & std::ios_base::dec) != 0) {
-    n = extractNumber<10>(is);
+    n = extractNumberAsNaturalN<10>(is);
   } else if ((flags & std::ios_base::oct) != 0) {
-    n = extractNumber<8>(is);
+    n = extractNumberAsNaturalN<8>(is);
   } else if ((flags & std::ios_base::hex) != 0) {
-    n = extractNumber<16>(is);
+    n = extractNumberAsNaturalN<16>(is);
   }
   return is;
 }

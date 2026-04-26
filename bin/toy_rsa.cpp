@@ -1,10 +1,5 @@
-#include "jt-computing/math/BigUInt.hpp"
-#include "jt-computing/math/GenericPower.hpp"
-#include "jt-computing/math/ModularArithmetic.hpp"
-#include "jt-computing/math/NaturalN.hpp"
-#include "jt-computing/Support.hpp"
-
 import std;
+import jt.Crypto;
 
 using namespace jt;
 using namespace jt::math;

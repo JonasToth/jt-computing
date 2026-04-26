@@ -1,9 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "jt-computing/math/NaturalN.hpp"
-#include "jt-computing/math/Concepts.hpp"
-
 import std;
+import jt.Math;
 
 using namespace jt;
 using namespace jt::math;

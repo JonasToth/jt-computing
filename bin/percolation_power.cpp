@@ -1,8 +1,5 @@
-#include "jt-computing/math/FixedSquareMatrix.hpp"
-#include "jt-computing/math/GenericPower.hpp"
-#include "jt-computing/Support.hpp"
-
 import std;
+import jt.Math;
 
 using namespace std;
 using namespace jt;

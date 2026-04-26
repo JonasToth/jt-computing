@@ -1,8 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "jt-computing/math/BigInt.hpp"
-
 import std;
+import jt.Math;
 
 using namespace jt;
 using namespace jt::math;

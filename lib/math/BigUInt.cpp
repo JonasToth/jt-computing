@@ -1,9 +1,212 @@
-#include "jt-computing/math/BigUInt.hpp"
-#include "jt-computing/container/BitVector.hpp"
+export module jt.Math:BigUInt;
+
+import :Helpers;
+import :NaturalNumberAlgorithms;
 
 import std;
 
+import jt.Core;
+import jt.Container;
+
 namespace jt::math {
+
+/// Arbitrary sized unsigned integer type, stored as @c container::BitVector.
+/// The vector is always normalized, meaning it does not have leading zeros.
+export class BigUInt {
+public:
+  BigUInt() = default;
+
+  /// Construct the number from a builtin unsigned integer @c value.
+  explicit BigUInt(std::unsigned_integral auto value);
+
+  /// Returns the number of bits this number requires.
+  [[nodiscard]] usize binaryDigits() const noexcept { return _bits.size(); }
+
+  /// Compare all digits of both @c BigUInt and return @c true if they are
+  /// identical.
+  bool operator==(const BigUInt &other) const noexcept;
+  bool operator==(std::unsigned_integral auto other) const noexcept;
+
+  /// Compare the length of both numbers, because both are canonicalized to not
+  /// have leading zeros.
+  std::strong_ordering operator<=>(const BigUInt &other) const noexcept;
+  std::strong_ordering
+  operator<=>(std::unsigned_integral auto other) const noexcept;
+
+  /// Implement assign-add with another @c BigUInt.
+  BigUInt &operator+=(const BigUInt &other);
+  /// Implement assign-add with another @c unsigned type by constructing a @c
+  /// BigUInt and using the generalized implementation.
+  BigUInt &operator+=(std::unsigned_integral auto value);
+
+  /// Implement assign-subtract with another @c BigUInt. The result must be a
+  /// non-negative number.
+  /// @note The algorithm uses borrowing and not a complement represenation.
+  /// @throws @c std::domain_error if @c other is bigger than @c this.
+  BigUInt &operator-=(const BigUInt &other);
+  /// Implement an overload for assign-subtract for builtin types.
+  /// @sa operator-=(const BigUInt& other)
+  /// @throws @c std::domain_error if @c value is bigger than @c this.
+  BigUInt &operator-=(std::unsigned_integral auto value);
+
+  /// Implement assign-multiply with another @c BigUInt.
+  BigUInt &operator*=(const BigUInt &other);
+  /// Implement assign-multiply with another @c unsigned type by constructing a
+  /// @c BigUInt and using the generalized implementation.
+  BigUInt &operator*=(std::unsigned_integral auto value);
+
+  /// Implement assign-division with another @c BigUInt that drops the remainder
+  /// of the division.
+  /// @sa divmod
+  /// @throws std::invalid_argument if @c other == 0U
+  BigUInt &operator/=(const BigUInt &other);
+  /// Implement assign-division with another @c unsigned type by constructing a
+  /// @c BigUInt and using the generalized implementation.
+  BigUInt &operator/=(std::unsigned_integral auto value);
+
+  /// Implement assign-modulo-division with another @c BigUInt that drops the
+  /// quotient of the division and assigns the remainder to *this.
+  /// @sa divmod
+  /// @throws std::invalid_argument if @c other == 0U
+  BigUInt &operator%=(const BigUInt &other);
+  /// Implement assign-modulo-division with another @c unsigned type by
+  /// constructing a @c BigUInt and using the generalized implementation.
+  BigUInt &operator%=(std::unsigned_integral auto value);
+
+  /// Shifts the underlying @c BitVector by @c value positions to the left.
+  /// This doubles the @c BigUInt @c value times.
+  /// @pre value > 0
+  BigUInt &operator<<=(int value);
+
+  /// Shifts the underlying @c BitVector by @c value positions to the right.
+  /// This halfes the @c BigUInt @c value times and drops the remainder.
+  /// @pre value > 0
+  BigUInt &operator>>=(int value);
+
+  /// Returns @c true if the integer is either 0 or it least significant bit is
+  /// @c true.
+  [[nodiscard]] bool isEven() const noexcept;
+
+  /// Returns @c !isEven().
+  [[nodiscard]] bool isOdd() const noexcept { return !isEven(); }
+
+  /// Tries to convert to a builtin type. If the value does not fit, it throws
+  /// an 'std::out_of_range' exception instead of performing a narrowing
+  /// conversion.
+  template <std::unsigned_integral Target> Target convertTo() const;
+
+private:
+  container::BitVector _bits;
+};
+
+/// Perfom natural number division and return the quotient and the
+/// modulus/remainder.
+/// @throws std::invalid_argument if @c divisor == 0.
+/// @returns {quotient, modulus}
+export std::pair<BigUInt, BigUInt> divmod(BigUInt dividend,
+                                          const BigUInt &divisor);
+
+/// Write 'n' to 'os', optionally adhering to the base modifiers.
+export std::ostream &operator<<(std::ostream &os, BigUInt n);
+
+/// Parse 'n' from 'is', optionally adhering to the base modifiers.
+export std::istream &operator>>(std::istream &is, BigUInt &n);
+
+export BigUInt operator""_N(unsigned long long literal);
+export BigUInt operator""_N(char const *literal, std::size_t len);
+
+BigUInt::BigUInt(std::unsigned_integral auto value) : _bits{value} {
+  _bits.normalize();
+}
+
+bool BigUInt::operator==(std::unsigned_integral auto other) const noexcept {
+  return *this == BigUInt{other};
+}
+
+std::strong_ordering
+BigUInt::operator<=>(std::unsigned_integral auto other) const noexcept {
+  return *this <=> BigUInt{other};
+}
+
+BigUInt &BigUInt::operator+=(std::unsigned_integral auto value) {
+  return *this += BigUInt{value};
+}
+
+BigUInt &BigUInt::operator-=(std::unsigned_integral auto value) {
+  return *this -= BigUInt{value};
+}
+
+BigUInt &BigUInt::operator*=(std::unsigned_integral auto value) {
+  return *this *= BigUInt{value};
+}
+
+BigUInt &BigUInt::operator/=(std::unsigned_integral auto value) {
+  return *this /= BigUInt{value};
+}
+
+template <std::unsigned_integral Target> Target BigUInt::convertTo() const {
+  Target result{0U};
+  if (*this > std::numeric_limits<Target>::max()) {
+    throw std::out_of_range{"Conversion would narrow"};
+  }
+
+  for (usize i = 0U; i < _bits.size(); i++) {
+    if (_bits.get(i)) {
+      result |= (1U << i);
+    }
+  }
+
+  return result;
+}
+
+export inline BigUInt operator+(BigUInt a, const BigUInt &b) { return a += b; }
+export inline BigUInt operator+(std::unsigned_integral auto a,
+                                const BigUInt &b) {
+  return BigUInt{a} += b;
+}
+export inline BigUInt operator+(BigUInt a, std::unsigned_integral auto b) {
+  return a += b;
+}
+
+export inline BigUInt operator-(BigUInt a, const BigUInt &b) { return a -= b; }
+export inline BigUInt operator-(std::unsigned_integral auto a,
+                                const BigUInt &b) {
+  return BigUInt{a} -= b;
+}
+export inline BigUInt operator-(BigUInt a, std::unsigned_integral auto b) {
+  return a -= b;
+}
+
+export inline BigUInt operator*(BigUInt a, const BigUInt &b) { return a *= b; }
+export inline BigUInt operator*(std::unsigned_integral auto a,
+                                const BigUInt &b) {
+  return BigUInt{a} *= b;
+}
+export inline BigUInt operator*(BigUInt a, std::unsigned_integral auto b) {
+  return a *= b;
+}
+
+export inline BigUInt operator/(BigUInt a, const BigUInt &b) { return a /= b; }
+export inline BigUInt operator/(std::unsigned_integral auto a,
+                                const BigUInt &b) {
+  return BigUInt{a} /= b;
+}
+export inline BigUInt operator/(BigUInt a, std::unsigned_integral auto b) {
+  return a /= b;
+}
+
+export inline BigUInt operator%(BigUInt a, const BigUInt &b) { return a %= b; }
+export inline BigUInt operator%(std::unsigned_integral auto a,
+                                const BigUInt &b) {
+  return BigUInt{a} %= b;
+}
+export inline BigUInt operator%(BigUInt a, std::unsigned_integral auto b) {
+  return a %= b;
+}
+
+export inline bool isEven(const BigUInt &n) noexcept { return n.isEven(); }
+export inline bool isOdd(const BigUInt &n) noexcept { return n.isOdd(); }
+
 bool BigUInt::operator==(const BigUInt &other) const noexcept {
   return (*this <=> other) == std::strong_ordering::equal;
 }
@@ -251,23 +454,6 @@ std::pair<BigUInt, BigUInt> divmod(BigUInt dividend, const BigUInt &divisor) {
   return {quotient, dividend};
 }
 
-template <u8 Base> char digitToChar(u8 digit) {
-  static_assert(Base == 2 || Base == 8 || Base == 10 || Base == 16,
-                "Only the common number bases, either power of 2 or base 10 "
-                "are supported");
-  if (digit >= Base) {
-    throw std::out_of_range{"Digit must be < Base"};
-  }
-  if constexpr (Base == 2 || Base == 8 || Base == 10) {
-    return static_cast<char>('0' + digit);
-  } else if constexpr (Base == 16) {
-    return digit < 10 ? static_cast<char>('0' + digit)
-                      : static_cast<char>((digit - 10) + 'a');
-  }
-
-  // assert(false && "Unreachable");
-}
-
 template <u8 Base> std::string writeInBase(BigUInt n) {
   static_assert(Base == 2 || Base == 8 || Base == 10 || Base == 16,
                 "Only the common number bases, either power of 2 or base 10 "
@@ -306,7 +492,8 @@ std::ostream &operator<<(std::ostream &os, BigUInt n) {
 }
 
 template <u8 Base>
-BigUInt interpretDigitsInBase(const std::vector<u8> &digitsHighestFirst) {
+BigUInt
+interpretDigitsInBaseBigUInt(const std::vector<u8> &digitsHighestFirst) {
   static_assert(Base == 2 || Base == 8 || Base == 10 || Base == 16,
                 "Only the common number bases, either power of 2 or base 10 "
                 "are supported");
@@ -321,55 +508,32 @@ BigUInt interpretDigitsInBase(const std::vector<u8> &digitsHighestFirst) {
   return result;
 }
 
-template <u8 Base> std::optional<u8> nextDigit(std::istream &is) {
-  int c = is.peek();
-  if constexpr (Base == 2 || Base == 8 || Base == 10) {
-    if (std::isdigit(c)) {
-      return static_cast<u8>(is.get() - '0');
-    }
-  } else if constexpr (Base == 16) {
-    if ((c >= '0') && (c <= '9')) {
-      (void)is.get();
-      return static_cast<u8>(c - '0');
-    }
-    if ((c >= 'A') && (c <= 'F')) {
-      (void)is.get();
-      return static_cast<u8>(c - 'A' + 10);
-    }
-    if ((c >= 'a') && (c <= 'f')) {
-      (void)is.get();
-      return static_cast<u8>(c - 'a' + 10);
-    }
-  }
-  return std::nullopt;
-}
-
-template <u8 Base> BigUInt extractNumber(std::istream &is) {
+template <u8 Base> BigUInt extractNumberAsBigUInt(std::istream &is) {
   std::vector<u8> digitsHighestFirst;
   // Read from the stream as long as the next character is a digit.
   // Extracts each digit into 'digitsHighestFirst'.
   while (auto digit = nextDigit<Base>(is)) {
     digitsHighestFirst.emplace_back(digit.value());
   }
-  return interpretDigitsInBase<Base>(digitsHighestFirst);
+  return interpretDigitsInBaseBigUInt<Base>(digitsHighestFirst);
 }
 
-std::istream &operator>>(std::istream &is, BigUInt &n) {
+export std::istream &operator>>(std::istream &is, BigUInt &n) {
   const auto flags = is.flags();
   if ((flags & std::ios_base::dec) != 0) {
-    n = extractNumber<10>(is);
+    n = extractNumberAsBigUInt<10>(is);
   } else if ((flags & std::ios_base::oct) != 0) {
-    n = extractNumber<8>(is);
+    n = extractNumberAsBigUInt<8>(is);
   } else if ((flags & std::ios_base::hex) != 0) {
-    n = extractNumber<16>(is);
+    n = extractNumberAsBigUInt<16>(is);
   }
   return is;
 }
 
-BigUInt operator""_N(unsigned long long int literal) {
+export BigUInt operator""_N(unsigned long long int literal) {
   return BigUInt{literal};
 }
-BigUInt operator""_N(char const *literal, std::size_t /*len*/) {
+export BigUInt operator""_N(char const *literal, std::size_t /*len*/) {
   auto r  = 0_N;
   auto ss = std::stringstream{literal};
   ss >> r;

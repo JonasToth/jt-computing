@@ -1,7 +1,5 @@
-#include "jt-computing/Support.hpp"
-#include "jt-computing/crypto/Sha256.hpp"
-
 import std;
+import jt.Crypto;
 
 namespace {
 struct HashResult {
@@ -16,10 +14,14 @@ HashResult computeHashForFile(std::filesystem::path arg) {
 
   using namespace jt::crypto;
   auto hasher = Sha256Sum{};
-  auto read   = std::fstream{arg, std::ios_base::in | std::ios_base::binary};
-  hasher.process(std::istreambuf_iterator<char>(read),
-                 std::istreambuf_iterator<char>());
+  std::ifstream inputFile(arg, std::ios_base::binary);
+  std::vector<jt::u8> bytesInput{std::istreambuf_iterator<jt::u8>(inputFile),
+                                 std::istreambuf_iterator<jt::u8>()};
+#if 1
+  hasher.process(bytesInput);
   return {hasher.digest(), std::move(arg)};
+#endif
+  return {"", ""};
 }
 
 std::vector<std::filesystem::path> filesFromArgv(std::span<char const *> args) {
@@ -95,6 +97,7 @@ bool filesMatchExpectedHashes(std::vector<HashResult> const &expectedHashes) {
         }
         return matches;
       });
+  return false;
 }
 
 } // namespace
