@@ -14,13 +14,15 @@ set(module_sources
     lib/math/Math.cppm
     lib/math/BigInt.cpp
     lib/math/BigUInt.cpp
+    lib/math/BigUIntImpl.cpp
     lib/math/Concepts.cpp
     lib/math/FixedSquareMatrix.cpp
     lib/math/GenericPower.cpp
-    lib/math/Helpers.cpp
     lib/math/ModularArithmetic.cpp
     lib/math/NaturalN.cpp
+    lib/math/NaturalNImpl.cpp
     lib/math/NaturalNumberAlgorithms.cpp
+    lib/math/NumberIO.cpp
     lib/math/Rational.cpp
     lib/math/Operations.cpp
 )

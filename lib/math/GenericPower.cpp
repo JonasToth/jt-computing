@@ -2,12 +2,11 @@ export module jt.Math:GenericPower;
 
 import :Concepts;
 
-namespace jt::math {
+export namespace jt::math {
 
-export bool isOdd(const Integer auto &n) { return n & 1; }
-export bool isEven(const Integer auto &n) { return !isOdd(n); }
+bool isOdd(const Integer auto &n) { return n & 1; }
+bool isEven(const Integer auto &n) { return !isOdd(n); }
 
-namespace detail {
 template <std::regular A, Integer N, Semigroup<A> Op>
 A power_accumulate_semigroup(A r, A a, N n, Op op) {
   // assert(n >= N{0U});
@@ -26,10 +25,8 @@ A power_accumulate_semigroup(A r, A a, N n, Op op) {
     a = op(a, a);
   }
 }
-} // namespace detail
 
-export template <std::regular A, Integer N,
-                 Semigroup<A> Op = std::multiplies<A>>
+template <std::regular A, Integer N, Semigroup<A> Op = std::multiplies<A>>
 A power_semigroup(A a, N n, Op op = {}) {
   // assert(n > N{0U});
   while (!isOdd(n)) {
@@ -39,11 +36,10 @@ A power_semigroup(A a, N n, Op op = {}) {
   if (n == N{1U}) {
     return a;
   }
-  return detail::power_accumulate_semigroup(a, op(a, a), (n - N{1U}) / N{2U},
-                                            op);
+  return power_accumulate_semigroup(a, op(a, a), (n - N{1U}) / N{2U}, op);
 }
 
-export template <std::regular A, Integer N, Monoid<A> Op = std::multiplies<A>>
+template <std::regular A, Integer N, Monoid<A> Op = std::multiplies<A>>
 A power_monoid(A a, N n, Op op = {}) {
   // assert(n >= N{0U});
   if (n == N{0U}) {
@@ -52,7 +48,7 @@ A power_monoid(A a, N n, Op op = {}) {
   return power_semigroup(std::move(a), std::move(n), std::move(op));
 }
 
-export template <std::regular A, Integer N, Group<A> Op = std::multiplies<A>>
+template <std::regular A, Integer N, Group<A> Op = std::multiplies<A>>
 A power_group(A a, N n, Op op = {}) {
   if (n < N{0U}) {
     n = -n;

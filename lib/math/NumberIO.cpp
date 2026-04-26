@@ -1,4 +1,4 @@
-module jt.Math:Helpers;
+module jt.Math:NumberIO;
 
 import std;
 import jt.Core;
@@ -46,4 +46,5 @@ template <u8 Base> std::optional<u8> nextDigit(std::istream &is) {
   }
   return std::nullopt;
 }
+
 }
