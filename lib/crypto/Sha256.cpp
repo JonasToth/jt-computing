@@ -34,6 +34,7 @@ u32 Sum1(u32 x) { return rotr(x, 6) ^ rotr(x, 11) ^ rotr(x, 25); }
 u32 Sig0(u32 x) { return rotr(x, 7) ^ rotr(x, 18) ^ (x >> 3U); }
 /// Defined in Section 4.1.2, (4.7).
 u32 Sig1(u32 x) { return rotr(x, 17) ^ rotr(x, 19) ^ (x >> 10U); }
+
 } // namespace
 
 export namespace jt::crypto {
@@ -41,10 +42,12 @@ export namespace jt::crypto {
 // Implements Sha256 as described in FIPS PUB 180-4.
 class Sha256Sum {
 public:
-  void process(CryptHashable auto data);
+  void process(CryptHashable auto const &data);
 
   void process(std::string_view str) {
-    return process(std::as_bytes(std::span{str}));
+    auto s = std::span{str};
+    auto b = std::as_bytes(s);
+    return process(b);
   }
 
   template <std::input_iterator I> void process(I begin, I end) {
@@ -90,7 +93,7 @@ private:
   void pad();
 };
 
-void Sha256Sum::process(CryptHashable auto data) {
+void Sha256Sum::process(CryptHashable auto const &data) {
   if (!_digest.empty()) {
     throw std::runtime_error{"Digest Computed, Can not further update Message"};
   }
@@ -151,14 +154,32 @@ __attribute__((target("default"))) void Sha256Sum::transform() {
   // Section 6.2.2, Step 1. (1)
   // Insert all data of this block at the start of the message schedule in
   // big-endian words.
-  auto dataReinterpreted = std::span<u32>{reinterpret_cast<u32 *>(_data.data()),
+
+  // FIXME: The 'std::span<u32>' code leads to the linker error:
+  // undefined symbol: __gnu_cxx::__normal_iterator<unsigned int*, std::span<unsigned int, 18446744073709551615ul>::__iter_tag>::__normal_iterator(unsigned int* const&)
+  // after transitioning to modules with clang-21, using libstdc++ on my fedora machine.
+#if 1
+  u32 const *start = reinterpret_cast<u32 const *>(_data.data());
+  // assert(data.size() % sizeof(u32) == 0);
+  usize length     = _data.size() / sizeof(u32);
+
+  if constexpr (std::endian::native == std::endian::little) {
+    std::transform(start, start + length, W.begin(),
+                   [](u32 state) { return std::byteswap(state); });
+  } else {
+    std::copy(start, start + length, W.begin());
+  }
+#else
+  auto reinterpretedData = std::span<u32>{reinterpret_cast<u32 *>(_data.data()),
                                           blockSize / sizeof(u32)};
-  if (std::endian::native == std::endian::little) {
-    std::transform(dataReinterpreted.begin(), dataReinterpreted.end(),
+
+  if constexpr (std::endian::native == std::endian::little) {
+    std::transform(reinterpretedData.begin(), reinterpretedData.end(),
                    W.begin(), [](u32 state) { return std::byteswap(state); });
   } else {
-    std::copy(dataReinterpreted.begin(), dataReinterpreted.end(), W.begin());
+    std::copy(reinterpretedData.begin(), reinterpretedData.end(), W.begin());
   }
+#endif
 
   // Section 6.2.2, Step 1. (2).
   // The rest of the message schedule is derived from the previous data words.

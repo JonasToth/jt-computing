@@ -114,8 +114,9 @@ ducimus non amet assumenda.)"};
 }
 
 TEST_CASE("Sha256 resets", "") {
-  const auto *s1 = "I am the first string";
-  const auto *s2 = "Completely different content";
+  using namespace std::string_view_literals;
+  const auto s1 = "I am the first string"sv;
+  const auto s2 = "Completely different content"sv;
   Sha256Sum s;
 
   s.process(s1);
@@ -133,8 +134,9 @@ TEST_CASE("Sha256 resets", "") {
 }
 
 TEST_CASE("Sha256 throws when digested, but not reset", "") {
-  const auto *s1 = "I am the first string";
-  const auto *s2 = "Completely different content";
+  using namespace std::string_view_literals;
+  const auto s1 = "I am the first string"sv;
+  const auto s2 = "Completely different content"sv;
   Sha256Sum s;
 
   s.process(s1);

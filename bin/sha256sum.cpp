@@ -1,4 +1,5 @@
 import std;
+import jt.Core;
 import jt.Crypto;
 
 namespace {
@@ -14,14 +15,10 @@ HashResult computeHashForFile(std::filesystem::path arg) {
 
   using namespace jt::crypto;
   auto hasher = Sha256Sum{};
-  std::ifstream inputFile(arg, std::ios_base::binary);
-  std::vector<jt::u8> bytesInput{std::istreambuf_iterator<jt::u8>(inputFile),
-                                 std::istreambuf_iterator<jt::u8>()};
-#if 1
-  hasher.process(bytesInput);
+  std::ifstream file(arg, std::ios::binary);
+  hasher.process(std::istreambuf_iterator<char>(file),
+                 std::istreambuf_iterator<char>());
   return {hasher.digest(), std::move(arg)};
-#endif
-  return {"", ""};
 }
 
 std::vector<std::filesystem::path> filesFromArgv(std::span<char const *> args) {
