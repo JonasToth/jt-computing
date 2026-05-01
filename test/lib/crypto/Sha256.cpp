@@ -9,20 +9,20 @@ import std;
 import jt.Crypto;
 
 using namespace std;
+using namespace std::string_view_literals;
 using namespace jt;
 using namespace jt::crypto;
 
 TEST_CASE("Empty String", "") {
   Sha256Sum s;
   REQUIRE(s.digest() ==
-          "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
+          "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"sv);
 }
 TEST_CASE("ShortString", "") {
-  using namespace string_view_literals;
   Sha256Sum s;
   s.process("Hello"sv);
   REQUIRE(s.digest() ==
-          "185f8db32271fe25f561a6fc938b2e264306ec304eda518007d1764826381969");
+          "185f8db32271fe25f561a6fc938b2e264306ec304eda518007d1764826381969"sv);
 }
 TEST_CASE("MiddleLong String", "") {
   auto data = string{"oalksdjf oiajsdoifjqlwejroi jasdflk alskjdj"};
@@ -58,8 +58,8 @@ TEST_CASE("MiddleLong String == 70", "") {
           "e145971a579a6d748dae0ac60b4ed5ed866ec53a91adecb96ef025baf4d7964a");
 }
 TEST_CASE("Lorem Ipseum Processed Differently", "") {
-  const auto expectedHash = string{
-      "bac1ff482adf0f85340f18db432d0dc281d6207eb06a122b4a1a96af8dbd8c92"};
+  const auto expectedHash =
+      "bac1ff482adf0f85340f18db432d0dc281d6207eb06a122b4a1a96af8dbd8c92"sv;
   const auto lorem = string{
       R"(Quia ut laborum rem ut consectetur consectetur consectetur. Ex ea ullam
 eaque quaerat sint quaerat sit. Saepe quod rerum qui veniam quia 
@@ -120,7 +120,6 @@ ducimus non amet assumenda.)"};
 }
 
 TEST_CASE("Sha256 resets", "") {
-  using namespace string_view_literals;
   const auto s1 = "I am the first string"sv;
   const auto s2 = "Completely different content"sv;
   Sha256Sum s;
@@ -140,7 +139,6 @@ TEST_CASE("Sha256 resets", "") {
 }
 
 TEST_CASE("Sha256 throws when digested, but not reset", "") {
-  using namespace string_view_literals;
   const auto s1 = "I am the first string"sv;
   const auto s2 = "Completely different content"sv;
   Sha256Sum s;
@@ -158,9 +156,9 @@ TEST_CASE("Sha256 throws when digested, but not reset", "") {
 }
 
 TEST_CASE("Hash single-linked list of characters", "") {
-  const auto expectedHash = string_view{
-      "6da1d8d43d91f1af32775e7ec6b1425235b8f31072271b792635cc5451bf2793"};
-  const auto s1 = string_view{"I am the worst string"};
+  const auto expectedHash =
+      "6da1d8d43d91f1af32775e7ec6b1425235b8f31072271b792635cc5451bf2793"sv;
+  const auto s1 = "I am the worst string"sv;
   auto s        = Sha256Sum{};
   s.process(s1);
   REQUIRE(s.digest() == expectedHash);
