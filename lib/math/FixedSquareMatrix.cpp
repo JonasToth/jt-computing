@@ -9,36 +9,37 @@ import :Concepts;
 import std;
 import jt.Core;
 
+using namespace std;
+
 export namespace jt::math {
 
-template <std::regular T, i32 N, typename Plus = std::plus<T>,
-          typename Times = std::multiplies<T>>
+template <regular T, i32 N, typename Plus = plus<T>,
+          typename Times = multiplies<T>>
   requires(SemiRing<Plus, Times, T>)
 class FixedSquareMatrix {
 public:
   static_assert(N > 0, "Matrix must have positive dimension");
 
   FixedSquareMatrix(Plus plus, Times times)
-      : _data{std::make_unique<T[]>(N * N)}, _plus{std::move(plus)},
-        _times{std::move(times)} {
-    CONTRACT_ASSERT(_data.get() != nullptr && "Bad Alloc must have been thrown");
-    std::fill_n(_data.get(), N * N, identity_element(_plus));
+      : _data{make_unique<T[]>(N * N)}, _plus{move(plus)}, _times{move(times)} {
+    CONTRACT_ASSERT(_data.get() != nullptr &&
+                    "Bad Alloc must have been thrown");
+    fill_n(_data.get(), N * N, identity_element(_plus));
   }
 
   /// Default construction of the matrix with all zeros.
   FixedSquareMatrix() : FixedSquareMatrix(Plus{}, Times{}) {}
 
   /// Explicit value initialization.
-  FixedSquareMatrix(std::initializer_list<T> args)
-      : _data{std::make_unique<T[]>(N * N)} {
+  FixedSquareMatrix(initializer_list<T> args) : _data{make_unique<T[]>(N * N)} {
     if (args.size() != N * N) {
-      throw std::invalid_argument{"Mismatched dimension"};
+      throw invalid_argument{"Mismatched dimension"};
     }
-    std::copy(args.begin(), args.end(), _data.get());
+    copy(args.begin(), args.end(), _data.get());
   }
   /// Create Zero or Identity Matrix of neutral elements.
   explicit FixedSquareMatrix(i32 i, Plus plus = {}, Times times = {})
-      : FixedSquareMatrix(std::move(plus), std::move(times)) {
+      : FixedSquareMatrix(move(plus), move(times)) {
     CONTRACT_ASSERT(i == 0 || i == 1);
     if (i == 1) {
       for (int diagonal = 0; diagonal < N; ++diagonal) {
@@ -48,8 +49,8 @@ public:
   }
 
   FixedSquareMatrix(const FixedSquareMatrix &other)
-      : _data{std::make_unique<T[]>(N * N)} {
-    std::copy_n(other._data.get(), N * N, _data.get());
+      : _data{make_unique<T[]>(N * N)} {
+    copy_n(other._data.get(), N * N, _data.get());
   }
   FixedSquareMatrix(FixedSquareMatrix &&other) noexcept = default;
 
@@ -57,7 +58,7 @@ public:
     if (&other == this) {
       return *this;
     }
-    std::copy_n(other._data.get(), N * N, _data.get());
+    copy_n(other._data.get(), N * N, _data.get());
   }
   FixedSquareMatrix &operator=(FixedSquareMatrix &&other) noexcept = default;
   ~FixedSquareMatrix() noexcept                                    = default;
@@ -81,7 +82,7 @@ public:
 
   friend bool operator==(const FixedSquareMatrix &a,
                          const FixedSquareMatrix &b) noexcept {
-    return std::equal(a._data.get(), a._data.get() + N * N, b._data.get());
+    return equal(a._data.get(), a._data.get() + N * N, b._data.get());
   }
   friend bool operator!=(const FixedSquareMatrix &a,
                          const FixedSquareMatrix &b) noexcept {
@@ -102,27 +103,25 @@ public:
   }
 
   template <typename AA, i32 NN, typename PPlus, typename TTimes>
-  friend std::ostream &
-  operator<<(std::ostream &os,
-             const FixedSquareMatrix<AA, NN, PPlus, TTimes> &m);
+  friend ostream &operator<<(ostream &os,
+                             const FixedSquareMatrix<AA, NN, PPlus, TTimes> &m);
 
 private:
-  std::unique_ptr<T[]> _data;
+  unique_ptr<T[]> _data;
   Plus _plus;
   Times _times;
 };
 
 template <typename AA, i32 NN, typename PPlus, typename TTimes>
-std::ostream &operator<<(std::ostream &os,
-                         const FixedSquareMatrix<AA, NN, PPlus, TTimes> &m) {
+ostream &operator<<(ostream &os,
+                    const FixedSquareMatrix<AA, NN, PPlus, TTimes> &m) {
   for (i32 i = 0; i < NN; ++i) {
     for (i32 j = 0; j < NN; ++j) {
       os << m(i, j) << ", ";
     }
-    os << std::endl;
+    os << endl;
   }
   return os;
 }
 
 } // namespace jt::math
-

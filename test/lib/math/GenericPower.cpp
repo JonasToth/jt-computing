@@ -7,19 +7,19 @@ module jt.Math:TestGenericPower;
 import std;
 import jt.Math;
 
+using namespace std;
 using namespace jt;
 using namespace jt::math;
 
-template <>
-std::string jt::math::identity_element(std::plus<std::string> /*op*/) {
+template <> string jt::math::identity_element(plus<string> /*op*/) {
   return "";
 }
 
 TEST_CASE("GenericPower", "") {
   SECTION("Integer Multiplication") {
-    REQUIRE(power_monoid(10, 2, std::plus<int>{}) == 20);
-    REQUIRE(power_monoid(i64{1203}, i64{12}, std::plus<i64>{}) == i64{14436});
-    REQUIRE(power_monoid(u64{1203}, u64{12}, std::plus<u64>{}) == i64{14436});
+    REQUIRE(power_monoid(10, 2, plus<int>{}) == 20);
+    REQUIRE(power_monoid(i64{1203}, i64{12}, plus<i64>{}) == i64{14436});
+    REQUIRE(power_monoid(u64{1203}, u64{12}, plus<u64>{}) == i64{14436});
   }
   SECTION("Integer Exponentiation") {
     REQUIRE(power_monoid(i64{10}, i64{5}) == i64{100000});
@@ -48,11 +48,9 @@ TEST_CASE("GenericPower", "") {
     REQUIRE(decipher == plain);
   }
   SECTION("Raising String To Power") {
-    REQUIRE(
-        power_semigroup(std::string{"Hello"}, 8, std::plus<std::string>{}) ==
-        std::string{"HelloHelloHelloHelloHelloHelloHelloHello"});
-    REQUIRE(power_monoid(std::string{"Hello"}, 0, std::plus<std::string>{}) ==
-            std::string{""});
+    REQUIRE(power_semigroup(string{"Hello"}, 8, plus<string>{}) ==
+            string{"HelloHelloHelloHelloHelloHelloHelloHello"});
+    REQUIRE(power_monoid(string{"Hello"}, 0, plus<string>{}) == string{""});
   }
 }
 

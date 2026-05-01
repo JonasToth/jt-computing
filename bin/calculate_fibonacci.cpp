@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) try {
        << "\n";
 
   return EXIT_SUCCESS;
-} catch (std::exception &e) {
+} catch (exception &e) {
   cerr << "Unhandled exception occured during processing: " << e.what() << endl;
   return EXIT_FAILURE;
 } catch (...) {

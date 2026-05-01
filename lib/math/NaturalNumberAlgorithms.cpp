@@ -6,6 +6,8 @@ import :Operations;
 import std;
 import jt.Container;
 
+using namespace std;
+
 export namespace jt::math {
 
 /// Computes all prime factors that are not @c 1 or @c n and returns them.
@@ -14,7 +16,7 @@ export namespace jt::math {
 /// const auto factors = getPrimeFactors(84U);
 /// factors == {2, 2, 3, 7};
 /// @endcode
-template <NaturalNumber N> std::vector<N> getPrimeFactors(N n);
+template <NaturalNumber N> vector<N> getPrimeFactors(N n);
 
 /// Checks if a number is prime by determining its prime factors. If the number
 /// is even, it returns early with a @c false.
@@ -24,8 +26,7 @@ template <NaturalNumber N> bool isPrime(NaturalNumber auto n);
 /// Computes the prime numbers up to a specific N.
 /// @warning Uses O(N) ~ memory for the computation.
 /// @returns vector of prime numbers.
-template <NaturalNumber N>
-std::vector<N> sieveEratosthenes(const usize &maximum);
+template <NaturalNumber N> vector<N> sieveEratosthenes(const usize &maximum);
 
 /// Computes the greatest-common-divisor for natural numbers.
 template <NaturalNumber N> N gcd(N a, N b);
@@ -33,8 +34,8 @@ template <NaturalNumber N> N gcd(N a, N b);
 /// Computes the least-common-multiple for natural numbers.
 template <NaturalNumber N> N lcm(const N &a, const N &b);
 
-template <NaturalNumber N> std::vector<N> getPrimeFactors(N n) {
-  std::vector<N> result;
+template <NaturalNumber N> vector<N> getPrimeFactors(N n) {
+  vector<N> result;
 
   if (n == N{0U} || n == N{1U} || n == N{2U}) {
     return result;
@@ -103,14 +104,13 @@ template <NaturalNumber N> bool isPrime(N n) {
   return true;
 }
 
-template <NaturalNumber N>
-std::vector<N> sieveEratosthenes(const usize &maximum) {
+template <NaturalNumber N> vector<N> sieveEratosthenes(const usize &maximum) {
   // All numbers are potentially prime numbers at the beginning. The algorithm
   // strikes through specific numbers.
   container::BitVector sieve{maximum, /*initialValue=*/true};
 
   // This vector stores the determined primes.
-  std::vector<N> collectedPrimes;
+  vector<N> collectedPrimes;
 
   // The number 0 and 1 are not prime numbers.
   sieve.set(0, false);
@@ -120,7 +120,7 @@ std::vector<N> sieveEratosthenes(const usize &maximum) {
   usize currentMinimalFactor{2U};
   // ... and stop at sqrt(maximum). At this point, all prime numbers are
   // discovered.
-  usize maximalFactor{static_cast<usize>(std::ceil(std::sqrt(maximum)))};
+  usize maximalFactor{static_cast<usize>(ceil(sqrt(maximum)))};
 
   while (currentMinimalFactor <= maximalFactor) {
     collectedPrimes.emplace_back(N{currentMinimalFactor});
@@ -142,8 +142,8 @@ std::vector<N> sieveEratosthenes(const usize &maximum) {
           return i;
         }
       }
-      throw std::runtime_error{"Failed to determine next prime number."
-                               " It should terminate!"};
+      throw runtime_error{"Failed to determine next prime number."
+                          " It should terminate!"};
     };
     currentMinimalFactor = findNextPrime(currentMinimalFactor);
   }
@@ -161,7 +161,7 @@ std::vector<N> sieveEratosthenes(const usize &maximum) {
 template <NaturalNumber N> N gcd(N a, N b) {
   while (b != N{0U}) {
     a %= b;
-    std::swap(a, b);
+    swap(a, b);
   }
   return a;
 }
@@ -174,5 +174,3 @@ template <NaturalNumber N> N lcm(const N &a, const N &b) {
 }
 
 } // namespace jt::math
-
-

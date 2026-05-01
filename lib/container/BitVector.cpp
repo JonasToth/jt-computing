@@ -7,6 +7,8 @@ export module jt.Container:BitVector;
 import std;
 import jt.Core;
 
+using namespace std;
+
 namespace jt::container {
 
 export class BitVector {
@@ -15,7 +17,7 @@ public:
 
   /// Construct a @c BitVector that has enough bits to represent @c value and
   /// assign @c values bit pattern to the individual bits.
-  explicit BitVector(std::unsigned_integral auto value);
+  explicit BitVector(unsigned_integral auto value);
 
   /// Construct a @c BitVector with initial capacity of at least @c length bits.
   BitVector(usize length, bool initialValue);
@@ -53,10 +55,10 @@ public:
   BitVector &operator>>=(int i);
 
 private:
-  std::vector<u8> _data;
+  vector<u8> _data;
 };
 
-BitVector::BitVector(std::unsigned_integral auto value)
+BitVector::BitVector(unsigned_integral auto value)
     : _data(sizeof(value) * 8, u8{0}) {
   for (u32 i = 0U; i < 8 * sizeof(value); ++i) {
     const bool bitFromValue = value & (static_cast<decltype(value)>(1U) << i);
@@ -68,9 +70,8 @@ BitVector::BitVector(usize length, bool initialValue)
     : _data(length, initialValue ? u8{1} : u8{0}) {}
 
 void BitVector::normalize() {
-  const auto itFirstOne = std::find(_data.crbegin(), _data.crend(), u8{1});
-  _data.erase(_data.begin() + std::distance(itFirstOne, _data.crend()),
-              _data.end());
+  const auto itFirstOne = find(_data.crbegin(), _data.crend(), u8{1});
+  _data.erase(_data.begin() + distance(itFirstOne, _data.crend()), _data.end());
 }
 
 BitVector &BitVector::operator<<=(int i) {

@@ -6,18 +6,20 @@ import :BigUInt;
 import std;
 import jt.Core;
 
+using namespace std;
+
 export namespace jt::math {
 
 class Rational {
 public:
   Rational() = default;
 
-  template <std::regular N1> Rational(N1 numerator, const BigInt &denominator);
+  template <regular N1> Rational(N1 numerator, const BigInt &denominator);
 
   /// Compare the sign to @c other and continue with comparing the value itself.
   bool operator==(const Rational &other) const noexcept = default;
 
-  std::strong_ordering operator<=>(const Rational &other) const;
+  strong_ordering operator<=>(const Rational &other) const;
 
   Rational &operator+=(const Rational &other);
   Rational &operator-=(const Rational &other);
@@ -50,18 +52,18 @@ inline Rational operator""_Q(unsigned long long number) {
 Rational operator""_Q(long double rational);
 
 /// Write 'z' to 'os', optionally adhering to the base modifiers.
-/// @sa operator<<(std::ostream&, BigUInt)
-std::ostream &operator<<(std::ostream &os, const Rational &z);
+/// @sa operator<<(ostream&, BigUInt)
+ostream &operator<<(ostream &os, const Rational &z);
 
 /// Parse 'z' from 'is', optionally adhering to the base modifiers.
-/// @sa operator>>(std::istream&, BigUInt&)
-// std::istream &operator>>(std::istream &is, Rational &z);
+/// @sa operator>>(istream&, BigUInt&)
+// istream &operator>>(istream &is, Rational &z);
 
-template <std::regular N1>
+template <regular N1>
 Rational::Rational(N1 numerator, const BigInt &denominator)
-    : _num{std::move(numerator)}, _denom{denominator.abs()} {
+    : _num{move(numerator)}, _denom{denominator.abs()} {
   if (_denom == 0U) {
-    throw std::invalid_argument{"Division by 0 detected"};
+    throw invalid_argument{"Division by 0 detected"};
   }
   if (denominator.isNegative()) {
     _num.negate();
@@ -78,12 +80,12 @@ void Rational::reduce() {
   _denom /= d;
 }
 
-std::strong_ordering Rational::operator<=>(const Rational &other) const {
+strong_ordering Rational::operator<=>(const Rational &other) const {
   if (getNumerator().isNegative() && !other.getNumerator().isNegative()) {
-    return std::strong_ordering::less;
+    return strong_ordering::less;
   }
   if (!getNumerator().isNegative() && other.getNumerator().isNegative()) {
-    return std::strong_ordering::greater;
+    return strong_ordering::greater;
   }
   const auto denom1         = BigInt{getDenominator()};
   const auto denom2         = BigInt{other.getDenominator()};
@@ -147,9 +149,11 @@ Rational &Rational::operator-() noexcept {
   return *this;
 }
 
-Rational operator""_Q(long double rational) { return Rational{i64(rational), 1_Z}; }
+Rational operator""_Q(long double rational) {
+  return Rational{i64(rational), 1_Z};
+}
 
-std::ostream &operator<<(std::ostream &os, const Rational &z) {
+ostream &operator<<(ostream &os, const Rational &z) {
   os << z.getNumerator() << "/" << z.getDenominator();
   return os;
 }

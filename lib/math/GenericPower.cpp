@@ -6,12 +6,14 @@ export module jt.Math:GenericPower;
 
 import :Concepts;
 
+using namespace std;
+
 export namespace jt::math {
 
 bool isOdd(const Integer auto &n) { return n & 1; }
 bool isEven(const Integer auto &n) { return !isOdd(n); }
 
-template <std::regular A, Integer N, Semigroup<A> Op>
+template <regular A, Integer N, Semigroup<A> Op>
 A power_accumulate_semigroup(A r, A a, N n, Op op) {
   CONTRACT_ASSERT(n >= N{0U});
   if (n == N{0U}) {
@@ -30,7 +32,7 @@ A power_accumulate_semigroup(A r, A a, N n, Op op) {
   }
 }
 
-template <std::regular A, Integer N, Semigroup<A> Op = std::multiplies<A>>
+template <regular A, Integer N, Semigroup<A> Op = multiplies<A>>
 A power_semigroup(A a, N n, Op op = {}) {
   CONTRACT_ASSERT(n > N{0U});
   while (!isOdd(n)) {
@@ -43,21 +45,21 @@ A power_semigroup(A a, N n, Op op = {}) {
   return power_accumulate_semigroup(a, op(a, a), (n - N{1U}) / N{2U}, op);
 }
 
-template <std::regular A, Integer N, Monoid<A> Op = std::multiplies<A>>
+template <regular A, Integer N, Monoid<A> Op = multiplies<A>>
 A power_monoid(A a, N n, Op op = {}) {
   CONTRACT_ASSERT(n >= N{0U});
   if (n == N{0U}) {
     return identity_element(op);
   }
-  return power_semigroup(std::move(a), std::move(n), std::move(op));
+  return power_semigroup(move(a), move(n), move(op));
 }
 
-template <std::regular A, Integer N, Group<A> Op = std::multiplies<A>>
+template <regular A, Integer N, Group<A> Op = multiplies<A>>
 A power_group(A a, N n, Op op = {}) {
   if (n < N{0U}) {
     n = -n;
     a = inverse_operation(op)(a);
   }
-  return power_monoid(std::move(a), std::move(n), std::move(op));
+  return power_monoid(move(a), move(n), move(op));
 }
 } // namespace jt::math

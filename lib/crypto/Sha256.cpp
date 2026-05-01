@@ -9,23 +9,24 @@ import :Concepts;
 import jt.Core;
 import std;
 
+using namespace std;
+
 namespace {
 using namespace jt;
 
-std::string str(const std::array<u32, 8> &digest) {
-  std::stringstream s;
-  s << std::setfill('0') << std::hex;
-  auto bytes = std::as_bytes(std::span{digest});
+string str(const array<u32, 8> &digest) {
+  stringstream s;
+  s << setfill('0') << hex;
+  auto bytes = as_bytes(span{digest});
   for (auto b : bytes) {
     // Note: Cast to @c uint is necessary, because @c u8 turns into a char and
     // not a hex-number.
-    s << std::setw(2) << std::to_integer<unsigned int>(b);
+    s << setw(2) << to_integer<uint>(b);
   }
 
   return s.str();
 }
 
-using std::rotr;
 /// Defined in Section 4.1.2, (4.2).
 u32 Ch(u32 x, u32 y, u32 z) { return (x & y) ^ (~x & z); }
 /// Defined in Section 4.1.2, (4.3).
@@ -48,33 +49,33 @@ class Sha256Sum {
 public:
   void process(CryptHashable auto const &data);
 
-  void process(char const* str) = delete;
-  void process(std::string_view str) {
-    auto s = std::span{str};
-    auto b = std::as_bytes(s);
+  void process(char const *str) = delete;
+  void process(string_view str) {
+    auto s = span{str};
+    auto b = as_bytes(s);
     return process(b);
   }
 
-  template <std::input_iterator I> void process(I begin, I end) {
-    return process(std::ranges::subrange{begin, end});
+  template <input_iterator I> void process(I begin, I end) {
+    return process(ranges::subrange{begin, end});
   }
 
-  std::string digest();
+  string digest();
   void reset();
 
 private:
   static constexpr usize blockSize = 64;
   static constexpr auto cacheLine  = 64;
-  alignas(cacheLine) std::array<u8, blockSize> _data{0};
+  alignas(cacheLine) array<u8, blockSize> _data{0};
 
   /// Defined in Section 5.3.3.
-  alignas(cacheLine) std::array<u32, 8> H{
+  alignas(cacheLine) array<u32, 8> H{
       /*A=*/0x6a09e667, /*B=*/0xbb67ae85, /*C=*/0x3c6ef372,
       /*D=*/0xa54ff53a, /*E=*/0x510e527f, /*F=*/0x9b05688c,
       /*G=*/0x1f83d9ab, /*H=*/0x5be0cd19};
 
   // Constants defined in Section 4.2.3.
-  alignas(cacheLine) static constexpr std::array<u32, 64> K = {
+  alignas(cacheLine) static constexpr array<u32, 64> K = {
       0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1,
       0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
       0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786,
@@ -89,7 +90,7 @@ private:
 
   u64 _blockLength{0};
   u64 _bitLen{0};
-  std::string _digest;
+  string _digest;
 
   void transform();
   void pad();
@@ -97,10 +98,10 @@ private:
 
 void Sha256Sum::process(CryptHashable auto const &data) {
   if (!_digest.empty()) {
-    throw std::runtime_error{"Digest Computed, Can not further update Message"};
+    throw runtime_error{"Digest Computed, Can not further update Message"};
   }
   for (auto b : data) {
-    _data[_blockLength++] = std::bit_cast<u8>(b);
+    _data[_blockLength++] = bit_cast<u8>(b);
 
     // Once a datablock is full, apply the "compression function" that actually
     // hashes.
@@ -114,20 +115,20 @@ void Sha256Sum::process(CryptHashable auto const &data) {
   }
 }
 
-std::string Sha256Sum::digest() {
+string Sha256Sum::digest() {
   if (_digest.empty()) {
     pad();
 
-    auto hashDigest = std::array<u32, 8>{0};
-    if constexpr (std::endian::native == std::endian::little) {
+    auto hashDigest = array<u32, 8>{0};
+    if constexpr (endian::native == endian::little) {
       std::transform(H.begin(), H.end(), hashDigest.begin(),
-                     [](u32 state) { return std::byteswap(state); });
+                     [](u32 state) { return byteswap(state); });
     } else {
-      std::copy(H.begin(), H.end(), hashDigest.begin());
+      copy(H.begin(), H.end(), hashDigest.begin());
     }
     auto digestString = str(hashDigest);
     CONTRACT_ASSERT(digestString.size() == 64);
-    _digest           = digestString;
+    _digest = digestString;
   }
 
   return _digest;
@@ -144,27 +145,27 @@ void Sha256Sum::reset() {
   // clang-format on
 
   // Reset the internal values that are used to pad and process the data.
-  _data        = std::array<u8, blockSize>{0};
+  _data        = array<u8, blockSize>{0};
   _blockLength = 0;
   _bitLen      = 0;
   _digest.clear();
 }
 
 void Sha256Sum::transform() {
-  alignas(cacheLine) std::array<u32, 64> W;
+  alignas(cacheLine) array<u32, 64> W;
 
   // Section 6.2.2, Step 1. (1)
   // Insert all data of this block at the start of the message schedule in
   // big-endian words.
 
-  auto reinterpretedData = std::span<u32>{reinterpret_cast<u32 *>(_data.data()),
-                                          blockSize / sizeof(u32)};
+  auto reinterpretedData =
+      span<u32>{reinterpret_cast<u32 *>(_data.data()), blockSize / sizeof(u32)};
 
-  if constexpr (std::endian::native == std::endian::little) {
+  if constexpr (endian::native == endian::little) {
     std::transform(reinterpretedData.begin(), reinterpretedData.end(),
-                   W.begin(), [](u32 state) { return std::byteswap(state); });
+                   W.begin(), [](u32 state) { return byteswap(state); });
   } else {
-    std::copy(reinterpretedData.begin(), reinterpretedData.end(), W.begin());
+    copy(reinterpretedData.begin(), reinterpretedData.end(), W.begin());
   }
 
   // Section 6.2.2, Step 1. (2).
@@ -174,8 +175,8 @@ void Sha256Sum::transform() {
   }
 
   // Section 6.2.2, Step 2.
-  alignas(cacheLine) std::array<u32, 8> abcdefgh = H;
-  auto &[a, b, c, d, e, f, g, h]                 = abcdefgh;
+  alignas(cacheLine) array<u32, 8> abcdefgh = H;
+  auto &[a, b, c, d, e, f, g, h]            = abcdefgh;
 
   // Section 6.2.2, Step 3.
   for (u8 t = 0; t < 64; ++t) {
@@ -220,8 +221,8 @@ void Sha256Sum::pad() {
   }
 
   if (_blockLength >= 56) {
-    transform();
-    std::fill_n(_data.begin(), 56, 0U);
+    this->transform();
+    fill_n(_data.begin(), 56, 0U);
   }
 
   // Append to the padding the total message's length in bits and transform.

@@ -11,6 +11,8 @@ import std;
 import jt.Core;
 import jt.Container;
 
+using namespace std;
+
 namespace jt::math {
 
 /// Arbitrary sized unsigned integer type, stored as @c container::BitVector.
@@ -20,7 +22,7 @@ public:
   BigUInt() = default;
 
   /// Construct the number from a builtin unsigned integer @c value.
-  explicit BigUInt(std::unsigned_integral auto value);
+  explicit BigUInt(unsigned_integral auto value);
 
   /// Returns the number of bits this number requires.
   [[nodiscard]] usize binaryDigits() const noexcept { return _bits.size(); }
@@ -28,53 +30,52 @@ public:
   /// Compare all digits of both @c BigUInt and return @c true if they are
   /// identical.
   bool operator==(const BigUInt &other) const noexcept;
-  bool operator==(std::unsigned_integral auto other) const noexcept;
+  bool operator==(unsigned_integral auto other) const noexcept;
 
   /// Compare the length of both numbers, because both are canonicalized to not
   /// have leading zeros.
-  std::strong_ordering operator<=>(const BigUInt &other) const noexcept;
-  std::strong_ordering
-  operator<=>(std::unsigned_integral auto other) const noexcept;
+  strong_ordering operator<=>(const BigUInt &other) const noexcept;
+  strong_ordering operator<=>(unsigned_integral auto other) const noexcept;
 
   /// Implement assign-add with another @c BigUInt.
   BigUInt &operator+=(const BigUInt &other);
   /// Implement assign-add with another @c unsigned type by constructing a @c
   /// BigUInt and using the generalized implementation.
-  BigUInt &operator+=(std::unsigned_integral auto value);
+  BigUInt &operator+=(unsigned_integral auto value);
 
   /// Implement assign-subtract with another @c BigUInt. The result must be a
   /// non-negative number.
   /// @note The algorithm uses borrowing and not a complement represenation.
-  /// @throws @c std::domain_error if @c other is bigger than @c this.
+  /// @throws @c domain_error if @c other is bigger than @c this.
   BigUInt &operator-=(const BigUInt &other);
   /// Implement an overload for assign-subtract for builtin types.
   /// @sa operator-=(const BigUInt& other)
-  /// @throws @c std::domain_error if @c value is bigger than @c this.
-  BigUInt &operator-=(std::unsigned_integral auto value);
+  /// @throws @c domain_error if @c value is bigger than @c this.
+  BigUInt &operator-=(unsigned_integral auto value);
 
   /// Implement assign-multiply with another @c BigUInt.
   BigUInt &operator*=(const BigUInt &other);
   /// Implement assign-multiply with another @c unsigned type by constructing a
   /// @c BigUInt and using the generalized implementation.
-  BigUInt &operator*=(std::unsigned_integral auto value);
+  BigUInt &operator*=(unsigned_integral auto value);
 
   /// Implement assign-division with another @c BigUInt that drops the remainder
   /// of the division.
   /// @sa divmod
-  /// @throws std::invalid_argument if @c other == 0U
+  /// @throws invalid_argument if @c other == 0U
   BigUInt &operator/=(const BigUInt &other);
   /// Implement assign-division with another @c unsigned type by constructing a
   /// @c BigUInt and using the generalized implementation.
-  BigUInt &operator/=(std::unsigned_integral auto value);
+  BigUInt &operator/=(unsigned_integral auto value);
 
   /// Implement assign-modulo-division with another @c BigUInt that drops the
   /// quotient of the division and assigns the remainder to *this.
   /// @sa divmod
-  /// @throws std::invalid_argument if @c other == 0U
+  /// @throws invalid_argument if @c other == 0U
   BigUInt &operator%=(const BigUInt &other);
   /// Implement assign-modulo-division with another @c unsigned type by
   /// constructing a @c BigUInt and using the generalized implementation.
-  BigUInt &operator%=(std::unsigned_integral auto value);
+  BigUInt &operator%=(unsigned_integral auto value);
 
   /// Shifts the underlying @c BitVector by @c value positions to the left.
   /// This doubles the @c BigUInt @c value times.
@@ -94,9 +95,9 @@ public:
   [[nodiscard]] bool isOdd() const noexcept { return !isEven(); }
 
   /// Tries to convert to a builtin type. If the value does not fit, it throws
-  /// an 'std::out_of_range' exception instead of performing a narrowing
+  /// an 'out_of_range' exception instead of performing a narrowing
   /// conversion.
-  template <std::unsigned_integral Target> Target convertTo() const;
+  template <unsigned_integral Target> Target convertTo() const;
 
 private:
   container::BitVector _bits;
@@ -104,53 +105,52 @@ private:
 
 /// Perfom natural number division and return the quotient and the
 /// modulus/remainder.
-/// @throws std::invalid_argument if @c divisor == 0.
+/// @throws invalid_argument if @c divisor == 0.
 /// @returns {quotient, modulus}
-export std::pair<BigUInt, BigUInt> divmod(BigUInt dividend,
-                                          const BigUInt &divisor);
+export pair<BigUInt, BigUInt> divmod(BigUInt dividend, const BigUInt &divisor);
 
 /// Write 'n' to 'os', optionally adhering to the base modifiers.
-export std::ostream &operator<<(std::ostream &os, BigUInt n);
+export ostream &operator<<(ostream &os, BigUInt n);
 
 /// Parse 'n' from 'is', optionally adhering to the base modifiers.
-export std::istream &operator>>(std::istream &is, BigUInt &n);
+export istream &operator>>(istream &is, BigUInt &n);
 
 export BigUInt operator""_N(unsigned long long literal);
-export BigUInt operator""_N(char const *literal, std::size_t len);
+export BigUInt operator""_N(char const *literal, size_t len);
 
-BigUInt::BigUInt(std::unsigned_integral auto value) : _bits{value} {
+BigUInt::BigUInt(unsigned_integral auto value) : _bits{value} {
   _bits.normalize();
 }
 
-bool BigUInt::operator==(std::unsigned_integral auto other) const noexcept {
+bool BigUInt::operator==(unsigned_integral auto other) const noexcept {
   return *this == BigUInt{other};
 }
 
-std::strong_ordering
-BigUInt::operator<=>(std::unsigned_integral auto other) const noexcept {
+strong_ordering
+BigUInt::operator<=>(unsigned_integral auto other) const noexcept {
   return *this <=> BigUInt{other};
 }
 
-BigUInt &BigUInt::operator+=(std::unsigned_integral auto value) {
+BigUInt &BigUInt::operator+=(unsigned_integral auto value) {
   return *this += BigUInt{value};
 }
 
-BigUInt &BigUInt::operator-=(std::unsigned_integral auto value) {
+BigUInt &BigUInt::operator-=(unsigned_integral auto value) {
   return *this -= BigUInt{value};
 }
 
-BigUInt &BigUInt::operator*=(std::unsigned_integral auto value) {
+BigUInt &BigUInt::operator*=(unsigned_integral auto value) {
   return *this *= BigUInt{value};
 }
 
-BigUInt &BigUInt::operator/=(std::unsigned_integral auto value) {
+BigUInt &BigUInt::operator/=(unsigned_integral auto value) {
   return *this /= BigUInt{value};
 }
 
-template <std::unsigned_integral Target> Target BigUInt::convertTo() const {
+template <unsigned_integral Target> Target BigUInt::convertTo() const {
   Target result{0U};
-  if (*this > std::numeric_limits<Target>::max()) {
-    throw std::out_of_range{"Conversion would narrow"};
+  if (*this > numeric_limits<Target>::max()) {
+    throw out_of_range{"Conversion would narrow"};
   }
 
   for (usize i = 0U; i < _bits.size(); i++) {
@@ -163,47 +163,42 @@ template <std::unsigned_integral Target> Target BigUInt::convertTo() const {
 }
 
 export inline BigUInt operator+(BigUInt a, const BigUInt &b) { return a += b; }
-export inline BigUInt operator+(std::unsigned_integral auto a,
-                                const BigUInt &b) {
+export inline BigUInt operator+(unsigned_integral auto a, const BigUInt &b) {
   return BigUInt{a} += b;
 }
-export inline BigUInt operator+(BigUInt a, std::unsigned_integral auto b) {
+export inline BigUInt operator+(BigUInt a, unsigned_integral auto b) {
   return a += b;
 }
 
 export inline BigUInt operator-(BigUInt a, const BigUInt &b) { return a -= b; }
-export inline BigUInt operator-(std::unsigned_integral auto a,
-                                const BigUInt &b) {
+export inline BigUInt operator-(unsigned_integral auto a, const BigUInt &b) {
   return BigUInt{a} -= b;
 }
-export inline BigUInt operator-(BigUInt a, std::unsigned_integral auto b) {
+export inline BigUInt operator-(BigUInt a, unsigned_integral auto b) {
   return a -= b;
 }
 
 export inline BigUInt operator*(BigUInt a, const BigUInt &b) { return a *= b; }
-export inline BigUInt operator*(std::unsigned_integral auto a,
-                                const BigUInt &b) {
+export inline BigUInt operator*(unsigned_integral auto a, const BigUInt &b) {
   return BigUInt{a} *= b;
 }
-export inline BigUInt operator*(BigUInt a, std::unsigned_integral auto b) {
+export inline BigUInt operator*(BigUInt a, unsigned_integral auto b) {
   return a *= b;
 }
 
 export inline BigUInt operator/(BigUInt a, const BigUInt &b) { return a /= b; }
-export inline BigUInt operator/(std::unsigned_integral auto a,
-                                const BigUInt &b) {
+export inline BigUInt operator/(unsigned_integral auto a, const BigUInt &b) {
   return BigUInt{a} /= b;
 }
-export inline BigUInt operator/(BigUInt a, std::unsigned_integral auto b) {
+export inline BigUInt operator/(BigUInt a, unsigned_integral auto b) {
   return a /= b;
 }
 
 export inline BigUInt operator%(BigUInt a, const BigUInt &b) { return a %= b; }
-export inline BigUInt operator%(std::unsigned_integral auto a,
-                                const BigUInt &b) {
+export inline BigUInt operator%(unsigned_integral auto a, const BigUInt &b) {
   return BigUInt{a} %= b;
 }
-export inline BigUInt operator%(BigUInt a, std::unsigned_integral auto b) {
+export inline BigUInt operator%(BigUInt a, unsigned_integral auto b) {
   return a %= b;
 }
 
@@ -211,20 +206,20 @@ export inline bool isEven(const BigUInt &n) noexcept { return n.isEven(); }
 export inline bool isOdd(const BigUInt &n) noexcept { return n.isOdd(); }
 
 bool BigUInt::operator==(const BigUInt &other) const noexcept {
-  return (*this <=> other) == std::strong_ordering::equal;
+  return (*this <=> other) == strong_ordering::equal;
 }
-std::strong_ordering BigUInt::operator<=>(const BigUInt &other) const noexcept {
+strong_ordering BigUInt::operator<=>(const BigUInt &other) const noexcept {
   auto digitsComparison = binaryDigits() <=> other.binaryDigits();
   // - This number has less digits => this number must be smaller than other.
   // - This number has more digits => this number must be bigger than other.
-  if (digitsComparison != std::strong_ordering::equal) {
+  if (digitsComparison != strong_ordering::equal) {
     return digitsComparison;
   }
 
   CONTRACT_ASSERT(other.binaryDigits() == binaryDigits());
 
   if (binaryDigits() == usize{0ULL}) {
-    return std::strong_ordering::equal;
+    return strong_ordering::equal;
   }
 
   for (usize i = binaryDigits(); i > 0; --i) {
@@ -232,13 +227,12 @@ std::strong_ordering BigUInt::operator<=>(const BigUInt &other) const noexcept {
     if (_bits.get(idx) != other._bits.get(idx)) {
       // *this is smaller than @c other if the first differing digit is 'false'.
       // Otherwise @c other is smaller.
-      return !_bits.get(idx) ? std::strong_ordering::less
-                             : std::strong_ordering::greater;
+      return !_bits.get(idx) ? strong_ordering::less : strong_ordering::greater;
     }
   }
 
   // All digits are identical, so this number is not smaller than @c other.
-  return std::strong_ordering::equal;
+  return strong_ordering::equal;
 }
 
 BigUInt &BigUInt::operator+=(const BigUInt &other) {
@@ -292,13 +286,13 @@ BigUInt &BigUInt::operator-=(const BigUInt &other) {
 
   // Subtraction on natural numbers is only defined for @c Bigger - Smaller
   // numbers. Negative numbers can not be represented with @c BigUInt.
-  if (magnitudeRelation == std::strong_ordering::less) {
-    throw std::domain_error{"unsigned-subtraction would yield negative result"};
+  if (magnitudeRelation == strong_ordering::less) {
+    throw domain_error{"unsigned-subtraction would yield negative result"};
   }
 
   // Both number are equal. The result of subtraction is the neutral element, @c
   // 0U.
-  if (magnitudeRelation == std::strong_ordering::equal) {
+  if (magnitudeRelation == strong_ordering::equal) {
     *this = BigUInt{0U};
     return *this;
   }
@@ -309,7 +303,7 @@ BigUInt &BigUInt::operator-=(const BigUInt &other) {
     return *this;
   }
 
-  CONTRACT_ASSERT(magnitudeRelation == std::strong_ordering::greater);
+  CONTRACT_ASSERT(magnitudeRelation == strong_ordering::greater);
 
   // 1. Subtract @c other from @c this by subtracting each digit individually.
   //    If @c 0 - 1 is executed, the subtraction "borrows" from the next digit.
@@ -362,7 +356,7 @@ static BigUInt egyptianMultiplication(BigUInt n, BigUInt a) {
   if (n == one) {
     return a;
   }
-  return multiplyAccumulate(BigUInt{0U}, std::move(n), std::move(a));
+  return multiplyAccumulate(BigUInt{0U}, move(n), move(a));
 }
 
 BigUInt &BigUInt::operator*=(const BigUInt &other) {
@@ -426,9 +420,9 @@ static BigUInt largestDoubling(const BigUInt &a, BigUInt b) {
   return b;
 }
 
-std::pair<BigUInt, BigUInt> divmod(BigUInt dividend, const BigUInt &divisor) {
+pair<BigUInt, BigUInt> divmod(BigUInt dividend, const BigUInt &divisor) {
   if (divisor == 0U) {
-    throw std::invalid_argument{"divison by zero is not possible"};
+    throw invalid_argument{"divison by zero is not possible"};
   }
 
   if (dividend == 0U) {
@@ -460,9 +454,9 @@ std::pair<BigUInt, BigUInt> divmod(BigUInt dividend, const BigUInt &divisor) {
 export BigUInt operator""_N(unsigned long long int literal) {
   return BigUInt{literal};
 }
-export BigUInt operator""_N(char const *literal, std::size_t /*len*/) {
+export BigUInt operator""_N(char const *literal, size_t /*len*/) {
   auto r  = 0_N;
-  auto ss = std::stringstream{literal};
+  auto ss = stringstream{literal};
   ss >> r;
   return r;
 }

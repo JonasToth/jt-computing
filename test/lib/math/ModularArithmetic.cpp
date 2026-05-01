@@ -7,6 +7,7 @@ module jt.Math:TestModularArithmetic;
 import std;
 import jt.Math;
 
+using namespace std;
 using namespace jt;
 using namespace jt::math;
 
@@ -48,24 +49,23 @@ TEST_CASE("Modular Multiplication", "") {
     REQUIRE(multiplies_mod{10_N}(9_N, 2_N) == 8_N);
   }
 }
-template <typename Int = BigUInt>
-Int fromHexString(const std::string &numberHex) {
+template <typename Int = BigUInt> Int fromHexString(const string &numberHex) {
   Int result{0U};
-  std::istringstream{numberHex} >> std::hex >> result;
+  istringstream{numberHex} >> hex >> result;
   return result;
 }
-template <typename Int = BigUInt> std::string toHexString(const Int &n) {
-  std::ostringstream oss;
-  oss << std::hex << n;
+template <typename Int = BigUInt> string toHexString(const Int &n) {
+  ostringstream oss;
+  oss << hex << n;
   return oss.str();
 }
-template <typename Int = BigUInt> std::string toString(const Int &n) {
-  std::ostringstream oss;
-  oss << std::dec << n;
+template <typename Int = BigUInt> string toString(const Int &n) {
+  ostringstream oss;
+  oss << dec << n;
   return oss.str();
 }
 TEST_CASE("Example RSA", "[.]") {
-  using namespace std::string_literals;
+  using namespace string_literals;
   const auto modulus =
       "C32F20E0AB05983D8AB9FD8FCC85CDFB6DFBA49D4E5A17A543486B03EA55D1B09CA6C825"
       "030C7D7F57F0D56092648DB4255C339CCAD83AD5D391DBEAD94E6420E2D78B981954CEE3"
@@ -175,7 +175,7 @@ TEST_CASE("Example RSA", "[.]") {
 }
 
 TEST_CASE("Example RSA Fast", "") {
-  using namespace std::string_literals;
+  using namespace string_literals;
   const auto modulus =
       "C32F20E0AB05983D8AB9FD8FCC85CDFB6DFBA49D4E5A17A543486B03EA55D1B09CA6C825"
       "030C7D7F57F0D56092648DB4255C339CCAD83AD5D391DBEAD94E6420E2D78B981954CEE3"

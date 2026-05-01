@@ -6,6 +6,7 @@ module jt.Math:TestNaturalNumberAlgorithms;
 
 import jt.Math;
 
+using namespace std;
 using namespace jt;
 using namespace jt::math;
 
@@ -28,7 +29,7 @@ TEST_CASE("ComputePrimeFactors", "") {
   }
   SECTION("4") {
     const auto factors = getPrimeFactors(4U);
-    REQUIRE(factors == std::vector<unsigned int>{2U, 2U});
+    REQUIRE(factors == vector<uint>{2U, 2U});
   }
   SECTION("5") {
     const auto factors = getPrimeFactors(5U);
@@ -36,26 +37,25 @@ TEST_CASE("ComputePrimeFactors", "") {
   }
   SECTION("6") {
     const auto factors = getPrimeFactors(6U);
-    REQUIRE(factors == std::vector<unsigned int>{2U, 3U});
+    REQUIRE(factors == vector<uint>{2U, 3U});
   }
   SECTION("8") {
     const auto factors = getPrimeFactors(8U);
-    REQUIRE(factors == std::vector<unsigned int>{2U, 2U, 2U});
+    REQUIRE(factors == vector<uint>{2U, 2U, 2U});
   }
   SECTION("15") {
     const auto factors = getPrimeFactors(15U);
-    REQUIRE(factors == std::vector<unsigned int>{3U, 5U});
+    REQUIRE(factors == vector<uint>{3U, 5U});
   }
   SECTION("120391248") {
     const auto factors = getPrimeFactors(BigUInt{120391248U});
-    REQUIRE(factors == std::vector<BigUInt>{BigUInt{2U}, BigUInt{2U},
-                                            BigUInt{2U}, BigUInt{2U},
-                                            BigUInt{3U}, BigUInt{2508151U}});
+    REQUIRE(factors == vector<BigUInt>{BigUInt{2U}, BigUInt{2U}, BigUInt{2U},
+                                       BigUInt{2U}, BigUInt{3U},
+                                       BigUInt{2508151U}});
   }
   SECTION("Prime Number Product factors into the primes again") {
     const auto factors = getPrimeFactors(BigUInt{132049U} * BigUInt{216091U});
-    REQUIRE(factors ==
-            std::vector<BigUInt>{BigUInt{132049U}, BigUInt{216091U}});
+    REQUIRE(factors == vector<BigUInt>{BigUInt{132049U}, BigUInt{216091U}});
   }
 }
 

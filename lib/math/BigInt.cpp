@@ -9,6 +9,8 @@ import :BigUInt;
 import std;
 import jt.Core;
 
+using namespace std;
+
 export namespace jt::math {
 
 /// Stores a @c BigUInt together with a sign bit.
@@ -19,24 +21,22 @@ public:
   BigInt() = default;
 
   /// Construct a @c BigInt from any builtin integer type.
-  template <std::signed_integral Z> explicit BigInt(Z value);
-  template <std::unsigned_integral Z> explicit BigInt(Z value) : _val{value} {}
-  explicit BigInt(BigUInt value) : _val{std::move(value)} {}
+  template <signed_integral Z> explicit BigInt(Z value);
+  template <unsigned_integral Z> explicit BigInt(Z value) : _val{value} {}
+  explicit BigInt(BigUInt value) : _val{move(value)} {}
 
   /// Compare the sign to @c other and continue with comparing the value itself.
   bool operator==(const BigInt &other) const noexcept;
   bool operator==(const BigUInt &other) const noexcept;
-  bool operator==(std::unsigned_integral auto other) const noexcept;
-  bool operator==(std::signed_integral auto other) const noexcept;
+  bool operator==(unsigned_integral auto other) const noexcept;
+  bool operator==(signed_integral auto other) const noexcept;
 
   /// First compares the signs of both numbers and then their absolute value
   /// accordingly.
-  std::strong_ordering operator<=>(const BigInt &other) const noexcept;
-  std::strong_ordering operator<=>(const BigUInt &other) const noexcept;
-  std::strong_ordering
-  operator<=>(std::unsigned_integral auto other) const noexcept;
-  std::strong_ordering
-  operator<=>(std::signed_integral auto other) const noexcept;
+  strong_ordering operator<=>(const BigInt &other) const noexcept;
+  strong_ordering operator<=>(const BigUInt &other) const noexcept;
+  strong_ordering operator<=>(unsigned_integral auto other) const noexcept;
+  strong_ordering operator<=>(signed_integral auto other) const noexcept;
 
   /// Implement assign-add with another @c BigInt.
   BigInt &operator+=(const BigInt &other);
@@ -44,7 +44,7 @@ public:
   BigInt &operator+=(BigUInt other);
   /// Implement assign-add with another integral value by constructing a
   /// @c BigInt and using the generalized implementation.
-  BigInt &operator+=(std::integral auto value);
+  BigInt &operator+=(integral auto value);
 
   /// Invert the sign of the @c BigInt.
   BigInt &operator-() noexcept;
@@ -55,7 +55,7 @@ public:
   BigInt &operator-=(BigUInt other);
   /// Implement assign-subtract with another integral value by constructing a
   /// @c BigInt and using the generalized implementation.
-  BigInt &operator-=(std::integral auto value);
+  BigInt &operator-=(integral auto value);
 
   /// Implement assign-multiply with another @c BigInt.
   BigInt &operator*=(const BigInt &other);
@@ -63,7 +63,7 @@ public:
   BigInt &operator*=(const BigUInt &other);
   /// Implement assign-multiply with another integral value by constructing a
   /// @c BigInt and using the generalized implementation.
-  BigInt &operator*=(std::integral auto value);
+  BigInt &operator*=(integral auto value);
 
   /// Implement assign-multiply with another @c BigInt.
   BigInt &operator/=(const BigInt &other);
@@ -71,7 +71,7 @@ public:
   BigInt &operator/=(const BigUInt &other);
   /// Implement assign-multiply with another integral value by constructing a
   /// @c BigInt and using the generalized implementation.
-  BigInt &operator/=(std::integral auto value);
+  BigInt &operator/=(integral auto value);
 
   /// @returns @c true if the number is smaller 0. It is not possible to have a
   ///          negative 0 by definition of this type.
@@ -99,44 +99,43 @@ inline BigInt operator""_Z(unsigned long long literal) {
 /// Allow to change the sign of a 'BigUInt' to create a whole number from a
 /// natural number.
 inline BigInt operator-(BigUInt n) noexcept {
-  auto r = BigInt{std::move(n)};
+  auto r = BigInt{move(n)};
   return -r;
 }
 
 /// Write 'z' to 'os', optionally adhering to the base modifiers.
-/// @sa operator<<(std::ostream&, BigUInt)
-std::ostream &operator<<(std::ostream &os, const BigInt &z);
+/// @sa operator<<(ostream&, BigUInt)
+ostream &operator<<(ostream &os, const BigInt &z);
 
 /// Parse 'z' from 'is', optionally adhering to the base modifiers.
-/// @sa operator>>(std::istream&, BigUInt&)
-std::istream &operator>>(std::istream &is, BigInt &z);
+/// @sa operator>>(istream&, BigUInt&)
+istream &operator>>(istream &is, BigInt &z);
 
-template <std::signed_integral Z> auto castToUnsigned(Z value) {
-  return static_cast<std::make_unsigned_t<Z>>(std::abs(value));
+template <signed_integral Z> auto castToUnsigned(Z value) {
+  return static_cast<make_unsigned_t<Z>>(abs(value));
 }
-template <std::signed_integral Z>
+template <signed_integral Z>
 BigInt::BigInt(Z value) : _isNegative{value < 0}, _val{castToUnsigned(value)} {}
 
-bool BigInt::operator==(std::signed_integral auto other) const noexcept {
+bool BigInt::operator==(signed_integral auto other) const noexcept {
   return *this == BigInt{other};
 }
-bool BigInt::operator==(std::unsigned_integral auto other) const noexcept {
+bool BigInt::operator==(unsigned_integral auto other) const noexcept {
   return *this == BigInt{other};
 }
 
-std::strong_ordering
-BigInt::operator<=>(std::unsigned_integral auto other) const noexcept {
+strong_ordering
+BigInt::operator<=>(unsigned_integral auto other) const noexcept {
   return *this <=> BigInt{other};
 }
-std::strong_ordering
-BigInt::operator<=>(std::signed_integral auto other) const noexcept {
+strong_ordering BigInt::operator<=>(signed_integral auto other) const noexcept {
   return *this <=> BigInt{other};
 }
 
 inline BigInt &BigInt::operator+=(BigUInt other) {
-  return *this += BigInt{std::move(other)};
+  return *this += BigInt{move(other)};
 }
-BigInt &BigInt::operator+=(std::integral auto value) {
+BigInt &BigInt::operator+=(integral auto value) {
   return *this += BigInt{value};
 }
 
@@ -146,9 +145,9 @@ inline BigInt &BigInt::operator-() noexcept {
 }
 inline BigInt &BigInt::operator-=(BigInt other) { return *this += -other; }
 inline BigInt &BigInt::operator-=(BigUInt other) {
-  return *this += -BigInt{std::move(other)};
+  return *this += -BigInt{move(other)};
 }
-BigInt &BigInt::operator-=(std::integral auto value) {
+BigInt &BigInt::operator-=(integral auto value) {
   return *this += -BigInt{value};
 }
 
@@ -156,7 +155,7 @@ inline BigInt &BigInt::operator*=(const BigUInt &other) {
   _val *= other;
   return *this;
 }
-BigInt &BigInt::operator*=(std::integral auto value) {
+BigInt &BigInt::operator*=(integral auto value) {
   return *this *= BigInt{value};
 }
 
@@ -164,7 +163,7 @@ inline BigInt &BigInt::operator/=(const BigUInt &other) {
   _val /= other;
   return *this;
 }
-BigInt &BigInt::operator/=(std::integral auto value) {
+BigInt &BigInt::operator/=(integral auto value) {
   return *this /= BigInt{value};
 }
 
@@ -184,15 +183,15 @@ bool BigInt::operator==(const BigUInt &other) const noexcept {
   return abs() == other;
 }
 
-std::strong_ordering BigInt::operator<=>(const BigInt &other) const noexcept {
+strong_ordering BigInt::operator<=>(const BigInt &other) const noexcept {
   // '*this < 0' && 'other >= 0' => '*this < other'.
   if (isNegative() && !other.isNegative()) {
-    return std::strong_ordering::less;
+    return strong_ordering::less;
   }
 
   // 'other < 0' && '*this >= 0' => 'other < *this'.
   if (other.isNegative() && !isNegative()) {
-    return std::strong_ordering::greater;
+    return strong_ordering::greater;
   }
 
   // The signs must be identical after the first two conditions were false.
@@ -205,10 +204,10 @@ std::strong_ordering BigInt::operator<=>(const BigInt &other) const noexcept {
   return abs() <=> other.abs();
 }
 
-std::strong_ordering BigInt::operator<=>(const BigUInt &other) const noexcept {
+strong_ordering BigInt::operator<=>(const BigUInt &other) const noexcept {
   // '*this < 0' && 'other >= 0' => '*this < other'.
   if (isNegative()) {
-    return std::strong_ordering::less;
+    return strong_ordering::less;
   }
 
   // The signs must be identical after the first two conditions were false.
@@ -265,14 +264,14 @@ BigInt &BigInt::operator/=(const BigInt &other) {
   return *this;
 }
 
-std::ostream &operator<<(std::ostream &os, const BigInt &z) {
+ostream &operator<<(ostream &os, const BigInt &z) {
   if (z.isNegative()) {
     os << "-";
   }
   os << z.abs();
   return os;
 }
-std::istream &operator>>(std::istream &is, BigInt &z) {
+istream &operator>>(istream &is, BigInt &z) {
   bool negative = false;
 
   // Consume the sign.
@@ -289,9 +288,9 @@ std::istream &operator>>(std::istream &is, BigInt &z) {
   BigUInt n{0U};
   is >> n;
   if (negative) {
-    z = -BigInt{std::move(n)};
+    z = -BigInt{move(n)};
   } else {
-    z = BigInt{std::move(n)};
+    z = BigInt{move(n)};
   }
   return is;
 }

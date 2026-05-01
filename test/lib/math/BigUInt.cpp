@@ -7,13 +7,14 @@ module jt.Math:TestBigUInt;
 import std;
 import jt.Math;
 
+using namespace std;
 using namespace jt;
 using namespace jt::math;
 
 // Verify that the concept for natural numbers works.
 static_assert(Computable<BigUInt>);
 static_assert(NaturalNumber<BigUInt>);
-static_assert(NaturalNumber<unsigned int>);
+static_assert(NaturalNumber<uint>);
 static_assert(!NaturalNumber<int>);
 
 TEST_CASE("BigUInt Construction", "") {
@@ -41,7 +42,7 @@ TEST_CASE("BigUInt ConversionToBuiltin", "") {
   }
   SECTION("u8 wouldNarrow") {
     const auto N = 256_N;
-    REQUIRE_THROWS_AS(N.convertTo<u8>(), std::out_of_range);
+    REQUIRE_THROWS_AS(N.convertTo<u8>(), out_of_range);
 
     const auto C = N.convertTo<u16>();
     REQUIRE(C == 256U);
@@ -284,12 +285,12 @@ TEST_CASE("BigUInt Subtraction", "") {
   SECTION("0 - 1 must throw a domain_error") {
     BigUInt a{0U};
     BigUInt b{1U};
-    REQUIRE_THROWS_AS(a -= b, std::domain_error);
+    REQUIRE_THROWS_AS(a -= b, domain_error);
   }
   SECTION("12310914U - 112839149123U must throw a domain_error") {
     BigUInt a{12310914U};
     BigUInt b{112839149123U};
-    REQUIRE_THROWS_AS(a -= b, std::domain_error);
+    REQUIRE_THROWS_AS(a -= b, domain_error);
   }
 }
 
@@ -340,11 +341,11 @@ TEST_CASE("Multiplication", "") {
 TEST_CASE("Division", "") {
   SECTION("0 / 0") {
     BigUInt a{0U};
-    REQUIRE_THROWS_AS(a /= BigUInt{0U}, std::invalid_argument);
+    REQUIRE_THROWS_AS(a /= BigUInt{0U}, invalid_argument);
   }
   SECTION("1 / 0") {
     BigUInt a{1U};
-    REQUIRE_THROWS_AS(a /= BigUInt{0U}, std::invalid_argument);
+    REQUIRE_THROWS_AS(a /= BigUInt{0U}, invalid_argument);
   }
   SECTION("0 / 10") {
     BigUInt a{0U};
@@ -384,11 +385,11 @@ TEST_CASE("Division", "") {
 TEST_CASE("Modulus", "") {
   SECTION("0 % 0") {
     BigUInt a{0U};
-    REQUIRE_THROWS_AS(a %= BigUInt{0U}, std::invalid_argument);
+    REQUIRE_THROWS_AS(a %= BigUInt{0U}, invalid_argument);
   }
   SECTION("1 % 0") {
     BigUInt a{1U};
-    REQUIRE_THROWS_AS(a %= BigUInt{0U}, std::invalid_argument);
+    REQUIRE_THROWS_AS(a %= BigUInt{0U}, invalid_argument);
   }
   SECTION("0 % 10") {
     BigUInt a{0U};
@@ -509,58 +510,58 @@ TEST_CASE("DivMod", "") {
   SECTION("division by 0 throws exception") {
     BigUInt a{10U};
     BigUInt b{0U};
-    REQUIRE_THROWS_AS(divmod(a, b), std::invalid_argument);
+    REQUIRE_THROWS_AS(divmod(a, b), invalid_argument);
   }
   SECTION("0 divided by anything is 0 with no remainder") {
     BigUInt a{10U};
     BigUInt b{0U};
-    REQUIRE(divmod(b, a) == std::pair{BigUInt{0U}, BigUInt{0U}});
+    REQUIRE(divmod(b, a) == pair{BigUInt{0U}, BigUInt{0U}});
   }
   SECTION("<small> divided by <big> is 0, remainder <small>") {
     BigUInt a{10U};
     BigUInt b{30U};
-    REQUIRE(divmod(a, b) == std::pair{BigUInt{0U}, a});
+    REQUIRE(divmod(a, b) == pair{BigUInt{0U}, a});
   }
   SECTION("10 / 5 == {2,0}") {
     BigUInt a{10U};
     BigUInt b{5U};
-    REQUIRE(divmod(a, b) == std::pair{BigUInt{2U}, BigUInt{0U}});
+    REQUIRE(divmod(a, b) == pair{BigUInt{2U}, BigUInt{0U}});
   }
   SECTION("13 / 5 == {2,3}") {
     BigUInt a{13U};
     BigUInt b{5U};
-    REQUIRE(divmod(a, b) == std::pair{BigUInt{2U}, BigUInt{3U}});
+    REQUIRE(divmod(a, b) == pair{BigUInt{2U}, BigUInt{3U}});
   }
   SECTION("1239410 / 1247 == {993,1139}") {
     BigUInt a{1239410U};
     BigUInt b{1247U};
-    REQUIRE(divmod(a, b) == std::pair{BigUInt{993U}, BigUInt{1139U}});
+    REQUIRE(divmod(a, b) == pair{BigUInt{993U}, BigUInt{1139U}});
   }
 }
 
 TEST_CASE("Printing", "") {
   const auto printTwice = [](usize builtin, auto... mods) {
-    std::stringstream ssBuiltin;
+    stringstream ssBuiltin;
     (ssBuiltin << ... << mods) << builtin;
 
     const auto N = BigUInt{builtin};
-    std::stringstream ssBigUInt;
+    stringstream ssBigUInt;
     (ssBigUInt << ... << mods) << N;
 
-    return std::pair{ssBuiltin.str(), ssBigUInt.str()};
+    return pair{ssBuiltin.str(), ssBigUInt.str()};
   };
 
   const auto N = 120397124981723U;
 
   SECTION("Printing Base 8") {
     SECTION("Without Base") {
-      const auto [builtin, own] = printTwice(N, std::oct, std::noshowbase);
+      const auto [builtin, own] = printTwice(N, oct, noshowbase);
       REQUIRE(builtin == "3330004367351733");
       REQUIRE(builtin == own);
     }
 
     SECTION("With Base") {
-      const auto [builtin, own] = printTwice(N, std::oct, std::showbase);
+      const auto [builtin, own] = printTwice(N, oct, showbase);
       REQUIRE(builtin == "03330004367351733");
       REQUIRE(builtin == own);
     }
@@ -568,13 +569,13 @@ TEST_CASE("Printing", "") {
 
   SECTION("Printing Base 10") {
     SECTION("Without Base") {
-      const auto [builtin, own] = printTwice(N, std::dec, std::noshowbase);
+      const auto [builtin, own] = printTwice(N, dec, noshowbase);
       REQUIRE(builtin == "120397124981723");
       REQUIRE(builtin == own);
     }
 
     SECTION("With Base") {
-      const auto [builtin, own] = printTwice(N, std::dec, std::showbase);
+      const auto [builtin, own] = printTwice(N, dec, showbase);
       REQUIRE(builtin == "120397124981723");
       REQUIRE(builtin == own);
     }
@@ -582,13 +583,13 @@ TEST_CASE("Printing", "") {
 
   SECTION("Printing Base 16") {
     SECTION("Without Base") {
-      const auto [builtin, own] = printTwice(N, std::hex, std::noshowbase);
+      const auto [builtin, own] = printTwice(N, hex, noshowbase);
       REQUIRE(builtin == "6d8023ddd3db");
       REQUIRE(builtin == own);
     }
 
     SECTION("With Base") {
-      const auto [builtin, own] = printTwice(N, std::hex, std::showbase);
+      const auto [builtin, own] = printTwice(N, hex, showbase);
       REQUIRE(builtin == "0x6d8023ddd3db");
       REQUIRE(builtin == own);
     }
@@ -596,36 +597,36 @@ TEST_CASE("Printing", "") {
 }
 
 TEST_CASE("Parsing", "") {
-  const auto parseTwice = [](const std::string &rawValue, auto mod) {
+  const auto parseTwice = [](const string &rawValue, auto mod) {
     auto builtin = 0ULL;
-    std::stringstream ssBuiltin{rawValue};
+    stringstream ssBuiltin{rawValue};
     ssBuiltin >> mod >> builtin;
 
     auto N = 0_N;
-    std::stringstream ssBigUInt{rawValue};
+    stringstream ssBigUInt{rawValue};
     ssBigUInt >> mod >> N;
 
-    return std::pair{builtin, N};
+    return pair{builtin, N};
   };
 
   SECTION("Parsing Base 8") {
-    const auto [builtin, own] = parseTwice("3330004367351733", std::oct);
+    const auto [builtin, own] = parseTwice("3330004367351733", oct);
     REQUIRE(builtin == 120397124981723ULL);
     REQUIRE(own == 120397124981723_N);
   }
 
   SECTION("Parsing Base 10") {
-    const auto [builtin, own] = parseTwice("120397124981723", std::dec);
+    const auto [builtin, own] = parseTwice("120397124981723", dec);
     REQUIRE(builtin == 120397124981723ULL);
     REQUIRE(own == 120397124981723_N);
   }
   SECTION("Parsing Base 16 small letters") {
-    const auto [builtin, own] = parseTwice("6d8023ddd3db", std::hex);
+    const auto [builtin, own] = parseTwice("6d8023ddd3db", hex);
     REQUIRE(builtin == 120397124981723ULL);
     REQUIRE(own == 120397124981723_N);
   }
   SECTION("Parsing Base 16 big letters") {
-    const auto [builtin, own] = parseTwice("6D8023DDD3DB", std::hex);
+    const auto [builtin, own] = parseTwice("6D8023DDD3DB", hex);
     REQUIRE(builtin == 120397124981723ULL);
     REQUIRE(own == 120397124981723_N);
   }

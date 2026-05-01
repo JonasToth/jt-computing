@@ -11,36 +11,38 @@ import :NumberIO;
 import std;
 import jt.Core;
 
+using namespace std;
+
 namespace jt::math {
 
-template <std::unsigned_integral Target> Target NaturalN::convertTo() const {
+template <unsigned_integral Target> Target NaturalN::convertTo() const {
   Target result{0U};
   if (_digits.empty()) {
     return result;
   }
   CONTRACT_ASSERT(!_digits.empty());
-  if constexpr (std::is_same_v<Target, u64>) {
+  if constexpr (is_same_v<Target, u64>) {
     if (_digits.size() > 2) {
-      throw std::out_of_range{"Conversion would narrow"};
+      throw out_of_range{"Conversion would narrow"};
     }
     result += !_digits.empty() ? Target{_digits[0]} : 0U;
     result += _digits.size() > 1U ? Target{_digits[1]} : 0U;
   }
-  if constexpr (std::is_same_v<Target, u32>) {
+  if constexpr (is_same_v<Target, u32>) {
     if (_digits.size() > 1) {
-      throw std::out_of_range{"Conversion would narrow"};
+      throw out_of_range{"Conversion would narrow"};
     }
     return _digits[0];
   }
-  if constexpr (std::is_same_v<Target, u16>) {
-    if (_digits.size() > 1 || _digits[0] > std::numeric_limits<u16>::max()) {
-      throw std::out_of_range{"Conversion would narrow"};
+  if constexpr (is_same_v<Target, u16>) {
+    if (_digits.size() > 1 || _digits[0] > numeric_limits<u16>::max()) {
+      throw out_of_range{"Conversion would narrow"};
     }
     return Target(_digits[0]);
   }
-  if constexpr (std::is_same_v<Target, u8>) {
-    if (_digits.size() > 1 || _digits[0] > std::numeric_limits<u8>::max()) {
-      throw std::out_of_range{"Conversion would narrow"};
+  if constexpr (is_same_v<Target, u8>) {
+    if (_digits.size() > 1 || _digits[0] > numeric_limits<u8>::max()) {
+      throw out_of_range{"Conversion would narrow"};
     }
     return Target(_digits[0]);
   }
@@ -49,22 +51,21 @@ template <std::unsigned_integral Target> Target NaturalN::convertTo() const {
 }
 
 bool NaturalN::operator==(const NaturalN &other) const noexcept {
-  return (*this <=> other) == std::strong_ordering::equal;
+  return (*this <=> other) == strong_ordering::equal;
 }
 
-std::strong_ordering
-NaturalN::operator<=>(const NaturalN &other) const noexcept {
+strong_ordering NaturalN::operator<=>(const NaturalN &other) const noexcept {
   auto digitsComparison = _digits.size() <=> other._digits.size();
   // - This number has less digits => this number must be smaller than other.
   // - This number has more digits => this number must be bigger than other.
-  if (digitsComparison != std::strong_ordering::equal) {
+  if (digitsComparison != strong_ordering::equal) {
     return digitsComparison;
   }
 
   CONTRACT_ASSERT(_digits.size() == other._digits.size());
 
   if (_digits.empty()) {
-    return std::strong_ordering::equal;
+    return strong_ordering::equal;
   }
 
   for (usize i = _digits.size(); i > 0; --i) {
@@ -72,13 +73,12 @@ NaturalN::operator<=>(const NaturalN &other) const noexcept {
     const auto &d1 = _digits[idx];
     const auto &d2 = other._digits[idx];
     if (d1 != d2) {
-      return d1 < d2 ? std::strong_ordering::less
-                     : std::strong_ordering::greater;
+      return d1 < d2 ? strong_ordering::less : strong_ordering::greater;
     }
   }
 
   // All digits are identical, so this number is not smaller than @c other.
-  return std::strong_ordering::equal;
+  return strong_ordering::equal;
 }
 
 NaturalN &NaturalN::operator+=(const NaturalN &other) {
@@ -122,13 +122,13 @@ NaturalN &NaturalN::operator-=(const NaturalN &other) {
 
   // Subtraction on natural numbers is only defined for @c Bigger - Smaller
   // numbers. Negative numbers can not be represented with @c BigUInt.
-  if (magnitudeRelation == std::strong_ordering::less) {
-    throw std::domain_error{"unsigned-subtraction would yield negative result"};
+  if (magnitudeRelation == strong_ordering::less) {
+    throw domain_error{"unsigned-subtraction would yield negative result"};
   }
 
   // Both number are equal. The result of subtraction is the neutral element, @c
   // 0U.
-  if (magnitudeRelation == std::strong_ordering::equal) {
+  if (magnitudeRelation == strong_ordering::equal) {
     *this = NaturalN{0U};
     return *this;
   }
@@ -139,7 +139,7 @@ NaturalN &NaturalN::operator-=(const NaturalN &other) {
     return *this;
   }
 
-  CONTRACT_ASSERT(magnitudeRelation == std::strong_ordering::greater);
+  CONTRACT_ASSERT(magnitudeRelation == strong_ordering::greater);
 
   // 1. Subtract @c other from @c this by subtracting each digit individually.
   //    If @c 0 - 1 is executed, the subtraction "borrows" from the next digit.
@@ -183,7 +183,7 @@ NaturalN &NaturalN::operator*=(const NaturalN &other) {
     return *this;
   }
 #if 0
-    return *this = power_monoid(*this, other, std::plus<NaturalN>{});
+    return *this = power_monoid(*this, other, plus<NaturalN>{});
 #else
   CONTRACT_ASSERT(!_digits.empty());
   CONTRACT_ASSERT(!other._digits.empty());
@@ -225,9 +225,9 @@ NaturalN &NaturalN::operator<<=(int value) {
   }
 
   const auto shiftPos  = u32(bitsPerDigit - bitsToShift);
-  const auto upperMask = std::numeric_limits<u32>::max() << shiftPos;
+  const auto upperMask = numeric_limits<u32>::max() << shiftPos;
 
-  if (std::countl_zero(_digits.back()) < bitsToShift) {
+  if (countl_zero(_digits.back()) < bitsToShift) {
     _digits.emplace_back(0U);
   }
 
@@ -261,7 +261,7 @@ NaturalN &NaturalN::operator>>=(int value) {
   }
 
   const auto shiftPos  = u32(bitsPerDigit - bitsToShift);
-  const auto lowerMask = std::numeric_limits<u32>::max() >> shiftPos;
+  const auto lowerMask = numeric_limits<u32>::max() >> shiftPos;
   CONTRACT_ASSERT(shiftPos < bitsPerDigit);
 
   if (_digits.size() == 1U) {
@@ -302,10 +302,9 @@ static NaturalN largestDoubling(const NaturalN &a, NaturalN b) {
   }
   return b;
 }
-std::pair<NaturalN, NaturalN> divmod(NaturalN dividend,
-                                     const NaturalN &divisor) {
+pair<NaturalN, NaturalN> divmod(NaturalN dividend, const NaturalN &divisor) {
   if (divisor == 0_U) {
-    throw std::invalid_argument{"division by zero is not possible"};
+    throw invalid_argument{"division by zero is not possible"};
   }
   if (dividend == 0_U) {
     return {0_U, 0_U};
@@ -328,37 +327,37 @@ std::pair<NaturalN, NaturalN> divmod(NaturalN dividend,
   return {quotient, dividend};
 }
 
-template <u8 Base> std::string writeInBase(NaturalN n) {
+template <u8 Base> string writeInBase(NaturalN n) {
   static_assert(Base == 2 || Base == 8 || Base == 10 || Base == 16,
                 "Only the common number bases, either power of 2 or base 10 "
                 "are supported");
 
-  std::string reverseDigits;
+  string reverseDigits;
   const auto base = NaturalN{Base};
   while (n > 0_U) {
     auto [quotient, remainder] = divmod(n, base);
-    n                          = std::move(quotient);
+    n                          = move(quotient);
     reverseDigits += digitToChar<Base>(remainder.convertTo<u8>());
   }
 
-  std::reverse(reverseDigits.begin(), reverseDigits.end());
+  reverse(reverseDigits.begin(), reverseDigits.end());
   return reverseDigits;
 }
 
-std::ostream &operator<<(std::ostream &os, NaturalN n) {
+ostream &operator<<(ostream &os, NaturalN n) {
   const auto flags = os.flags();
-  if ((flags & std::ios_base::dec) != 0) {
-    os << writeInBase<10>(std::move(n));
-  } else if ((flags & std::ios_base::oct) != 0) {
-    if ((flags & std::ios_base::showbase) != 0) {
+  if ((flags & ios_base::dec) != 0) {
+    os << writeInBase<10>(move(n));
+  } else if ((flags & ios_base::oct) != 0) {
+    if ((flags & ios_base::showbase) != 0) {
       os << "0";
     }
-    os << writeInBase<8>(std::move(n));
-  } else if ((flags & std::ios_base::hex) != 0) {
-    if ((flags & std::ios_base::showbase) != 0) {
+    os << writeInBase<8>(move(n));
+  } else if ((flags & ios_base::hex) != 0) {
+    if ((flags & ios_base::showbase) != 0) {
       os << "0x";
     }
-    os << writeInBase<16>(std::move(n));
+    os << writeInBase<16>(move(n));
   } else {
     CONTRACT_ASSERT(false && "Either number base must be configured");
   }
@@ -366,15 +365,14 @@ std::ostream &operator<<(std::ostream &os, NaturalN n) {
 }
 
 template <u8 Base>
-NaturalN
-interpretDigitsInBaseNaturalN(const std::vector<u8> &digitsHighestFirst) {
+NaturalN interpretDigitsInBaseNaturalN(const vector<u8> &digitsHighestFirst) {
   static_assert(Base == 2 || Base == 8 || Base == 10 || Base == 16,
                 "Only the common number bases, either power of 2 or base 10 "
                 "are supported");
   const auto base = NaturalN{Base};
   auto result     = 0_U;
   auto position   = 1_U;
-  for (u8 digit : std::ranges::reverse_view(digitsHighestFirst)) {
+  for (u8 digit : ranges::reverse_view(digitsHighestFirst)) {
     result += position * NaturalN{digit};
     position *= base;
   }
@@ -382,8 +380,8 @@ interpretDigitsInBaseNaturalN(const std::vector<u8> &digitsHighestFirst) {
   return result;
 }
 
-template <u8 Base> NaturalN extractNumberAsNaturalN(std::istream &is) {
-  std::vector<u8> digitsHighestFirst;
+template <u8 Base> NaturalN extractNumberAsNaturalN(istream &is) {
+  vector<u8> digitsHighestFirst;
   // Read from the stream as long as the next character is a digit.
   // Extracts each digit into 'digitsHighestFirst'.
   while (auto digit = nextDigit<Base>(is)) {
@@ -392,21 +390,21 @@ template <u8 Base> NaturalN extractNumberAsNaturalN(std::istream &is) {
   return interpretDigitsInBaseNaturalN<Base>(digitsHighestFirst);
 }
 
-std::istream &operator>>(std::istream &is, NaturalN &n) {
+istream &operator>>(istream &is, NaturalN &n) {
   const auto flags = is.flags();
-  if ((flags & std::ios_base::dec) != 0) {
+  if ((flags & ios_base::dec) != 0) {
     n = extractNumberAsNaturalN<10>(is);
-  } else if ((flags & std::ios_base::oct) != 0) {
+  } else if ((flags & ios_base::oct) != 0) {
     n = extractNumberAsNaturalN<8>(is);
-  } else if ((flags & std::ios_base::hex) != 0) {
+  } else if ((flags & ios_base::hex) != 0) {
     n = extractNumberAsNaturalN<16>(is);
   }
   return is;
 }
 
-NaturalN operator""_U(const char *literal, std::size_t /*len*/) {
+NaturalN operator""_U(const char *literal, size_t /*len*/) {
   auto r  = 0_U;
-  auto ss = std::stringstream{literal};
+  auto ss = stringstream{literal};
   ss >> r;
   return r;
 }

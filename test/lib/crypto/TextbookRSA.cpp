@@ -1,7 +1,7 @@
 module;
 
-#include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 module jt.Crypto:TestTextbookRSA;
 
@@ -10,7 +10,7 @@ import jt.Crypto;
 
 using namespace jt;
 using namespace std;
-using namespace std::string_literals;
+using namespace string_literals;
 
 namespace {
 const auto modul =
@@ -25,14 +25,14 @@ const auto private_exponent =
     "AB76F1DF31EDDAE06B45C675B62976392E813C54B200C5D6C0397B187862FC67851B6C1C"
     "25EF1703A8863B32EBEF41833637014E388FB5C1"s;
 
-template <typename Int> Int fromHexString(const std::string &numberHex) {
+template <typename Int> Int fromHexString(const string &numberHex) {
   Int result{0U};
-  std::istringstream{numberHex} >> std::hex >> result;
+  istringstream{numberHex} >> hex >> result;
   return result;
 }
-template <typename Int> std::string toHexString(const Int &n) {
-  std::ostringstream oss;
-  oss << std::hex << n;
+template <typename Int> string toHexString(const Int &n) {
+  ostringstream oss;
+  oss << hex << n;
   return oss.str();
 }
 } // namespace

@@ -2,10 +2,12 @@ export module jt.Math:ModularArithmetic;
 
 import :Concepts;
 
+using namespace std;
+
 export namespace jt::math {
 /// Perform addition of two @c NaturalNumbers modulus @c n.
 template <NaturalNumber N> struct plus_mod {
-  explicit plus_mod(N n) : modulus{std::move(n)} {}
+  explicit plus_mod(N n) : modulus{move(n)} {}
 
   N operator()(const N &lhs, const N &rhs) { return (lhs + rhs) % modulus; }
 
@@ -15,7 +17,7 @@ private:
 
 /// Perform subtraction of two @c NaturalNumbers modulus @c n.
 template <NaturalNumber N> struct minus_mod {
-  explicit minus_mod(N n) : modulus{std::move(n)} {}
+  explicit minus_mod(N n) : modulus{move(n)} {}
 
   N operator()(const N &lhs, const N &rhs) { return (lhs - rhs) % modulus; }
 
@@ -25,7 +27,7 @@ private:
 
 /// Perform multiplication of two @c NaturalNumbers modulus @c n.
 template <NaturalNumber N> struct multiplies_mod {
-  explicit multiplies_mod(N n) : modulus{std::move(n)} {}
+  explicit multiplies_mod(N n) : modulus{move(n)} {}
 
   N operator()(const N &lhs, const N &rhs) { return (lhs * rhs) % modulus; }
 
@@ -39,7 +41,7 @@ template <NaturalNumber N> N identity_element(multiplies_mod<N> /*op*/) {
 
 /// Perform divides of two @c NaturalNumbers modulus @c n.
 template <NaturalNumber N> struct divides_mod {
-  explicit divides_mod(N n) : modulus{std::move(n)} {}
+  explicit divides_mod(N n) : modulus{move(n)} {}
 
   N operator()(const N &lhs, const N &rhs) { return (lhs / rhs) % modulus; }
 

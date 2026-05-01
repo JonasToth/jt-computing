@@ -7,6 +7,7 @@ module jt.Math:TestBigInt;
 import std;
 import jt.Math;
 
+using namespace std;
 using namespace jt;
 using namespace jt::math;
 
@@ -230,7 +231,7 @@ TEST_CASE("BigInt Computation", "") {
     REQUIRE(!a.isNegative());
     REQUIRE(a == 0);
 
-    REQUIRE_THROWS_AS(a /= BigInt{0}, std::invalid_argument);
+    REQUIRE_THROWS_AS(a /= BigInt{0}, invalid_argument);
     REQUIRE(a == 0);
 
     a += 112351;
@@ -258,14 +259,14 @@ TEST_CASE("BigInt Computation", "") {
 
 TEST_CASE("Printing", "") {
   const auto printTwice = [](i64 builtin, auto... mods) {
-    std::stringstream ssBuiltin;
+    stringstream ssBuiltin;
     (ssBuiltin << ... << mods) << builtin;
 
     const auto N = BigInt{builtin};
-    std::stringstream ssBigUInt;
+    stringstream ssBigUInt;
     (ssBigUInt << ... << mods) << N;
 
-    return std::pair{ssBuiltin.str(), ssBigUInt.str()};
+    return pair{ssBuiltin.str(), ssBigUInt.str()};
   };
 
   const auto NPos = +7124981723LL;
@@ -273,25 +274,21 @@ TEST_CASE("Printing", "") {
 
   SECTION("Printing Base 8") {
     SECTION("Without Base") {
-      const auto [builtinPos, ownPos] =
-          printTwice(NPos, std::oct, std::noshowbase);
+      const auto [builtinPos, ownPos] = printTwice(NPos, oct, noshowbase);
       REQUIRE(builtinPos == "65053513733");
       REQUIRE(builtinPos == ownPos);
 
-      const auto [builtinNeg, ownNeg] =
-          printTwice(NNeg, std::oct, std::noshowbase);
+      const auto [builtinNeg, ownNeg] = printTwice(NNeg, oct, noshowbase);
       REQUIRE(builtinNeg == "1777777777712724264045");
       REQUIRE(ownNeg == "-65053513733");
     }
 
     SECTION("With Base") {
-      const auto [builtinPos, ownPos] =
-          printTwice(NPos, std::oct, std::showbase);
+      const auto [builtinPos, ownPos] = printTwice(NPos, oct, showbase);
       REQUIRE(builtinPos == "065053513733");
       REQUIRE(builtinPos == ownPos);
 
-      const auto [builtinNeg, ownNeg] =
-          printTwice(NNeg, std::oct, std::showbase);
+      const auto [builtinNeg, ownNeg] = printTwice(NNeg, oct, showbase);
       REQUIRE(builtinNeg == "01777777777712724264045");
       REQUIRE(ownNeg == "-065053513733");
     }
@@ -299,25 +296,21 @@ TEST_CASE("Printing", "") {
 
   SECTION("Printing Base 10") {
     SECTION("Without Base") {
-      const auto [builtinPos, ownPos] =
-          printTwice(NPos, std::dec, std::noshowbase);
+      const auto [builtinPos, ownPos] = printTwice(NPos, dec, noshowbase);
       REQUIRE(builtinPos == "7124981723");
       REQUIRE(builtinPos == ownPos);
 
-      const auto [builtinNeg, ownNeg] =
-          printTwice(NNeg, std::dec, std::noshowbase);
+      const auto [builtinNeg, ownNeg] = printTwice(NNeg, dec, noshowbase);
       REQUIRE(builtinNeg == "-7124981723");
       REQUIRE(ownNeg == "-7124981723");
     }
 
     SECTION("With Base") {
-      const auto [builtinPos, ownPos] =
-          printTwice(NPos, std::dec, std::showbase);
+      const auto [builtinPos, ownPos] = printTwice(NPos, dec, showbase);
       REQUIRE(builtinPos == "7124981723");
       REQUIRE(builtinPos == ownPos);
 
-      const auto [builtinNeg, ownNeg] =
-          printTwice(NNeg, std::dec, std::showbase);
+      const auto [builtinNeg, ownNeg] = printTwice(NNeg, dec, showbase);
       REQUIRE(builtinNeg == "-7124981723");
       REQUIRE(ownNeg == "-7124981723");
     }
@@ -325,25 +318,21 @@ TEST_CASE("Printing", "") {
 
   SECTION("Printing Base 16") {
     SECTION("Without Base") {
-      const auto [builtinPos, ownPos] =
-          printTwice(NPos, std::hex, std::noshowbase);
+      const auto [builtinPos, ownPos] = printTwice(NPos, hex, noshowbase);
       REQUIRE(builtinPos == "1a8ae97db");
       REQUIRE(builtinPos == ownPos);
 
-      const auto [builtinNeg, ownNeg] =
-          printTwice(NNeg, std::hex, std::noshowbase);
+      const auto [builtinNeg, ownNeg] = printTwice(NNeg, hex, noshowbase);
       REQUIRE(builtinNeg == "fffffffe57516825");
       REQUIRE(ownNeg == "-1a8ae97db");
     }
 
     SECTION("With Base") {
-      const auto [builtinPos, ownPos] =
-          printTwice(NPos, std::hex, std::showbase);
+      const auto [builtinPos, ownPos] = printTwice(NPos, hex, showbase);
       REQUIRE(builtinPos == "0x1a8ae97db");
       REQUIRE(builtinPos == ownPos);
 
-      const auto [builtinNeg, ownNeg] =
-          printTwice(NNeg, std::hex, std::showbase);
+      const auto [builtinNeg, ownNeg] = printTwice(NNeg, hex, showbase);
       REQUIRE(builtinNeg == "0xfffffffe57516825");
       REQUIRE(ownNeg == "-0x1a8ae97db");
     }
@@ -351,52 +340,52 @@ TEST_CASE("Printing", "") {
 }
 
 TEST_CASE("Parsing", "") {
-  const auto parseTwice = [](const std::string &rawValue, auto mod) {
+  const auto parseTwice = [](const string &rawValue, auto mod) {
     auto builtin = 0LL;
-    std::stringstream ssBuiltin{rawValue};
+    stringstream ssBuiltin{rawValue};
     ssBuiltin >> mod >> builtin;
 
     auto N = 0_Z;
-    std::stringstream ssBigInt{rawValue};
+    stringstream ssBigInt{rawValue};
     ssBigInt >> mod >> N;
 
-    return std::pair{builtin, N};
+    return pair{builtin, N};
   };
 
   SECTION("Parsing Base 8") {
-    const auto [builtinPos, ownPos] = parseTwice("3330004367351733", std::oct);
+    const auto [builtinPos, ownPos] = parseTwice("3330004367351733", oct);
     REQUIRE(builtinPos == 120397124981723LL);
     REQUIRE(ownPos == 120397124981723_Z);
 
-    const auto [builtinNeg, ownNeg] = parseTwice("-3330004367351733", std::oct);
+    const auto [builtinNeg, ownNeg] = parseTwice("-3330004367351733", oct);
     REQUIRE(builtinNeg == -120397124981723LL);
     REQUIRE(ownNeg == -120397124981723_Z);
   }
 
   SECTION("Parsing Base 10") {
-    const auto [builtinPos, ownPos] = parseTwice("120397124981723", std::dec);
+    const auto [builtinPos, ownPos] = parseTwice("120397124981723", dec);
     REQUIRE(builtinPos == 120397124981723LL);
     REQUIRE(ownPos == 120397124981723_Z);
 
-    const auto [builtinNeg, ownNeg] = parseTwice("-120397124981723", std::dec);
+    const auto [builtinNeg, ownNeg] = parseTwice("-120397124981723", dec);
     REQUIRE(builtinNeg == -120397124981723LL);
     REQUIRE(ownNeg == -120397124981723_Z);
   }
   SECTION("Parsing Base 16 small letters") {
-    const auto [builtinPos, ownPos] = parseTwice("6d8023ddd3db", std::hex);
+    const auto [builtinPos, ownPos] = parseTwice("6d8023ddd3db", hex);
     REQUIRE(builtinPos == 120397124981723LL);
     REQUIRE(ownPos == 120397124981723_Z);
 
-    const auto [builtinNeg, ownNeg] = parseTwice("-6d8023ddd3db", std::hex);
+    const auto [builtinNeg, ownNeg] = parseTwice("-6d8023ddd3db", hex);
     REQUIRE(builtinNeg == -120397124981723LL);
     REQUIRE(ownNeg == -120397124981723_Z);
   }
   SECTION("Parsing Base 16 big letters") {
-    const auto [builtinPos, ownPos] = parseTwice("6D8023DDD3DB", std::hex);
+    const auto [builtinPos, ownPos] = parseTwice("6D8023DDD3DB", hex);
     REQUIRE(builtinPos == 120397124981723LL);
     REQUIRE(ownPos == 120397124981723_Z);
 
-    const auto [builtinNeg, ownNeg] = parseTwice("-6D8023DDD3DB", std::hex);
+    const auto [builtinNeg, ownNeg] = parseTwice("-6D8023DDD3DB", hex);
     REQUIRE(builtinNeg == -120397124981723LL);
     REQUIRE(ownNeg == -120397124981723_Z);
   }

@@ -6,6 +6,7 @@ module jt.Math:TestRational;
 
 import jt.Math;
 
+using namespace std;
 using namespace jt;
 using namespace jt::math;
 

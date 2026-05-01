@@ -4,28 +4,29 @@ import std;
 import jt.Core;
 import jt.Crypto;
 
+using namespace std;
+
 namespace {
 struct HashResult {
-  std::string digest;
-  std::filesystem::path path_arg;
+  string digest;
+  filesystem::path path_arg;
 };
 
-HashResult computeHashForFile(std::filesystem::path arg) {
+HashResult computeHashForFile(filesystem::path arg) {
   if (!is_regular_file(arg)) {
-    return {"", std::move(arg)};
+    return {"", move(arg)};
   }
 
   using namespace jt::crypto;
   auto hasher = Sha256Sum{};
-  std::ifstream file(arg, std::ios::binary);
-  hasher.process(std::istreambuf_iterator<char>(file),
-                 std::istreambuf_iterator<char>());
-  return {hasher.digest(), std::move(arg)};
+  ifstream file(arg, ios::binary);
+  hasher.process(istreambuf_iterator<char>(file), istreambuf_iterator<char>());
+  return {hasher.digest(), move(arg)};
 }
 
-std::vector<std::filesystem::path> filesFromArgv(std::span<char const *> args) {
+vector<filesystem::path> filesFromArgv(span<char const *> args) {
   CONTRACT_ASSERT(args.size() >= 2 && "At least one file argument required");
-  auto files = std::vector<std::filesystem::path>{};
+  auto files = vector<filesystem::path>{};
   files.reserve(args.size() - 1);
   for (auto const *a : args.subspan(1)) {
     files.emplace_back(a);
@@ -33,66 +34,64 @@ std::vector<std::filesystem::path> filesFromArgv(std::span<char const *> args) {
   return files;
 }
 
-std::vector<HashResult>
-computeHashes(std::vector<std::filesystem::path> const &files) {
-  auto result = std::vector<HashResult>{files.size()};
-  std::transform(std::execution::par, files.begin(), files.end(),
-                 result.begin(), computeHashForFile);
+vector<HashResult> computeHashes(vector<filesystem::path> const &files) {
+  auto result = vector<HashResult>{files.size()};
+  transform(execution::par, files.begin(), files.end(), result.begin(),
+            computeHashForFile);
 
   return result;
 }
 
 void hashPrinter(HashResult const &r) {
   if (r.digest.empty()) {
-    std::cerr << "File: '" << r.path_arg.string() << "' could not be hashed!\n";
+    cerr << "File: '" << r.path_arg.string() << "' could not be hashed!\n";
     return;
   }
-  std::cout << r.digest << " " << r.path_arg.string() << "\n";
+  cout << r.digest << " " << r.path_arg.string() << "\n";
 }
 
-void outputHashes(std::vector<HashResult> const &hashes) {
-  std::ranges::for_each(hashes, hashPrinter);
-  std::cout << std::flush;
+void outputHashes(vector<HashResult> const &hashes) {
+  ranges::for_each(hashes, hashPrinter);
+  cout << flush;
 }
 
-std::vector<HashResult> readHashes(std::filesystem::path const &inFile) {
-  auto in     = std::fstream{inFile, std::ios_base::in};
-  auto result = std::vector<HashResult>{};
-  for (std::string line; std::getline(in, line);) {
+vector<HashResult> readHashes(filesystem::path const &inFile) {
+  auto in     = fstream{inFile, ios_base::in};
+  auto result = vector<HashResult>{};
+  for (string line; getline(in, line);) {
     if (line.size() < 65) {
-      std::cerr
-          << "Line '" << line << "'"
-          << " is too short to contain a valid sha256 hash and file path!\n";
+      cerr << "Line '" << line << "'"
+           << " is too short to contain a valid sha256 hash and file path!\n";
       continue;
     }
-    auto digest = std::string{};
-    auto path   = std::string{};
-    auto ss     = std::istringstream{line};
+    auto digest = string{};
+    auto path   = string{};
+    auto ss     = istringstream{line};
     ss >> digest >> path;
-    result.emplace_back(digest, std::filesystem::path{path});
+    result.emplace_back(digest, filesystem::path{path});
   }
   return result;
 }
 
-using HashComparison = std::pair<HashResult, HashResult const *>;
+using HashComparison = pair<HashResult, HashResult const *>;
 HashComparison verifyHash(HashResult const &expectedResult) {
   auto const actual = computeHashForFile(expectedResult.path_arg);
-  return std::make_pair(actual, &expectedResult);
+  return make_pair(actual, &expectedResult);
 }
 
-bool filesMatchExpectedHashes(std::vector<HashResult> const &expectedHashes) {
-  auto comparison = std::vector<HashComparison>(expectedHashes.size());
-  std::transform(std::execution::par, expectedHashes.begin(),
-                 expectedHashes.end(), comparison.begin(), verifyHash);
-  return std::all_of(
+bool filesMatchExpectedHashes(vector<HashResult> const &expectedHashes) {
+  auto comparison = vector<HashComparison>(expectedHashes.size());
+  transform(execution::par, expectedHashes.begin(), expectedHashes.end(),
+            comparison.begin(), verifyHash);
+  return all_of(
       comparison.begin(), comparison.end(), [&](HashComparison const &hc) {
         bool const matches = hc.first.digest == hc.second->digest;
         if (!matches) {
-          std::cerr << "File: '" << hc.second->path_arg.string()
-                    << "' has mismatching hashes. Actual: " << hc.first.digest
-                    << " - Expected: " << hc.second->digest << std::endl;
+          cerr << "File: '" << hc.second->path_arg.string()
+               << "' has mismatching hashes. Actual: " << hc.first.digest
+               << " - Expected: " << hc.second->digest << endl;
         } else {
-          std::cerr << hc.second->path_arg.string() << ": OK" << std::endl;
+          cerr << hc.second->path_arg.string() << ": OK" << endl;
         }
         return matches;
       });
@@ -102,17 +101,18 @@ bool filesMatchExpectedHashes(std::vector<HashResult> const &expectedHashes) {
 } // namespace
 
 int main(int argc, char const **argv) {
-  auto const args = std::span{argv, static_cast<std::size_t>(argc)};
+  auto const args = span{argv, static_cast<size_t>(argc)};
   if (args.size() < 2) {
-    std::cerr << "Error: " << args[0]
-              << " - At least one file to hash must be provided!\n";
+    cerr << "Error: " << args[0]
+         << " - At least one file to hash must be provided!\n";
     return jt::EXIT_FAILURE;
   }
-  CONTRACT_ASSERT(argc >= 2 && "At least one argument is guaranteed from here on");
-  if (std::strcmp(args[1], "-c") == 0 || std::strcmp(args[1], "--check") == 0) {
+  CONTRACT_ASSERT(argc >= 2 &&
+                  "At least one argument is guaranteed from here on");
+  if (strcmp(args[1], "-c") == 0 || strcmp(args[1], "--check") == 0) {
     if (args.size() != 3) {
-      std::cerr << "Error: " << args[0]
-                << " - Checking requires the hash-file as third argument!\n";
+      cerr << "Error: " << args[0]
+           << " - Checking requires the hash-file as third argument!\n";
       return jt::EXIT_FAILURE;
     }
     auto const expectedHashes = readHashes(args[2]);

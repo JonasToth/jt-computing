@@ -7,6 +7,7 @@ module jt.Container:TestBitVector;
 import std;
 import jt.Container;
 
+using namespace std;
 using namespace jt;
 using namespace jt::container;
 
@@ -40,7 +41,7 @@ TEST_CASE("BitVector Construction", "") {
     }
 
     SECTION("All 1") {
-      BitVector b{std::numeric_limits<u8>::max()};
+      BitVector b{numeric_limits<u8>::max()};
       REQUIRE(b.capacity() == 8ULL);
       REQUIRE(b.size() == 8ULL);
       for (usize i = 0; i < 8; ++i) {

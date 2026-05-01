@@ -6,20 +6,19 @@ using namespace jt::math;
 using namespace std;
 
 namespace {
-template <typename Int = BigUInt>
-Int fromHexString(const std::string &numberHex) {
+template <typename Int = BigUInt> Int fromHexString(const string &numberHex) {
   Int result{0U};
-  std::istringstream{numberHex} >> std::hex >> result;
+  istringstream{numberHex} >> hex >> result;
   return result;
 }
-template <typename Int = BigUInt> std::string toHexString(const Int &n) {
-  std::ostringstream oss;
-  oss << std::hex << n;
+template <typename Int = BigUInt> string toHexString(const Int &n) {
+  ostringstream oss;
+  oss << hex << n;
   return oss.str();
 }
-template <typename Int = BigUInt> std::string toString(const Int &n) {
-  std::ostringstream oss;
-  oss << std::dec << n;
+template <typename Int = BigUInt> string toString(const Int &n) {
+  ostringstream oss;
+  oss << dec << n;
   return oss.str();
 }
 template <typename Int> auto measureSignature() {
@@ -61,17 +60,17 @@ template <typename Int> auto measureSignature() {
   auto n_exponent2        = fromHexString<Int>(exponent2);
   auto n_coefficient      = fromHexString<Int>(coefficient);
   auto n_hash             = fromHexString<Int>(hash_document);
-  const auto before       = std::chrono::steady_clock::now();
+  const auto before       = chrono::steady_clock::now();
   const auto signature =
       power_monoid(n_hash, n_private_exponent, multiplies_mod{n_modulus});
-  const auto after = std::chrono::steady_clock::now();
+  const auto after = chrono::steady_clock::now();
   return after - before;
 }
 
 template <NaturalNumber NumberType> void measureSigning() {
   const auto dBigUInt = measureSignature<NumberType>();
-  std::cout << "Took " << chrono::duration_cast<chrono::milliseconds>(dBigUInt)
-            << " for signature calculation" << std::endl;
+  cout << "Took " << chrono::duration_cast<chrono::milliseconds>(dBigUInt)
+       << " for signature calculation" << endl;
 }
 } // namespace
 

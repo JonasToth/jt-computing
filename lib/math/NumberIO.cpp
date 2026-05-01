@@ -7,6 +7,8 @@ module jt.Math:NumberIO;
 import std;
 import jt.Core;
 
+using namespace std;
+
 namespace jt::math {
 
 /// Convert a digit of any @c Base to a single character for textual output operations.
@@ -15,7 +17,7 @@ template <u8 Base> char digitToChar(u8 digit) {
                 "Only the common number bases, either power of 2 or base 10 "
                 "are supported");
   if (digit >= Base) {
-    throw std::out_of_range{"Digit must be < Base"};
+    throw out_of_range{"Digit must be < Base"};
   }
   if constexpr (Base == 2 || Base == 8 || Base == 10) {
     return static_cast<char>('0' + digit);
@@ -28,10 +30,10 @@ template <u8 Base> char digitToChar(u8 digit) {
 }
 
 /// Try to retrieve the next digit in @c Base from the input stream @c is.
-template <u8 Base> std::optional<u8> nextDigit(std::istream &is) {
+template <u8 Base> optional<u8> nextDigit(istream &is) {
   int c = is.peek();
   if constexpr (Base == 2 || Base == 8 || Base == 10) {
-    if (std::isdigit(c)) {
+    if (isdigit(c)) {
       return static_cast<u8>(is.get() - '0');
     }
   } else if constexpr (Base == 16) {
@@ -48,7 +50,7 @@ template <u8 Base> std::optional<u8> nextDigit(std::istream &is) {
       return static_cast<u8>(c - 'a' + 10);
     }
   }
-  return std::nullopt;
+  return nullopt;
 }
 
 }
