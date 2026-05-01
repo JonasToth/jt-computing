@@ -1,3 +1,7 @@
+module;
+
+#include "jt-computing/core/Contracts.hpp"
+
 export module jt.Math:NaturalN;
 
 import std;
@@ -32,8 +36,9 @@ public:
   NaturalN &operator*=(const NaturalN &other);
   NaturalN &operator/=(const NaturalN &other);
   NaturalN &operator%=(const NaturalN &other);
-  NaturalN &operator<<=(int value);
-  NaturalN &operator>>=(int value);
+  NaturalN &operator<<=(int value) PRE(value >= 0)
+      POST(_digits.empty() || _digits.back() != 0U);
+  NaturalN &operator>>=(int value) PRE(value >= 0);
 
   [[nodiscard]] bool isEven() const noexcept;
   [[nodiscard]] bool isOdd() const noexcept { return !isEven(); }
@@ -76,7 +81,8 @@ NaturalN operator/(NaturalN a, const NaturalN &b) { return a /= b; }
 NaturalN operator%(NaturalN a, const NaturalN &b) { return a %= b; }
 
 /// Write 'n' to 'os', optionally adhering to the base modifiers.
-ostream &operator<<(ostream &os, NaturalN n);
+ostream &operator<<(ostream &os, NaturalN n)
+    PRE((os.flags() & (ios_base::dec | ios_base::oct | ios_base::hex)) != 0);
 
 /// Parse 'n' from 'is', optionally adhering to the base modifiers.
 istream &operator>>(istream &is, NaturalN &n);

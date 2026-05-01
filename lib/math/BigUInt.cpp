@@ -80,12 +80,12 @@ public:
   /// Shifts the underlying @c BitVector by @c value positions to the left.
   /// This doubles the @c BigUInt @c value times.
   /// @pre value > 0
-  BigUInt &operator<<=(int value);
+  BigUInt &operator<<=(int value) PRE(value > 0);
 
   /// Shifts the underlying @c BitVector by @c value positions to the right.
   /// This halfes the @c BigUInt @c value times and drops the remainder.
   /// @pre value > 0
-  BigUInt &operator>>=(int value);
+  BigUInt &operator>>=(int value) PRE(value > 0);
 
   /// Returns @c true if the integer is either 0 or it least significant bit is
   /// @c true.
@@ -110,7 +110,8 @@ private:
 export pair<BigUInt, BigUInt> divmod(BigUInt dividend, const BigUInt &divisor);
 
 /// Write 'n' to 'os', optionally adhering to the base modifiers.
-export ostream &operator<<(ostream &os, BigUInt n);
+export ostream &operator<<(ostream &os, BigUInt n)
+    PRE((os.flags() & (ios_base::dec | ios_base::oct | ios_base::hex)) != 0);
 
 /// Parse 'n' from 'is', optionally adhering to the base modifiers.
 export istream &operator>>(istream &is, BigUInt &n);
@@ -384,8 +385,6 @@ BigUInt &BigUInt::operator%=(const BigUInt &other) {
 }
 
 BigUInt &BigUInt::operator<<=(int value) {
-  CONTRACT_ASSERT(value > 0);
-
   if (binaryDigits() == usize{0}) {
     return *this;
   }
@@ -394,8 +393,6 @@ BigUInt &BigUInt::operator<<=(int value) {
 }
 
 BigUInt &BigUInt::operator>>=(int value) {
-  CONTRACT_ASSERT(value > 0);
-
   if (binaryDigits() == usize{0}) {
     return *this;
   }
@@ -412,8 +409,7 @@ bool BigUInt::isEven() const noexcept {
   return _bits.size() == 0U || !_bits.get(0U);
 }
 
-static BigUInt largestDoubling(const BigUInt &a, BigUInt b) {
-  CONTRACT_ASSERT(b != 0U);
+static BigUInt largestDoubling(const BigUInt &a, BigUInt b) PRE(b != 0U) {
   while ((a - b) >= b) {
     b <<= 1;
   }

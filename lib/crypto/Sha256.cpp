@@ -60,7 +60,7 @@ public:
     return process(ranges::subrange{begin, end});
   }
 
-  string digest();
+  string digest() POST(r : r.size() == 64);
   void reset();
 
 private:
@@ -127,8 +127,7 @@ string Sha256Sum::digest() {
       copy(H.begin(), H.end(), hashDigest.begin());
     }
     auto digestString = str(hashDigest);
-    CONTRACT_ASSERT(digestString.size() == 64);
-    _digest = digestString;
+    _digest           = digestString;
   }
 
   return _digest;

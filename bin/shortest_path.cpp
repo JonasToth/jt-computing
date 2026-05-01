@@ -13,7 +13,7 @@ namespace {
 class Dist {
 public:
   constexpr Dist() = default;
-  explicit constexpr Dist(i32 d) : value{d} { /*assert(d >= 0);*/ }
+  explicit constexpr Dist(i32 d) PRE(d >= 0) : value{d} {}
 
   static constexpr Dist inf() noexcept {
     return Dist{numeric_limits<i32>::max()};

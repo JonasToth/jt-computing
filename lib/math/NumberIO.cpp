@@ -11,7 +11,8 @@ using namespace std;
 
 namespace jt::math {
 
-/// Convert a digit of any @c Base to a single character for textual output operations.
+/// Convert a digit of any @c Base to a single character for textual output
+/// operations.
 template <u8 Base> char digitToChar(u8 digit) {
   static_assert(Base == 2 || Base == 8 || Base == 10 || Base == 16,
                 "Only the common number bases, either power of 2 or base 10 "
@@ -53,4 +54,4 @@ template <u8 Base> optional<u8> nextDigit(istream &is) {
   return nullopt;
 }
 
-}
+} // namespace jt::math

@@ -39,8 +39,8 @@ public:
   }
   /// Create Zero or Identity Matrix of neutral elements.
   explicit FixedSquareMatrix(i32 i, Plus plus = {}, Times times = {})
+      PRE(i == 0 || i == 1)
       : FixedSquareMatrix(move(plus), move(times)) {
-    CONTRACT_ASSERT(i == 0 || i == 1);
     if (i == 1) {
       for (int diagonal = 0; diagonal < N; ++diagonal) {
         (*this)(diagonal, diagonal) = identity_element(_times);
@@ -63,20 +63,11 @@ public:
   FixedSquareMatrix &operator=(FixedSquareMatrix &&other) noexcept = default;
   ~FixedSquareMatrix() noexcept                                    = default;
 
-  T &operator()(i32 i, i32 j) {
-    CONTRACT_ASSERT(i >= 0);
-    CONTRACT_ASSERT(i < N);
-    CONTRACT_ASSERT(j >= 0);
-    CONTRACT_ASSERT(j < N);
-
+  T &operator()(i32 i, i32 j) PRE(i >= 0) PRE(i < N) PRE(j >= 0) PRE(j < N) {
     return _data[static_cast<usize>(i * N + j)];
   }
-  const T &operator()(i32 i, i32 j) const {
-    CONTRACT_ASSERT(i >= 0);
-    CONTRACT_ASSERT(i < N);
-    CONTRACT_ASSERT(j >= 0);
-    CONTRACT_ASSERT(j < N);
-
+  const T &operator()(i32 i, i32 j) const PRE(i >= 0) PRE(i < N) PRE(j >= 0)
+      PRE(j < N) {
     return _data[static_cast<usize>(i * N + j)];
   }
 

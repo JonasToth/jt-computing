@@ -46,13 +46,13 @@ public:
   /// @c i.
   /// @pre i > 0
   /// @post VectorBefore.size() + i == VectorAfter.size()
-  BitVector &operator<<=(int i);
+  BitVector &operator<<=(int i) PRE(i > 0);
 
   /// Shift all bits right by @c i position(s). No new bits are inserted and @c
   /// i bits are dropped.
   /// @pre i > 0 && i < size()
   /// @post VectorBefore.size() - i == VectorAfter.size()
-  BitVector &operator>>=(int i);
+  BitVector &operator>>=(int i) PRE(i > 0) PRE(usize(i) < this->size());
 
 private:
   vector<u8> _data;
@@ -75,8 +75,6 @@ void BitVector::normalize() {
 }
 
 BitVector &BitVector::operator<<=(int i) {
-  CONTRACT_ASSERT(i > 0);
-
   const auto sizeBefore [[maybe_unused]] = _data.size();
   _data.insert(_data.begin(), usize(i), u8{0});
 
@@ -85,9 +83,6 @@ BitVector &BitVector::operator<<=(int i) {
 }
 
 BitVector &BitVector::operator>>=(int i) {
-  CONTRACT_ASSERT(i > 0);
-  CONTRACT_ASSERT(usize(i) < size());
-
   const auto sizeBefore [[maybe_unused]] = _data.size();
   _data.erase(_data.begin(), _data.begin() + i);
 

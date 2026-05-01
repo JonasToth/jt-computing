@@ -212,8 +212,6 @@ NaturalN &NaturalN::operator%=(const NaturalN &other) {
   return *this = divmod(*this, other).second;
 }
 NaturalN &NaturalN::operator<<=(int value) {
-  CONTRACT_ASSERT(value >= 0);
-
   const auto newDigits   = value / bitsPerDigit;
   const auto bitsToShift = value % bitsPerDigit;
 
@@ -239,13 +237,9 @@ NaturalN &NaturalN::operator<<=(int value) {
     carryOver = nextCarryOver;
   }
 
-  CONTRACT_ASSERT(_digits.back() != 0U &&
-                  "Inserting a zero digit is only done if necessary");
   return *this;
 }
 NaturalN &NaturalN::operator>>=(int value) {
-  CONTRACT_ASSERT(value >= 0);
-
   const auto removeDigits = value / bitsPerDigit;
   const auto bitsToShift  = value % bitsPerDigit;
 
@@ -295,8 +289,7 @@ void NaturalN::_normalize() {
   }
 }
 
-static NaturalN largestDoubling(const NaturalN &a, NaturalN b) {
-  CONTRACT_ASSERT(b != 0_U);
+static NaturalN largestDoubling(const NaturalN &a, NaturalN b) PRE(b != 0_U) {
   while ((a - b) >= b) {
     b <<= 1;
   }
@@ -344,7 +337,8 @@ template <u8 Base> string writeInBase(NaturalN n) {
   return reverseDigits;
 }
 
-ostream &operator<<(ostream &os, NaturalN n) {
+ostream &operator<<(ostream &os, NaturalN n)
+    {
   const auto flags = os.flags();
   if ((flags & ios_base::dec) != 0) {
     os << writeInBase<10>(move(n));

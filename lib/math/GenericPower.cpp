@@ -14,8 +14,7 @@ bool isOdd(const Integer auto &n) { return n & 1; }
 bool isEven(const Integer auto &n) { return !isOdd(n); }
 
 template <regular A, Integer N, Semigroup<A> Op>
-A power_accumulate_semigroup(A r, A a, N n, Op op) {
-  CONTRACT_ASSERT(n >= N{0U});
+A power_accumulate_semigroup(A r, A a, N n, Op op) PRE(n >= N{0U}) {
   if (n == N{0U}) {
     return r;
   }
@@ -33,8 +32,7 @@ A power_accumulate_semigroup(A r, A a, N n, Op op) {
 }
 
 template <regular A, Integer N, Semigroup<A> Op = multiplies<A>>
-A power_semigroup(A a, N n, Op op = {}) {
-  CONTRACT_ASSERT(n > N{0U});
+A power_semigroup(A a, N n, Op op = {}) PRE(n > N{0U}) {
   while (!isOdd(n)) {
     a = op(a, a);
     n /= N{2U};
@@ -46,8 +44,7 @@ A power_semigroup(A a, N n, Op op = {}) {
 }
 
 template <regular A, Integer N, Monoid<A> Op = multiplies<A>>
-A power_monoid(A a, N n, Op op = {}) {
-  CONTRACT_ASSERT(n >= N{0U});
+A power_monoid(A a, N n, Op op = {}) PRE(n >= N{0U}) {
   if (n == N{0U}) {
     return identity_element(op);
   }

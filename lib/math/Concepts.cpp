@@ -39,8 +39,7 @@ constexpr negate<T> inverse_operation(plus<T> /*op*/) { return negate<T>{}; }
 
 template <regular T>
 struct reciprocal {
-    constexpr T operator()(const T& x) const {
-        CONTRACT_ASSERT(x != T{0U});
+    constexpr T operator()(const T& x) const PRE(x != T{0U}) {
         return T{1U} / x;
     }
 };

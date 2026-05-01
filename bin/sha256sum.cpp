@@ -24,8 +24,8 @@ HashResult computeHashForFile(filesystem::path arg) {
   return {hasher.digest(), move(arg)};
 }
 
-vector<filesystem::path> filesFromArgv(span<char const *> args) {
-  CONTRACT_ASSERT(args.size() >= 2 && "At least one file argument required");
+vector<filesystem::path> filesFromArgv(span<char const *> args)
+    PRE(args.size() >= 2 && "At least one file argument required") {
   auto files = vector<filesystem::path>{};
   files.reserve(args.size() - 1);
   for (auto const *a : args.subspan(1)) {
