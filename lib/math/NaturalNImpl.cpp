@@ -1,3 +1,7 @@
+module;
+
+#include "jt-computing/core/Contracts.hpp"
+
 module jt.Math:NaturalN.Impl;
 
 import :GenericPower;
@@ -14,7 +18,7 @@ template <std::unsigned_integral Target> Target NaturalN::convertTo() const {
   if (_digits.empty()) {
     return result;
   }
-  // assert(!_digits.empty());
+  CONTRACT_ASSERT(!_digits.empty());
   if constexpr (std::is_same_v<Target, u64>) {
     if (_digits.size() > 2) {
       throw std::out_of_range{"Conversion would narrow"};
@@ -40,7 +44,8 @@ template <std::unsigned_integral Target> Target NaturalN::convertTo() const {
     }
     return Target(_digits[0]);
   }
-  // assert(false && "Unreachable, because all integral types are handled");
+  CONTRACT_ASSERT(false &&
+                  "Unreachable, because all integral types are handled");
 }
 
 bool NaturalN::operator==(const NaturalN &other) const noexcept {
@@ -56,7 +61,7 @@ NaturalN::operator<=>(const NaturalN &other) const noexcept {
     return digitsComparison;
   }
 
-  // assert(_digits.size() == other._digits.size());
+  CONTRACT_ASSERT(_digits.size() == other._digits.size());
 
   if (_digits.empty()) {
     return std::strong_ordering::equal;
@@ -134,7 +139,7 @@ NaturalN &NaturalN::operator-=(const NaturalN &other) {
     return *this;
   }
 
-  // assert(magnitudeRelation == std::strong_ordering::greater);
+  CONTRACT_ASSERT(magnitudeRelation == std::strong_ordering::greater);
 
   // 1. Subtract @c other from @c this by subtracting each digit individually.
   //    If @c 0 - 1 is executed, the subtraction "borrows" from the next digit.
@@ -180,8 +185,8 @@ NaturalN &NaturalN::operator*=(const NaturalN &other) {
 #if 0
     return *this = power_monoid(*this, other, std::plus<NaturalN>{});
 #else
-  // assert(!_digits.empty());
-  // assert(!other._digits.empty());
+  CONTRACT_ASSERT(!_digits.empty());
+  CONTRACT_ASSERT(!other._digits.empty());
 
   auto result = NaturalN{0U};
   for (usize j = 0; j < other._digits.size(); ++j) {
@@ -207,7 +212,7 @@ NaturalN &NaturalN::operator%=(const NaturalN &other) {
   return *this = divmod(*this, other).second;
 }
 NaturalN &NaturalN::operator<<=(int value) {
-  // assert(value >= 0);
+  CONTRACT_ASSERT(value >= 0);
 
   const auto newDigits   = value / bitsPerDigit;
   const auto bitsToShift = value % bitsPerDigit;
@@ -234,12 +239,12 @@ NaturalN &NaturalN::operator<<=(int value) {
     carryOver = nextCarryOver;
   }
 
-  // assert(_digits.back() != 0U && "Inserting a zero digit is only done if
-  // necessary");
+  CONTRACT_ASSERT(_digits.back() != 0U &&
+                  "Inserting a zero digit is only done if necessary");
   return *this;
 }
 NaturalN &NaturalN::operator>>=(int value) {
-  // assert(value >= 0);
+  CONTRACT_ASSERT(value >= 0);
 
   const auto removeDigits = value / bitsPerDigit;
   const auto bitsToShift  = value % bitsPerDigit;
@@ -249,7 +254,7 @@ NaturalN &NaturalN::operator>>=(int value) {
     return *this;
   }
 
-  // assert(usize(removeDigits) < _digits.size());
+  CONTRACT_ASSERT(usize(removeDigits) < _digits.size());
   _digits.erase(_digits.begin(), _digits.begin() + removeDigits);
   if (bitsToShift == 0) {
     return *this;
@@ -257,7 +262,7 @@ NaturalN &NaturalN::operator>>=(int value) {
 
   const auto shiftPos  = u32(bitsPerDigit - bitsToShift);
   const auto lowerMask = std::numeric_limits<u32>::max() >> shiftPos;
-  // assert(shiftPos < bitsPerDigit);
+  CONTRACT_ASSERT(shiftPos < bitsPerDigit);
 
   if (_digits.size() == 1U) {
     _digits[0] >>= u32(bitsToShift);
@@ -265,7 +270,7 @@ NaturalN &NaturalN::operator>>=(int value) {
     return *this;
   }
 
-  // assert(_digits.size() > 1);
+  CONTRACT_ASSERT(_digits.size() > 1);
   for (usize i = 1; i < _digits.size(); ++i) {
     const auto bitsToPreserve = (_digits[i] & lowerMask) << shiftPos;
     _digits[i - 1] >>= u32(bitsToShift);
@@ -291,7 +296,7 @@ void NaturalN::_normalize() {
 }
 
 static NaturalN largestDoubling(const NaturalN &a, NaturalN b) {
-  // assert(b != 0_U);
+  CONTRACT_ASSERT(b != 0_U);
   while ((a - b) >= b) {
     b <<= 1;
   }
@@ -355,7 +360,7 @@ std::ostream &operator<<(std::ostream &os, NaturalN n) {
     }
     os << writeInBase<16>(std::move(n));
   } else {
-    // assert(false && "Either number base must be configured");
+    CONTRACT_ASSERT(false && "Either number base must be configured");
   }
   return os;
 }

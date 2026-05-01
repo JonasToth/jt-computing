@@ -6,14 +6,14 @@ rejected or reimplemented by me [;)].
 ## Code style and formatting
 
 The code must be clean and follow proper software engineering practices.
-Only modern `C++-20` is accepted, especially the use of concepts is required.
+Only modern `C++-26` is accepted, especially the use of concepts is required.
 But in the end its not about how many features of `C++` were used, but
 rather is the code understandable and correct.
 
 Your code requires
 
 * unit-tests
-* contracts (use `gsl` assertions)
+* C++26 contracts
 * consider benchmarks
 
 ### Closing Issues

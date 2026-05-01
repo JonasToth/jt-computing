@@ -1,3 +1,7 @@
+module;
+
+#include "jt-computing/core/Contracts.hpp"
+
 export module jt.Math:FixedSquareMatrix;
 
 import :Concepts;
@@ -17,7 +21,7 @@ public:
   FixedSquareMatrix(Plus plus, Times times)
       : _data{std::make_unique<T[]>(N * N)}, _plus{std::move(plus)},
         _times{std::move(times)} {
-    // assert(_data.get() != nullptr && "Bad Alloc must have been thrown");
+    CONTRACT_ASSERT(_data.get() != nullptr && "Bad Alloc must have been thrown");
     std::fill_n(_data.get(), N * N, identity_element(_plus));
   }
 
@@ -35,7 +39,7 @@ public:
   /// Create Zero or Identity Matrix of neutral elements.
   explicit FixedSquareMatrix(i32 i, Plus plus = {}, Times times = {})
       : FixedSquareMatrix(std::move(plus), std::move(times)) {
-    // assert(i == 0 || i == 1);
+    CONTRACT_ASSERT(i == 0 || i == 1);
     if (i == 1) {
       for (int diagonal = 0; diagonal < N; ++diagonal) {
         (*this)(diagonal, diagonal) = identity_element(_times);
@@ -59,18 +63,18 @@ public:
   ~FixedSquareMatrix() noexcept                                    = default;
 
   T &operator()(i32 i, i32 j) {
-    // assert(i >= 0);
-    // assert(i < N);
-    // assert(j >= 0);
-    // assert(j < N);
+    CONTRACT_ASSERT(i >= 0);
+    CONTRACT_ASSERT(i < N);
+    CONTRACT_ASSERT(j >= 0);
+    CONTRACT_ASSERT(j < N);
 
     return _data[static_cast<usize>(i * N + j)];
   }
   const T &operator()(i32 i, i32 j) const {
-    // assert(i >= 0);
-    // assert(i < N);
-    // assert(j >= 0);
-    // assert(j < N);
+    CONTRACT_ASSERT(i >= 0);
+    CONTRACT_ASSERT(i < N);
+    CONTRACT_ASSERT(j >= 0);
+    CONTRACT_ASSERT(j < N);
 
     return _data[static_cast<usize>(i * N + j)];
   }

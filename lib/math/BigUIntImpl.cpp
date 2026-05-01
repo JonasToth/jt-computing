@@ -1,3 +1,7 @@
+module;
+
+#include "jt-computing/core/Contracts.hpp"
+
 module jt.Math:BigUInt.Impl;
 
 import :BigUInt;
@@ -67,7 +71,7 @@ std::ostream &operator<<(std::ostream &os, BigUInt n) {
     }
     os << writeInBase<16>(std::move(n));
   } else {
-    // assert(false && "Either number base must be configured");
+    CONTRACT_ASSERT(false && "Either number base must be configured");
   }
   return os;
 }

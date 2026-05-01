@@ -1,3 +1,7 @@
+module;
+
+#include "jt-computing/core/Contracts.hpp"
+
 export module jt.Math:GenericPower;
 
 import :Concepts;
@@ -9,7 +13,7 @@ bool isEven(const Integer auto &n) { return !isOdd(n); }
 
 template <std::regular A, Integer N, Semigroup<A> Op>
 A power_accumulate_semigroup(A r, A a, N n, Op op) {
-  // assert(n >= N{0U});
+  CONTRACT_ASSERT(n >= N{0U});
   if (n == N{0U}) {
     return r;
   }
@@ -28,7 +32,7 @@ A power_accumulate_semigroup(A r, A a, N n, Op op) {
 
 template <std::regular A, Integer N, Semigroup<A> Op = std::multiplies<A>>
 A power_semigroup(A a, N n, Op op = {}) {
-  // assert(n > N{0U});
+  CONTRACT_ASSERT(n > N{0U});
   while (!isOdd(n)) {
     a = op(a, a);
     n /= N{2U};
@@ -41,7 +45,7 @@ A power_semigroup(A a, N n, Op op = {}) {
 
 template <std::regular A, Integer N, Monoid<A> Op = std::multiplies<A>>
 A power_monoid(A a, N n, Op op = {}) {
-  // assert(n >= N{0U});
+  CONTRACT_ASSERT(n >= N{0U});
   if (n == N{0U}) {
     return identity_element(op);
   }

@@ -1,3 +1,7 @@
+module;
+
+#include "jt-computing/core/Contracts.hpp"
+
 export module jt.Math:BigInt;
 
 import :BigUInt;
@@ -192,7 +196,7 @@ std::strong_ordering BigInt::operator<=>(const BigInt &other) const noexcept {
   }
 
   // The signs must be identical after the first two conditions were false.
-  // assert(isNegative() == other.isNegative());
+  CONTRACT_ASSERT(isNegative() == other.isNegative());
 
   // E.g.: -10 < -9 <==> |-9| <=> |-10| <==> 9 <=> 10
   if (isNegative()) {
@@ -208,7 +212,7 @@ std::strong_ordering BigInt::operator<=>(const BigUInt &other) const noexcept {
   }
 
   // The signs must be identical after the first two conditions were false.
-  // assert(!isNegative());
+  CONTRACT_ASSERT(!isNegative());
 
   return abs() <=> other;
 }
@@ -220,8 +224,8 @@ BigInt &BigInt::operator+=(const BigInt &other) {
     _val += other.abs();
     return *this;
   }
-  // assert(isNegative() ^ other.isNegative() &&
-         // "Signs must differ at this point");
+  CONTRACT_ASSERT(isNegative() ^ other.isNegative() &&
+                  "Signs must differ at this point");
 
   // The signs of *this will change by this operation.
   if (other.abs() > abs()) {

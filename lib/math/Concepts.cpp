@@ -1,3 +1,7 @@
+module;
+
+#include "jt-computing/core/Contracts.hpp"
+
 export module jt.Math:Concepts;
 
 import std;
@@ -35,7 +39,7 @@ constexpr std::negate<T> inverse_operation(std::plus<T> /*op*/) { return std::ne
 template <std::regular T>
 struct reciprocal {
     constexpr T operator()(const T& x) const {
-        // assert(x != T{0U});
+        CONTRACT_ASSERT(x != T{0U});
         return T{1U} / x;
     }
 };

@@ -1,4 +1,4 @@
 export module jt.Core;
 
-export import :Types;
 export import :Constants;
+export import :Types;

@@ -1,3 +1,5 @@
+#include "jt-computing/core/Contracts.hpp"
+
 import std;
 import jt.Math;
 
@@ -7,14 +9,14 @@ using namespace std;
 
 int main(int argc, char **argv) {
   if (argc != 2) {
-    // assert(argc >= 1);
+    CONTRACT_ASSERT(argc >= 1);
     cerr << "Usage: " << argv[0] << " <n>\n\n"
          << "Determines the length of the collatz-row of <n> until '1' is "
             "reached.\n";
     return EXIT_FAILURE;
   }
 
-  // assert(argc >= 2);
+  CONTRACT_ASSERT(argc >= 2);
 
   stringstream ss(argv[1]);
   auto n = 0_N;

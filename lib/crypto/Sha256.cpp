@@ -1,3 +1,7 @@
+module;
+
+#include "jt-computing/core/Contracts.hpp"
+
 export module jt.Crypto:Sha256;
 
 import :Concepts;
@@ -125,7 +129,7 @@ std::string Sha256Sum::digest() {
       std::copy(H.begin(), H.end(), hashDigest.begin());
     }
     auto digestString = str(hashDigest);
-    // assert(digestString.size() == 64);
+    CONTRACT_ASSERT(digestString.size() == 64);
     _digest           = digestString;
   }
 
@@ -161,7 +165,7 @@ __attribute__((target("default"))) void Sha256Sum::transform() {
   // after transitioning to modules with clang-21, using libstdc++ on my fedora machine.
 #if 1
   u32 const *start = reinterpret_cast<u32 const *>(_data.data());
-  // assert(data.size() % sizeof(u32) == 0);
+  CONTRACT_ASSERT(_data.size() % sizeof(u32) == 0);
   usize length     = _data.size() / sizeof(u32);
 
   if constexpr (std::endian::native == std::endian::little) {

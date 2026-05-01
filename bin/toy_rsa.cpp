@@ -67,18 +67,18 @@ template <typename Int> auto measureSignature() {
   const auto after = std::chrono::steady_clock::now();
   return after - before;
 }
+
+template <NaturalNumber NumberType> void measureSigning() {
+  const auto dBigUInt = measureSignature<NumberType>();
+  std::cout << "Took " << chrono::duration_cast<chrono::milliseconds>(dBigUInt)
+            << " for signature calculation" << std::endl;
+}
 } // namespace
 
 int main() {
 #if 0
-  const auto dBigUInt = measureSignature<BigUInt>();
-  std::cout << "Naive Bit-BigUInt takes "
-            << chrono::duration_cast<chrono::milliseconds>(dBigUInt)
-            << " for signature calculation" << std::endl;
+    measureSigning<BigUInt>();
 #endif
-  const auto dNaturalN = measureSignature<NaturalN>();
-  std::cout << "Naive u32-NaturalN takes "
-            << chrono::duration_cast<chrono::milliseconds>(dNaturalN)
-            << " for signature calculation" << std::endl;
+  measureSigning<NaturalN>();
   return jt::EXIT_SUCCESS;
 }

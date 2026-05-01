@@ -1,3 +1,5 @@
+#include "jt-computing/core/Contracts.hpp"
+
 import std;
 import jt.Math;
 
@@ -5,7 +7,8 @@ using namespace std;
 using namespace jt;
 using namespace jt::math;
 
-static BigUInt fibbonacci(usize n) {
+namespace {
+BigUInt fibbonacci(usize n) {
   static vector<BigUInt> memoized{0_N, 1_N};
   if (n == 0) {
     return memoized[0];
@@ -25,10 +28,11 @@ static BigUInt fibbonacci(usize n) {
   }
   return memoized.at(n);
 }
+} // namespace
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) try {
   if (argc != 1) {
-    // assert(argc >= 1);
+    CONTRACT_ASSERT(argc >= 1);
     cerr << "Usage: " << argv[0] << "\n\n"
          << "Computes multiple fibonacci numbers with memoization.\n";
     return EXIT_FAILURE;
@@ -72,4 +76,11 @@ int main(int argc, char *argv[]) {
        << "\n";
 
   return EXIT_SUCCESS;
+} catch (std::exception &e) {
+  cerr << "Unhandled exception occured during processing: " << e.what() << endl;
+  return EXIT_FAILURE;
+} catch (...) {
+  cerr << "Unhandled and unexpected exception occured during processing."
+       << endl;
+  return EXIT_FAILURE;
 }

@@ -1,7 +1,7 @@
 set(module_sources
     lib/core/Core.cppm
-    lib/core/Types.cpp
     lib/core/Constants.cpp
+    lib/core/Types.cpp
 
     lib/container/Container.cppm
     lib/container/BitVector.cpp

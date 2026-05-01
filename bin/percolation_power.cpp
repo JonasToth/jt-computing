@@ -1,3 +1,5 @@
+#include "jt-computing/core/Contracts.hpp"
+
 import std;
 import jt.Math;
 
@@ -32,7 +34,7 @@ std::ostream &operator<<(std::ostream &os,
 
 int main(int argc, char **argv) {
   if (argc != 3 && argc != 4) {
-    // assert(argc >= 1);
+    CONTRACT_ASSERT(argc >= 1);
     cerr << "Usage: " << argv[0]
          << " <probability-threshold> <output-file> <seed>\n\n"
          << "Computes clusters in percolation simulation.\n";

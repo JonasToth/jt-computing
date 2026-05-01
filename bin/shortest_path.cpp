@@ -1,3 +1,5 @@
+#include "jt-computing/core/Contracts.hpp"
+
 import std;
 import jt.Core;
 import jt.Math;

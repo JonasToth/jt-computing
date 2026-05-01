@@ -1,3 +1,7 @@
+module;
+
+#include "jt-computing/core/Contracts.hpp"
+
 export module jt.Container:BitVector;
 
 import std;
@@ -70,23 +74,23 @@ void BitVector::normalize() {
 }
 
 BitVector &BitVector::operator<<=(int i) {
-  // assert(i > 0);
+  CONTRACT_ASSERT(i > 0);
 
   const auto sizeBefore [[maybe_unused]] = _data.size();
   _data.insert(_data.begin(), usize(i), u8{0});
 
-  // assert(sizeBefore + usize(i) == size());
+  CONTRACT_ASSERT(sizeBefore + usize(i) == size());
   return *this;
 }
 
 BitVector &BitVector::operator>>=(int i) {
-  // assert(i > 0);
-  // assert(usize(i) < size());
+  CONTRACT_ASSERT(i > 0);
+  CONTRACT_ASSERT(usize(i) < size());
 
   const auto sizeBefore [[maybe_unused]] = _data.size();
   _data.erase(_data.begin(), _data.begin() + i);
 
-  // assert(sizeBefore - usize(i) == size());
+  CONTRACT_ASSERT(sizeBefore - usize(i) == size());
   return *this;
 }
 

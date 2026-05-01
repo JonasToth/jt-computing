@@ -80,18 +80,40 @@ function(set_project_warnings project_name)
 
   if(MSVC)
     set(PROJECT_WARNINGS ${MSVC_WARNINGS})
+    set(ADDITIONAL_FLAGS)
+    set(LINK_FLAGS)
   elseif(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
     set(PROJECT_WARNINGS ${CLANG_WARNINGS})
+    set(ADDITIONAL_FLAGS)
+    set(LINK_FLAGS)
   elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(PROJECT_WARNINGS ${GCC_WARNINGS})
+    set(ADDITIONAL_FLAGS "-fcontracts" "-fcontract-evaluation-semantic=enforce")
+    set(LINK_FLAGS "-fcontracts")
   else()
     message(AUTHOR_WARNING "No compiler warnings set for '${CMAKE_CXX_COMPILER_ID}' compiler.")
   endif()
 
   if(${PROJECT_NAME}_BUILD_HEADERS_ONLY)
-        target_compile_options(${project_name} INTERFACE ${PROJECT_WARNINGS})
+        target_compile_options(${project_name}
+            INTERFACE
+                ${PROJECT_WARNINGS}
+                ${ADDITIONAL_FLAGS}
+            )
+        target_link_options(${project_name}
+            INTERFACE
+                ${LINK_FLAGS}
+            )
   else()
-        target_compile_options(${project_name} PUBLIC ${PROJECT_WARNINGS})
+        target_compile_options(${project_name}
+            PUBLIC
+                ${PROJECT_WARNINGS}
+                ${ADDITIONAL_FLAGS}
+            )
+        target_link_options(${project_name}
+            PUBLIC
+                ${LINK_FLAGS}
+            )
   endif()
 
   if(NOT TARGET ${project_name})

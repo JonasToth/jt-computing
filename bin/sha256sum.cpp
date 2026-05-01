@@ -1,3 +1,5 @@
+#include "jt-computing/core/Contracts.hpp"
+
 import std;
 import jt.Core;
 import jt.Crypto;
@@ -22,7 +24,7 @@ HashResult computeHashForFile(std::filesystem::path arg) {
 }
 
 std::vector<std::filesystem::path> filesFromArgv(std::span<char const *> args) {
-  // assert(args.size() >= 2 && "At least one file argument required");
+  CONTRACT_ASSERT(args.size() >= 2 && "At least one file argument required");
   auto files = std::vector<std::filesystem::path>{};
   files.reserve(args.size() - 1);
   for (auto const *a : args.subspan(1)) {
@@ -106,7 +108,7 @@ int main(int argc, char const **argv) {
               << " - At least one file to hash must be provided!\n";
     return jt::EXIT_FAILURE;
   }
-  // assert(argc >= 2 && "At least one argument is guaranteed from here on");
+  CONTRACT_ASSERT(argc >= 2 && "At least one argument is guaranteed from here on");
   if (std::strcmp(args[1], "-c") == 0 || std::strcmp(args[1], "--check") == 0) {
     if (args.size() != 3) {
       std::cerr << "Error: " << args[0]

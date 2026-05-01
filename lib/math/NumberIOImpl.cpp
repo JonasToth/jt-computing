@@ -1,3 +1,7 @@
+module;
+
+#include "jt-computing/core/Contracts.hpp"
+
 module jt.Math:NumberIOImpl;
 
 import std;
@@ -21,7 +25,7 @@ template <u8 Base> char digitToChar(u8 digit) {
                       : static_cast<char>((digit - 10) + 'a');
   }
 
-  // assert(false && "Unreachable");
+  CONTRACT_ASSERT(false && "Unreachable");
 }
 
 /// Try to retrieve the next digit in @c Base from the input stream @c is.

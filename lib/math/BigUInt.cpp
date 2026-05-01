@@ -1,3 +1,7 @@
+module;
+
+#include "jt-computing/core/Contracts.hpp"
+
 export module jt.Math:BigUInt;
 
 import :NaturalNumberAlgorithms;
@@ -217,7 +221,7 @@ std::strong_ordering BigUInt::operator<=>(const BigUInt &other) const noexcept {
     return digitsComparison;
   }
 
-  // assert(other.binaryDigits() == binaryDigits());
+  CONTRACT_ASSERT(other.binaryDigits() == binaryDigits());
 
   if (binaryDigits() == usize{0ULL}) {
     return std::strong_ordering::equal;
@@ -305,7 +309,7 @@ BigUInt &BigUInt::operator-=(const BigUInt &other) {
     return *this;
   }
 
-  // assert(magnitudeRelation == std::strong_ordering::greater);
+  CONTRACT_ASSERT(magnitudeRelation == std::strong_ordering::greater);
 
   // 1. Subtract @c other from @c this by subtracting each digit individually.
   //    If @c 0 - 1 is executed, the subtraction "borrows" from the next digit.
@@ -386,7 +390,7 @@ BigUInt &BigUInt::operator%=(const BigUInt &other) {
 }
 
 BigUInt &BigUInt::operator<<=(int value) {
-  // assert(value > 0);
+  CONTRACT_ASSERT(value > 0);
 
   if (binaryDigits() == usize{0}) {
     return *this;
@@ -396,7 +400,7 @@ BigUInt &BigUInt::operator<<=(int value) {
 }
 
 BigUInt &BigUInt::operator>>=(int value) {
-  // assert(value > 0);
+  CONTRACT_ASSERT(value > 0);
 
   if (binaryDigits() == usize{0}) {
     return *this;
@@ -415,7 +419,7 @@ bool BigUInt::isEven() const noexcept {
 }
 
 static BigUInt largestDoubling(const BigUInt &a, BigUInt b) {
-  // assert(b != 0U);
+  CONTRACT_ASSERT(b != 0U);
   while ((a - b) >= b) {
     b <<= 1;
   }
