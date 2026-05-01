@@ -1,5 +1,3 @@
-[![Actions Status](https://github.com/JonasToth/jt-computing/workflows/Ubuntu/badge.svg)](https://github.com/JonasToth/jt-computing/actions)
-
 # `jt-computing` - Me Discovering Computation
 
 This project covers my journey to (re)discover the heart of computing using `C++`
