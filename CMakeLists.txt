@@ -20,7 +20,7 @@ string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPERCASE)
 set (CMAKE_CXX_STANDARD 26)
 set (CMAKE_CXX_EXTENSIONS ON)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
-set (CMAKE_CXX_MODULE_STD 1)
+set (CMAKE_CXX_MODULE_STD 0)
 
 include(cmake/StandardSettings.cmake)
 include(cmake/StaticAnalyzers.cmake)
