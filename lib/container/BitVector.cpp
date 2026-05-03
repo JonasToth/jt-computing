@@ -59,8 +59,8 @@ private:
 };
 
 BitVector::BitVector(unsigned_integral auto value)
-    : _data(sizeof(value) * 8, u8{0}) {
-  for (u32 i = 0U; i < 8 * sizeof(value); ++i) {
+    : _data(sizeof(value) * BitsPerByte, u8{0}) {
+  for (u32 i = 0U; i < BitsPerByte * sizeof(value); ++i) {
     const bool bitFromValue = value & (static_cast<decltype(value)>(1U) << i);
     set(i, bitFromValue);
   }

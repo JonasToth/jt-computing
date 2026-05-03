@@ -75,7 +75,7 @@ private:
       /*G=*/0x1f83d9ab, /*H=*/0x5be0cd19};
 
   // Constants defined in Section 4.2.3.
-  alignas(cacheLine) static constexpr array<u32, 64> K = {
+  alignas(cacheLine) static constexpr array<u32, blockSize> K = {
       0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1,
       0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
       0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786,
@@ -109,7 +109,7 @@ void Sha256Sum::process(CryptHashable auto const &data) {
       transform();
 
       // End of the block
-      _bitLen += blockSize * 8U;
+      _bitLen += blockSize * BitsPerByte;
       _blockLength = 0;
     }
   }
@@ -151,7 +151,7 @@ void Sha256Sum::reset() {
 }
 
 void Sha256Sum::transform() {
-  alignas(cacheLine) array<u32, 64> W;
+  alignas(cacheLine) array<u32, blockSize> W;
 
   // Section 6.2.2, Step 1. (1)
   // Insert all data of this block at the start of the message schedule in
@@ -169,7 +169,7 @@ void Sha256Sum::transform() {
 
   // Section 6.2.2, Step 1. (2).
   // The rest of the message schedule is derived from the previous data words.
-  for (u8 t = 16; t < 64; ++t) {
+  for (u8 t = 16; t < blockSize; ++t) {
     W[t] = Sig1(W[t - 2]) + W[t - 7] + Sig0(W[t - 15]) + W[t - 16];
   }
 
@@ -178,7 +178,7 @@ void Sha256Sum::transform() {
   auto &[a, b, c, d, e, f, g, h]            = abcdefgh;
 
   // Section 6.2.2, Step 3.
-  for (u8 t = 0; t < 64; ++t) {
+  for (u8 t = 0; t < blockSize; ++t) {
     // clang-format off
     u32 T1 = h
            + Sum1(e)
@@ -212,7 +212,7 @@ void Sha256Sum::pad() {
   // If the already processed message does not leave room for the bit-length,
   // a _new_ block must be done, performing one additional 'transform()'.
   u64 i      = _blockLength;
-  u8 end     = _blockLength < 56 ? 56 : 64;
+  u8 end     = _blockLength < 56 ? 56 : blockSize;
 
   _data[i++] = 1U << 7U;
   while (i < end) {

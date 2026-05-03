@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef __clang__
+#ifndef __cpp_contracts
 #  define PRE(...)
 #  define POST(...)
 #  define CONTRACT_ASSERT(...)
