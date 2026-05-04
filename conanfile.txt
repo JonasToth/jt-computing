@@ -1,0 +1,9 @@
+[requires]
+onetbb/2022.0.0
+
+[options]
+hwloc/*:shared=True
+
+[generators]
+CMakeDeps
+CMakeToolchain
