@@ -59,6 +59,7 @@ function(set_project_warnings project_name)
       -Wdouble-promotion # warn if float is implicit promoted to double
       -Wformat=2 # warn on security issues around functions that format output
                  # (ie printf)
+      -Wno-c2y-extensions
   )
 
   if (${PROJECT_NAME}_WARNINGS_AS_ERRORS)

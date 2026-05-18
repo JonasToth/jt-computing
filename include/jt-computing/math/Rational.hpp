@@ -17,7 +17,7 @@ public:
   /// Compare the sign to @c other and continue with comparing the value itself.
   bool operator==(const Rational &other) const noexcept;
   /// Compare the sign to @c other and continue with comparing the value itself.
-  template <std::regular N> bool operator==(const N &other) const;
+  template <typename N> bool operator==(const N &other) const;
 
   std::strong_ordering operator<=>(const Rational &other) const;
 
@@ -79,7 +79,7 @@ Rational::Rational(N1 numerator, BigUInt denominator)
   }
   reduce();
 }
-template <std::regular N> bool Rational::operator==(const N &other) const {
+template <typename N> bool Rational::operator==(const N &other) const {
   const auto tmp = Rational{other};
   return *this == tmp;
 }

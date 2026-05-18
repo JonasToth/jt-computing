@@ -6,6 +6,7 @@
 #include <climits>
 #include <compare>
 #include <concepts>
+#include <functional>
 #include <iosfwd>
 #include <limits>
 #include <stdexcept>
