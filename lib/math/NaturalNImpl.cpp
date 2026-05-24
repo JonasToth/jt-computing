@@ -2,7 +2,7 @@ module;
 
 #include "jt-computing/core/Contracts.hpp"
 
-module jt.Math:NaturalN.Impl;
+export module jt.Math:NaturalN.Impl;
 
 import :GenericPower;
 import :NaturalN;

@@ -2,7 +2,7 @@ module;
 
 #include "jt-computing/core/Contracts.hpp"
 
-module jt.Math:BigUInt.Impl;
+export module jt.Math:BigUInt.Impl;
 
 import :BigUInt;
 import :NumberIO;

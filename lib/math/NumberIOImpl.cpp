@@ -6,6 +6,7 @@ module jt.Math:NumberIOImpl;
 
 import std;
 import jt.Core;
+import :BigUInt;
 
 using namespace std;
 
